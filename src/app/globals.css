@@ -1,26 +1,441 @@
-@import "tailwindcss";
+/* @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@plugin '../../hero.ts';
+@source '../../node_modules/@heroui/theme/dist*.{js,ts,jsx,tsx}';
+@custom-variant dark (&:is(.dark *));
+
+
+
+body {
+  background-color: rgb(var(--background));
+  color: rgb(var(--foreground));
+}
+
+
+
+.dark {
+  --background: 9 9 11; 
+  --foreground: 244 244 245; 
+
+  --muted: 161 161 170; 
+  --border: 39 39 42; 
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: rgb(var(--background));
+  --color-foreground: rgb(var(--foreground));
+  --color-muted: rgb(var(--muted));
+  --color-border: rgb(var(--border));
+ 
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@theme {
+  --color-primary: #312c85e3;
+  
+  --color-secondary: #BEF264;
+  --color-danger : #F87878;
+  --color-warning: #EEE380 ;
+
+
+  
+  --state-hover-opacity: 15%;
+  --state-focus-opacity: 35%;
+  
+  
+  --color-input-text: #111827;
+
+   --input-bg-default: color-mix(
+    in srgb,
+    var(--color-primary) 7%,
+    white
+   );
+
+  --input-bg-hover: color-mix(
+    in srgb,
+    var(--color-primary) 10%,
+    white
+  );
+
+  --input-bg-focus: color-mix(
+    in srgb,
+    var(--color-primary) 6%,
+    white
+  );
+
+  --color-input-border-default: #d1d5db;
+  --color-input-border-hover: var(--color-primary);
+  --color-input-border-focus: var(--color-primary);
+
+  --color-input-ring: color-mix(
+    in srgb,
+    var(--color-primary) 40%,
+    transparent
+  ); */
+
+  
+  
+   /* =========================
+     DROPDOWN / OPTION BG
+  ========================= */
+/* 
+  --dropdown-bg: color-mix(
+    in srgb,
+    var(--color-primary) 7%,
+    white);
+
+  --dropdown-border: #e5e7eb;
+
+    --option-bg-hover: color-mix(
+    in srgb,
+    var(--color-primary) 6%,
+    white
+  );
+
+  --option-bg-selected: color-mix(
+    in srgb,
+    var(--color-primary) 14%,
+    white
+  );
+
+
+  --option-bg-active: color-mix(
+    in srgb,
+    var(--color-primary) 10%,
+    white
+  );
+
+  --option-bg-selected: color-mix(
+    in srgb,
+    var(--color-primary) 14%,
+    white
+  );
+
+  --option-text-selected: var(--color-primary);
+
+    --option-bg-disabled: transparent;
+  --option-text-disabled: #9ca3af;
+
+  
+}
+
+
+[data-slot="input-wrapper"] {
+  background: var(--input-bg-default);
+  border-color: var(--color-input-border-default);
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+[data-slot="input-wrapper"]:hover {
+  background: var(--input-bg-hover);
+  border-color: var(--color-input-border-hover);
+}
+
+[data-slot="input-wrapper"]:focus-within {
+  background: var(--input-bg-focus);
+  border-color: var(--color-input-border-focus);
+  box-shadow: 0 0 0 2px var(--color-input-ring);
+}
+
+[data-slot="dropdown-item"]:hover {
+  background: var(--option-bg-hover);
+}
+
+[data-slot="dropdown-item"][data-selected="true"] {
+  background: var(--option-bg-selected);
+}
+
+
+[data-slot="dropdown"] {
+  background: var(--dropdown-bg);
+  border: 1px solid var(--dropdown-border);
+  border-radius: 0.75rem;
+  padding: 0.25rem;
+}
+
+[data-slot="dropdown-item"] {
+  background: var(--option-bg-default);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+[data-slot="dropdown-item"]:hover {
+  background: var(--option-bg-hover);
+}
+
+[data-slot="dropdown-item"]:active {
+  background: var(--option-bg-active);
+}
+
+[data-slot="dropdown-item"][data-selected="true"] {
+  background: var(--option-bg-selected);
+  color: var(--option-text-selected);
+}
+
+[data-slot="input-wrapper"]:hover {
+  background: var(--input-bg-hover);
+}
+
+[data-slot="input-wrapper"]:focus-within {
+  background: var(--input-bg-focus);
+}
+
+
+[data-slot="dropdown-item"][data-disabled="true"] {
+  background: var(--option-bg-disabled);
+  color: var(--option-text-disabled);
+  cursor: not-allowed;
+}
+ */
+@import "tailwindcss";
+
+@plugin '../../hero.ts';
+/* Note: You may need to change the path to fit your project structure */
+@source '../../node_modules/@heroui/theme/dist/*.{js,ts,jsx,tsx}';
+@custom-variant dark (&:is(.dark *));
+
+/* =========================
+   ROOT VARIABLES
+========================= */
+:root {
+  --background: 255 255 255;
+  --foreground: 0 0 0;
+  --muted: 156 163 175;  /* zinc-400 */
+  --border: 209 213 219; /* zinc-300 */
+
+  /* Primary Color Palette */
+  --color-primary: 49 44 133;      /* #312c85 */
+  --color-primary-rgb: 49, 44, 133;
+  --color-primary-opacity: 0.89;   /* e3 */
+
+  /* Semantic Colors */
+  --color-secondary: 252 211 77;  /* #BEF264 */  /* #22c55e */
+  --color-secondary-faded: rgb(252 211 77 / 0.3);
+  --color-danger: 225 96 96;     /* #F87878 */
+  --color-warning: 238 227 128; 
+
+
+
+  --color-success: 193, 226, 82;
+  --heroui-success-600: 22 163 74; /* Opsional: untuk efek hover */
+
+  /* State Opacities */
+  --state-hover-opacity: 0.15;
+  --state-focus-opacity: 0.35;
+
+  /* Input Variables */
+  --input-bg-default: color-mix(
+    in srgb,
+    rgb(var(--color-primary)) 7%,
+    white
+  );
+  --input-bg-hover: color-mix(
+    in srgb,
+    rgb(var(--color-primary)) 10%,
+    white
+  );
+  --input-bg-focus: color-mix(
+    in srgb,
+    rgb(var(--color-primary)) 6%,
+    white
+  );
+
+  --color-input-text: 17 24 39;    /* #111827 */
+  --color-input-border-default: 209 213 219; /* #d1d5db */
+  --color-input-border-hover: #d1d1d1;
+  --color-input-border-focus: #ffff;
+
+  /* Dropdown Variables */
+  --dropdown-bg: color-mix(
+    in srgb,
+    rgb(var(--color-primary)) 7%,
+    white
+  );
+  --dropdown-border: 229 231 235; /* #e5e7eb */
+
+  /* Option Variables */
+  --option-bg-default: transparent;
+  --option-bg-hover: color-mix(
+    in srgb,
+    rgb(var(--color-primary)) 6%,
+    white
+  );
+  --option-bg-active: color-mix(
+    in srgb,
+    rgb(var(--color-primary)) 10%,
+    white
+  );
+  --option-bg-selected: color-mix(
+    in srgb,
+    rgb(var(--color-primary)) 14%,
+    white
+  );
+  --option-text-selected: rgb(var(--color-primary));
+  --option-bg-disabled: transparent;
+  --option-text-disabled: 156 163 175; /* #9ca3af */
+}
+
+/* =========================
+   DARK MODE
+========================= */
+.dark {
+  --background: 9 9 11;          /* zinc-950 */
+  --foreground: 244 244 245;     /* zinc-100 */
+  --muted: 161 161 170;         /* zinc-400 */
+  --border: 39 39 42;           /* zinc-800 */
+
+  --color-input-border-default: 55 65 81; /* gray-700 */
+  --dropdown-border: 55 65 81;           /* gray-700 */
+
+  --input-bg-default: color-mix(
+    in srgb,
+    rgb(var(--color-primary)) 15%,
+    transparent
+  );
+  --input-bg-hover: color-mix(
+    in srgb,
+    rgb(var(--color-primary)) 20%,
+    transparent
+  );
+  --input-bg-focus: color-mix(
+    in srgb,
+    rgb(var(--color-primary)) 12%,
+    transparent
+  );
+
+  --dropdown-bg: color-mix(
+    in srgb,
+    rgb(var(--color-primary)) 15%,
+    transparent
+  );
+}
+
+/* =========================
+   THEME CONFIGURATION
+========================= */
+@theme inline {
+  --color-background: rgb(var(--background));
+  --color-foreground: rgb(var(--foreground));
+  --color-muted: rgb(var(--muted));
+  --color-border: rgb(var(--border));
+
+  /* Primary with opacity */
+  --color-primary: rgb(var(--color-primary) / var(--color-primary-opacity));
+  
+  /* Semantic colors */
+  --color-secondary: rgb(var(--color-secondary));
+  --color-danger: rgb(var(--color-danger));
+  --color-warning: rgb(var(--color-warning));
+
+  /* State utilities */
+  --state-hover-opacity: var(--state-hover-opacity);
+  --state-focus-opacity: var(--state-focus-opacity);
+
+  /* Ring color */
+  --color-input-ring: color-mix(
+    in srgb,
+    rgb(var(--color-primary)) 40%,
+    transparent
+  );
+}
+
+/* =========================
+   COMPONENT STYLES
+========================= */
+
+/* Input Wrapper */
+[data-slot="input-wrapper"] {
+  background: var(--input-bg-default);
+  border: 1px solid rgb(var(--color-input-border-default));
+  border-radius: 0.5rem;
+  transition-property: background-color, border-color, box-shadow;
+  transition-duration: 0.2s;
+  transition-timing-function: ease;
+
+  &:hover {
+    background: var(--input-bg-hover);
+    border-color: var(--color-input-border-hover);
+  }
+
+  &:focus-within {
+    background: var(--input-bg-focus);
+    border-color: var(--color-input-border-focus);
+    box-shadow: 0 0 0 2px var(--color-input-ring);
   }
 }
 
+/* Dropdown */
+[data-slot="dropdown"] {
+  background: var(--dropdown-bg);
+  border: 1px solid rgb(var(--dropdown-border));
+  border-radius: 0.75rem;
+  padding: 0.25rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  backdrop-filter: blur(8px);
+}
+
+/* Dropdown Item */
+[data-slot="dropdown-item"] {
+  background: var(--option-bg-default);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  margin: 0.125rem 0;
+  cursor: pointer;
+  transition-property: background-color, color;
+  transition-duration: 0.15s;
+  transition-timing-function: ease;
+
+  &:hover:not([data-disabled="true"]) {
+    background: var(--option-bg-hover);
+  }
+
+  &:active:not([data-disabled="true"]) {
+    background: var(--option-bg-active);
+  }
+
+  &[data-selected="true"] {
+    background: var(--option-bg-selected);
+    color: var(--option-text-selected);
+    font-weight: 500;
+  }
+
+  &[data-disabled="true"] {
+    background: var(--option-bg-disabled);
+    color: rgb(var(--option-text-disabled));
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+/* =========================
+   BASE STYLES
+========================= */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: rgb(var(--background));
+  color: rgb(var(--foreground));
+  font-feature-settings: "rlig" 1, "calt" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* =========================
+   UTILITY CLASSES (Optional)
+========================= */
+.focus-ring {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--color-input-ring);
+}
+
+.transition-smooth {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
 }
