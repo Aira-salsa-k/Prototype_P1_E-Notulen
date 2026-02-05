@@ -2,17 +2,22 @@
 import { AppButton } from "@/components/ui/button/AppButton";
 import { PlusIcon, FunnelIcon } from "@heroicons/react/24/outline";
 import { AnggotaStats } from "@/types/anggota-dewan";
+import clsx from "clsx";
 
 interface AnggotaDewanHeaderProps {
   stats: AnggotaStats;
   onAdd?: () => void;
   onFilter?: () => void;
+  isFilterOpen?: boolean;
+  isReadOnly?: boolean;
 }
 
 export default function AnggotaDewanHeader({
   stats,
   onAdd,
   onFilter,
+  isFilterOpen,
+  isReadOnly = false,
 }: AnggotaDewanHeaderProps) {
   return (
     <div className="mb-4">
@@ -30,19 +35,26 @@ export default function AnggotaDewanHeader({
             color="ungu-muda"
             startContent={<FunnelIcon className="h-4 w-4" />}
             onPress={onFilter}
-            className="hidden sm:flex"
+            className={clsx(
+              "hidden sm:flex",
+              isFilterOpen
+                ? "bg-indigo-100 text-indigo-700 border-indigo-200"
+                : "",
+            )}
           >
-            Filter
+            {isFilterOpen ? "Tutup Filter" : "Filter"}
           </AppButton>
 
-          <AppButton
-            color="kuning"
-            className="bg-amber-300/70 text-amber-800 font-semibold"
-            startContent={<PlusIcon className="h-4 w-4" />}
-            onPress={onAdd}
-          >
-            Tambah Anggota Dewan
-          </AppButton>
+          {onAdd && !isReadOnly && (
+            <AppButton
+              color="kuning"
+              className="bg-amber-300/70 text-amber-800 font-semibold"
+              startContent={<PlusIcon className="h-4 w-4" />}
+              onPress={onAdd}
+            >
+              Tambah Anggota Dewan
+            </AppButton>
+          )}
         </div>
       </div>
 

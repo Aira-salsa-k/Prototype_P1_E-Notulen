@@ -20,8 +20,6 @@ export const useAnggotaDewanCRUD = () => {
   // 2. State Lokal untuk UI yang sifatnya temporer (Modal & Loading)
   const [isLoading, setIsLoading] = useState(false);
 
-
-
   const [selectedAnggota, setSelectedAnggota] = useState<AnggotaDewan | null>(
     null,
   );
@@ -33,7 +31,6 @@ export const useAnggotaDewanCRUD = () => {
     isOpen: false,
     data: null,
   });
-
 
   /** =======================
    * CREATE
@@ -50,6 +47,7 @@ export const useAnggotaDewanCRUD = () => {
           username: formData.username,
           password: hash(formData.password),
           name: formData.name,
+          role: "ANGGOTA_DEWAN",
           isActive: true,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -58,7 +56,6 @@ export const useAnggotaDewanCRUD = () => {
         const newAnggota: AnggotaDewan = {
           id: `anggota-${Date.now()}`,
           userId,
-          name: formData.name,
           jabatan: formData.jabatan,
           akd: formData.akd,
           status: formData.status,
@@ -96,7 +93,6 @@ export const useAnggotaDewanCRUD = () => {
             a.id === formData.id
               ? {
                   ...a,
-                  name: formData.name,
                   jabatan: formData.jabatan,
                   akd: formData.akd,
                   status: formData.status,
@@ -109,7 +105,12 @@ export const useAnggotaDewanCRUD = () => {
         setUsers((prev) =>
           prev.map((u) =>
             u.id === formData.userId
-              ? { ...u, username: formData.username, updatedAt: new Date() }
+              ? {
+                  ...u,
+                  username: formData.username,
+                  name: formData.name,
+                  updatedAt: new Date(),
+                }
               : u,
           ),
         );
@@ -129,26 +130,26 @@ export const useAnggotaDewanCRUD = () => {
   /** =======================
    * DELETE FLOW
    * ======================= */
- 
+
   const openDelete = (target: AnggotaDewan) =>
     setDeleteState({ isOpen: true, data: target });
   const closeDelete = () => setDeleteState({ isOpen: false, data: null });
 
- const confirmDelete = async () => {
-   if (!deleteState.data) return false;
-   setIsLoading(true);
-   try {
-     await fakeDelay();
-     const { id: targetId, userId: targetUserId } = deleteState.data;
-     setAnggota((prev) => prev.filter((a) => a.id !== targetId));
-     setUsers((prev) => prev.filter((u) => u.id !== targetUserId));
-     showNotification("success", `Data ${deleteState.data.name} dihapus.`);
-     closeDelete();
-     return true;
-   } finally {
-     setIsLoading(false);
-   }
- };
+  const confirmDelete = async () => {
+    if (!deleteState.data) return false;
+    setIsLoading(true);
+    try {
+      await fakeDelay();
+      const { id: targetId, userId: targetUserId } = deleteState.data;
+      setAnggota((prev) => prev.filter((a) => a.id !== targetId));
+      setUsers((prev) => prev.filter((u) => u.id !== targetUserId));
+      showNotification("success", `Data anggota berhasil dihapus.`);
+      closeDelete();
+      return true;
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return {
     anggota,

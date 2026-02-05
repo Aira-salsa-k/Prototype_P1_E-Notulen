@@ -1,172 +1,45 @@
-// app/dashboard/page.tsx
-// export default function AnggotaDewanPage() {
-//   return (
-//     <div className="max-w-7xl mx-auto">
-//       <h1 className="text-2xl font-bold font-sans text-gray-900 mb-6">
-//         Sekretaris Dewan
-//       </h1>
-//       <div className="bg-white rounded-lg shadow p-6">
-//         <p className="text-gray-600 font-sans">Sekretaris Dewan</p>
-//         {/* Tambahkan konten dashboard di sini */}
-//       </div>
-//     </div>
-//   );
-// }
-// // app/sekretaris-dewan/page.tsx
-// "use client";
-
-// import { useMemo, useEffect, useState } from "react";
-// import { useAnggotaStore } from "@/store/useAnggotaStore";
-// import { useSekretarisDewanStore } from "@/store/useSekretarisDewanStore";
-// import { resolveSekwanTable } from "@/lib/utils/sekretaris-dewan/resolveSekretatisDewanTable";
-// import { generateMockSekwan } from "@/mocks";
-// import { generateMockAnggota } from "@/mocks/anggota-dewan";
-// import { useSekretarisDewanTable } from "@/features/sekretaris-dewan/hooks/useSekretarisDewanTable";
-// import { useSekretarisDewanCRUD } from "@/features/sekretaris-dewan/hooks/useSekretarisDewanCRUD";
-// import { SekretarisDewanModalState } from "@/features/sekretaris-dewan/types/modal";
-// import { SekretarisDewanFormData } from "@/features/sekretaris-dewan/types/SekretarisDewanFormData";
-
-// import { Pagination } from "@heroui/pagination";
-// import { ConfirmDeleteModal } from "@/components/shared/ConfirmDeleteModal";
-
-// export default function SekretarisDewanPage() {
-//   const {
-//     anggota,
-//     isInitialized: isAnggotaReady,
-//     setAnggota,
-//     markAsInitialized,
-//   } = useAnggotaStore();
-//   const { sekretarisDewan, setSekretarisDewan } = useSekretarisDewanStore();
-
-//   // 1. DATA SOURCE & CRUD LOGIC
-//   const initialData = useMemo(() => generateMockSekwan(), []);
-
-//   const {
-
-//     // sekretarisDewan,
-//     isLoading,
-//     addSekretarisProfile,
-//     updateSekretarisProfile,
-//     openDeleteConfirm,
-//     closeDeleteConfirm,
-//     confirmDelete,
-//     isDeleteOpen,
-//     selectedProfile,
-//   } = useSekretarisDewanCRUD();
-
-//   // 2. TABLE LOGIC ( Pagination)
-//   const { data, page, setPage, totalPages, rowsPerPage, totalItems } =
-//     useSekretarisDewanTable(sekretarisDewan);
-
-//   // 3. UI STATES
-//   const [modalState, setModalState] = useState<SekretarisDewanModalState>(null);
-
-//   // 1. SEEDING LOGIC: Hanya jalan jika store kosong
-//   useEffect(() => {
-//     if (!isAnggotaReady) {
-//       setAnggota(generateMockAnggota());
-//       markAsInitialized();
-//     }
-//     if (sekretarisDewan.length === 0) {
-//       setSekretarisDewan(generateMockSekwan());
-//     }
-//   }, []);
-
-//   // 2. DATA RESOLVING: Gabungkan data profil dengan data nama anggota
-//   const resolvedRows = useMemo(() => {
-//     return resolveSekwanTable(sekretarisDewan, anggota);
-//   }, [sekretarisDewan, anggota]);
-
-//   // 5. HANDLERS
-//     const handleSubmit = async (formData: SekretarisDewanFormData) => {
-//       let success = false;
-//       if (modalState?.type === "edit") {
-//         // Pastikan updateAnggota juga async agar success check bekerja
-//         success = await updateSekretarisProfile({
-//           ...formData,
-//           id: modalState.data.sekretaris.id,
-//           userId: modalState.data.anggota.userId,
-//         });
-//       } else {
-//         success = await addSekretarisProfile(formData);
-//       }
-
-//       if (success) setModalState(null);
-//     };
-
-//   return (
-//     <div className="max-w-screen-2xl mx-auto px-4 py-6">
-//       <h1 className="text-3xl font-bold mb-6">Profil Sekretaris Dewan</h1>
-
-//       <SekretarisDewanTable
-//         data={resolvedRows}
-//         isLoading={!isAnggotaReady}
-//         onEdit={(row) => setModalState({ type: "edit", data: row })}
-//         onDelete={(row) => openDeleteConfirm(row.anggota)}
-//       />
-
-//       <ConfirmDeleteModal
-//         isOpen={isDeleteOpen}
-//         title="Hapus Anggota Dewan?"
-//         name={selectedProfile?.name}
-//         entityLabel="Data Anggota Dewan"
-//         recommendation="Jika data masih diperlukan untuk pengarsipan, cukup ubah status anggota dewan menjadi Non-Aktif tanpa perlu menghapusnya."
-//         onCancel={closeDeleteConfirm}
-//         onConfirm={confirmDelete}
-//         isLoading={isLoading}
-//       />
-
-//       {/* FOOTER: Pagination & Info */}
-//       <div className="mt-8 flex flex-col sm:flex-row justify-between items-center gap-4 py-6 border-t border-divider/50">
-//         <div className="text-sm text-muted-foreground">
-//           Menampilkan{" "}
-//           <span className="font-medium">{(page - 1) * rowsPerPage + 1}</span>–
-//           <span className="font-medium">
-//             {Math.min(page * rowsPerPage, totalItems)}
-//           </span>{" "}
-//           dari <span className="font-medium">{totalItems}</span> anggota
-//         </div>
-
-//         <Pagination
-//           isCompact
-//           showControls
-//           page={page}
-//           total={totalPages}
-//           onChange={(p) => setPage(Number(p))}
-//           color="primary"
-//           variant="flat"
-//         />
-//       </div>
-//     </div>
-//   );
-// }
-
-/////////////
-// app/sekretaris-dewan/page.tsx
+// app/dashboard-admin/sekretaris-dewan/page.tsx
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { useAnggotaStore } from "@/features/anggota-dewan/store/useAnggotaStore";
+// import { useAnggotaStore } from "@/features/anggota-dewan/store/useAnggotaStore"; // REMOVED
 import { useSekretarisDewanStore } from "@/features/sekretaris-dewan/store/useSekretarisDewanStore";
 import { useSekretarisDewanCRUD } from "@/features/sekretaris-dewan/hooks/useSekretarisDewanCRUD";
 import { resolveSekretarisDewan } from "@/features/sekretaris-dewan/utils/resolveSekretatisDewanTable";
-import { generateMockAnggota } from "@/mocks/anggota-dewan";
+// import { generateMockAnggota } from "@/mocks/anggota-dewan";
+import { useSekretarisDewanTable } from "@/features/sekretaris-dewan/hooks/useSekretarisDewanTable";
 import { SekretarisDewanFormData } from "@/features/sekretaris-dewan/types/SekretarisDewanFormData";
 import { generateMockSekretarisDewan } from "@/mocks/sekretaris-dewan";
+import { mockUsers } from "@/mocks/user";
 import { SekretarisDewanRow } from "@/features/sekretaris-dewan/views/sekretatis-dewan-row";
 
 import { SekretarisDewanTable } from "@/features/sekretaris-dewan/components/SekretarisDewanProfileTable";
 import { SekretarisDewanFormModal } from "@/features/sekretaris-dewan/components/SekretarisDewanForm.modal";
 import { ConfirmDeleteModal } from "@/components/shared/ConfirmDeleteModal";
+import { ResetPasswordModal } from "@/components/shared/ResetPasswordModal";
+import { Pagination } from "@heroui/pagination";
 import SekretarisDewanHeader from "@/features/sekretaris-dewan/components/SekretarisDewanHeader";
+import { useUIStore } from "@/store/useUIStore";
+import { generatePassword } from "@/lib/utils/generatePassword";
+
 export default function SekretarisDewanPage() {
   // Inisialisasi store
-  const { anggota, setAnggota } = useAnggotaStore();
-  const { sekretarisDewan, setSekretarisDewan } = useSekretarisDewanStore();
+  // const { anggota, setAnggota } = useAnggotaStore();
+  const {
+    sekretarisDewan,
+    users,
+    setSekretarisDewan,
+    setUsers,
+    isInitialized,
+    markAsInitialized,
+    _hasHydrated,
+  } = useSekretarisDewanStore();
+  const { showNotification } = useUIStore();
   const {
     isLoading,
     addSekretaris,
     updateSekretaris,
+    resetPassword,
     deleteState,
     openDelete,
     closeDelete,
@@ -179,24 +52,63 @@ export default function SekretarisDewanPage() {
     data?: SekretarisDewanFormData & { id: string };
   }>({ isOpen: false });
 
-  const [editingData, setEditingData] = useState<
-    (SekretarisDewanFormData & { id?: string }) | undefined
-  >();
+  // Reset Password States (Same pattern as Notulis)
+  const [resetTarget, setResetTarget] = useState<SekretarisDewanRow | null>(
+    null,
+  );
+  const [tempPassword, setTempPassword] = useState<string | null>(null);
+  const [credentialMode, setCredentialMode] = useState<"reset" | "create">(
+    "reset",
+  );
 
-  // Inisialisasi data mock (hanya jika kosong)
+  // Inisialisasi data mock (hanya jika kosong atau users belum te-load karena migrasi store)
   useEffect(() => {
-    if (anggota.length === 0) {
-      setAnggota(generateMockAnggota());
+    if (_hasHydrated) {
+      let shouldReset =
+        !isInitialized || sekretarisDewan.length === 0 || users.length === 0;
+
+      // Check consistency: If we have profiles but their linked users are missing
+      if (!shouldReset && sekretarisDewan.length > 0) {
+        const firstProfile = sekretarisDewan[0];
+        const linkedUser = users.find((u) => u.id === firstProfile.userId);
+        if (!linkedUser) {
+          console.warn(
+            "Data inconsistency detected: Profiles exist but linked users are missing. Resetting...",
+          );
+          shouldReset = true;
+        }
+      }
+
+      if (shouldReset) {
+        setSekretarisDewan(generateMockSekretarisDewan());
+        setUsers(mockUsers);
+        markAsInitialized();
+      }
     }
-    if (sekretarisDewan.length === 0) {
-      setSekretarisDewan(generateMockSekretarisDewan());
-    }
-  }, [anggota.length, sekretarisDewan.length, setAnggota, setSekretarisDewan]);
+  }, [
+    _hasHydrated,
+    isInitialized,
+    sekretarisDewan.length,
+    users.length,
+    setSekretarisDewan,
+    setUsers,
+    markAsInitialized,
+  ]);
+
+  const {
+    data: paginatedProfiles,
+    page,
+    setPage,
+    totalPages,
+    rowsPerPage,
+    totalItems,
+  } = useSekretarisDewanTable(sekretarisDewan);
 
   // Resolve data untuk tabel
+  // Resolve data untuk tabel
   const tableData = useMemo(
-    () => resolveSekretarisDewan(sekretarisDewan, anggota),
-    [sekretarisDewan, anggota],
+    () => resolveSekretarisDewan(paginatedProfiles, users),
+    [paginatedProfiles, users],
   );
 
   // Handlers
@@ -212,7 +124,10 @@ export default function SekretarisDewanPage() {
       isOpen: true,
       data: {
         id: row.id,
-        userId: row.userId,
+        // userId: row.userId, // removed
+        name: row.name,
+        username: row.username,
+        nip: row.nip,
         jabatan: row.jabatan,
         // Pastikan format tanggalnya adalah objek Date agar bisa dibaca DatePicker
         periodeStart: new Date(row._meta.originalProfile.periodeStart),
@@ -222,31 +137,51 @@ export default function SekretarisDewanPage() {
     });
   };
 
-  
+  const handleResetPassword = (row: SekretarisDewanRow) => {
+    setResetTarget(row);
+    setCredentialMode("reset");
+    setTempPassword(null);
+  };
+
+  const confirmResetFlow = async () => {
+    if (!resetTarget) return;
+    const pwd = generatePassword();
+    const success = await resetPassword(resetTarget.id, pwd);
+    if (success) {
+      setTempPassword(pwd);
+    }
+  };
+
+  if (!_hasHydrated) return null;
 
   return (
     <div className="max-w-screen-2xl mx-auto px-4 py-1 relative">
-  
-     
       <SekretarisDewanHeader onAdd={handleAdd} />
-
-      <SekretarisDewanTable
-        data={tableData}
-        onEdit={(row) =>
-          setModalState({ isOpen: true, data: row._meta.originalProfile })
-        }
-        onDelete={(row) => openDelete(row._meta.originalProfile)}
-      />
 
       <SekretarisDewanFormModal
         isOpen={modalState.isOpen}
         initialData={modalState.data}
         onSubmit={async (data) => {
-          const success = modalState.data
-            ? await updateSekretaris(modalState.data.id, data)
+          const isEdit = !!modalState.data;
+          const success = isEdit
+            ? await updateSekretaris(modalState.data!.id, data)
             : await addSekretaris(data);
 
-          if (success) setModalState({ isOpen: false, data: undefined });
+          if (success) {
+            setModalState({ isOpen: false, data: undefined });
+
+            // Jika tambah data baru, tampilkan modal kredensial
+            if (!isEdit) {
+              setCredentialMode("create");
+              setResetTarget({
+                id: "temp-" + Date.now(),
+                name: data.name,
+                username: data.username,
+                _meta: {} as any,
+              } as any);
+              setTempPassword(data.password || "Password anda");
+            }
+          }
         }}
         isLoading={isLoading}
         onClose={() => setModalState({ isOpen: false })}
@@ -261,6 +196,62 @@ export default function SekretarisDewanPage() {
         onCancel={closeDelete}
         onConfirm={confirmDelete}
       />
+
+      {/* MODAL RESET PASSWORD / CREATE CREDENTIALS */}
+      <ResetPasswordModal
+        isOpen={!!resetTarget}
+        mode={credentialMode}
+        user={
+          resetTarget
+            ? {
+                name: resetTarget.name,
+                username: resetTarget.username,
+              }
+            : null
+        }
+        temporaryPassword={tempPassword || undefined}
+        onReset={confirmResetFlow}
+        onClose={() => {
+          setResetTarget(null);
+          setTempPassword(null);
+        }}
+        isLoading={isLoading}
+      />
+
+      <div className="min-h-[800px] flex flex-col">
+        <div className="flex-1">
+          <SekretarisDewanTable
+            data={tableData}
+            onEdit={handleEdit}
+            onResetPassword={handleResetPassword}
+            onDelete={(row) => openDelete(row._meta.originalProfile)}
+          />
+        </div>
+
+        <div className="mt-6 pt-6 border-t border-divider/50 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <p className="text-sm text-gray-500">
+            Menampilkan{" "}
+            <span className="font-semibold text-gray-700">
+              {(page - 1) * rowsPerPage + 1}
+            </span>
+            –
+            <span className="font-semibold text-gray-700">
+              {Math.min(page * rowsPerPage, totalItems)}
+            </span>{" "}
+            dari{" "}
+            <span className="font-semibold text-gray-700">{totalItems}</span>{" "}
+            data
+          </p>
+          <Pagination
+            showControls
+            total={totalPages}
+            page={page}
+            onChange={setPage}
+            color="primary"
+            variant="flat"
+          />
+        </div>
+      </div>
     </div>
   );
 }

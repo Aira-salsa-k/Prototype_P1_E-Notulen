@@ -21,14 +21,18 @@ import { MitraInstitution } from "@/types";
 
 import { MitraKerjaModalState } from "@/features/mitra-kerja/types/modal";
 import { useMitraStore } from "@/features/mitra-kerja/store/useMitraKerjaStore";
+import { useAuthStore } from "@/store/useAuthStore";
+import { canAddMitraKerja } from "@/lib/auth/permissions";
 
 export default function MitraKerjaPage() {
+  const { currentUser } = useAuthStore();
+  const canAdd = canAddMitraKerja(currentUser);
+
   const { institutions, isInitialized, setInstitutions, markAsInitialized } =
     useMitraStore();
 
   // 1. Source of Truth dari Hook CRUD
   const {
-    
     isLoading,
 
     // CRUD
@@ -43,7 +47,6 @@ export default function MitraKerjaPage() {
     selectedMitra,
   } = useMitraCRUD(mockMitraInstitutions);
 
-  
   // 2. UI States
   const [modalState, setModalState] = useState<MitraKerjaModalState>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -91,8 +94,9 @@ export default function MitraKerjaPage() {
       <MitraKerjaHeader
         totalInstitutions={stats.totalInstitutions}
         activeInstitutions={stats.activeInstitutions}
-        onAdd={handleOpenAdd}
+        onAdd={canAdd ? handleOpenAdd : undefined}
         onFilter={() => {}} // Tambahkan fungsi filter jika diperlukan
+        isReadOnly={true}
       />
 
       <div className="mt-6">
@@ -100,6 +104,7 @@ export default function MitraKerjaPage() {
           institutions={institutions}
           onEdit={handleOpenEdit}
           onRequestDelete={openDeleteConfirm}
+          isReadOnly={true}
         />
       </div>
 

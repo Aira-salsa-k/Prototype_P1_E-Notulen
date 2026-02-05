@@ -1,12 +1,12 @@
 //deep
 // app/types/user.ts
-export type UserRole = "ADMIN" | "NOTULIS" | "ANGGOTA_DEWAN";
+export type UserRole = "ADMIN" | "NOTULIS" | "ANGGOTA_DEWAN" | "SEKWAN";
 
 export interface User {
   id: string;
   username: string;
   password: string; // hashed
-
+  role: UserRole;
 
   name: string;
   email?: string; //opsional perlu email pa tidak

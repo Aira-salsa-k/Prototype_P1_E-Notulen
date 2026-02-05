@@ -1,7 +1,7 @@
 import { mockMeetingMinutes } from './notulen';
 // app/mocks/pdf.ts
 
-import { mockNotulenSections,mockAttendanceRecords, mockMeetingResolved, mockAttendanceSummary, mockNotulenProgress } from "../mocks";
+import { mockNotulenSections,mockAttendanceRecords, mockMeetingResolved, mockNotulenProgress } from "../mocks";
 
 import {
   PDFTemplateData,
@@ -9,19 +9,19 @@ import {
   GeneratedPDF,
 } from "@/types/pdf";
 
-export const mockPDFTemplateData: PDFTemplateData = {
-  meeting: mockMeetingResolved[0],
-  attendance: {
-    anggotaDewan: mockAttendanceRecords.filter(
-      (r) => r.type === "ANGGOTA_DEWAN",
-    ),
-    mitraKerja: mockAttendanceRecords.filter((r) => r.type === "MITRA_KERJA"),
-    tenagaAhli: mockAttendanceRecords.filter((r) => r.type === "TENAGA_AHLI"),
-  },
-  notulenSections: mockNotulenSections,
-  meetingMinutes: mockMeetingMinutes[0],
-  summary: mockAttendanceSummary,
-};
+// export const mockPDFTemplateData: PDFTemplateData = {
+//   meeting: mockMeetingResolved[0],
+//   attendance: {
+//     anggotaDewan: mockAttendanceRecords.filter(
+//       (r) => r.type === "ANGGOTA_DEWAN",
+//     ),
+//     mitraKerja: mockAttendanceRecords.filter((r) => r.type === "MITRA_KERJA"),
+//     tenagaAhli: mockAttendanceRecords.filter((r) => r.type === "TENAGA_AHLI"),
+//   },
+//   notulenSections: mockNotulenSections,
+//   meetingMinutes: mockMeetingMinutes[0],
+//   summary: mockAttendanceSummary,
+// };
 
 export const mockPDFGenerationConfig: PDFGenerationConfig = {
   includeAttendance: true,

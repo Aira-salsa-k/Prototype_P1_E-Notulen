@@ -1,11 +1,11 @@
 // app/types/sekwan.ts
 
-
 export interface SekretarisDewanProfile {
-  id: string;
-  userId: string; // Reference to AnggotaDewan's userId
+  id: string; // Business/Profile ID (e.g. sekwan-001)
+  userId: string; // Reference to auth user (e.g. user-sekwan-001)
 
-  jabatan: string; 
+  jabatan: string;
+  nip: string;
   periodeStart: Date;
   periodeEnd: Date;
   // signatureTemplate?: string; // Template tanda tangan

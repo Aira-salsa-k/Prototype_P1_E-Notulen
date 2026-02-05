@@ -1,32 +1,4 @@
-// import { MeetingCategory } from '@/types/meeting';
-// app/types/meeting.ts
-
 import { SemanticTone } from "./common";
-
-// export interface MeetingCategory {
-//   id: string; // pleno, komisi-1
-//   name: string; // Pleno, Komisi I
-//   color: SemanticTone;
-// }
-
-// export interface SubMeetingCategory {
-//   id: string; // pleno, komisi-1
-//   name: string; // Pleno, Komisi I
-//   meetingCategoryID: string;
-// }
-
-// export interface Meeting {
-//   id: string;
-//   title: string;
-//   meetingCategoryID: string; // ⬅️ Pleno / Komisi
-//   subMeetingCategoryID?: string; // ⬅️ Sub jenis
-//   agenda: string;
-//   date: string;
-//   time: string;
-//   room: string;
-//   status: "live" | "completed";
-//   hasAccess: boolean;
-// }
 
 export interface Stats {
   totalMeetings: number;
@@ -45,21 +17,23 @@ export interface MeetingResolved extends Meeting {
 // app/types/meeting.ts
 
 import { User } from "./user";
-import { Sekwan } from "./sekretaris-dewan";
+import { SekretarisDewanProfile } from "./sekretaris-dewan";
 import { AttendanceRecord } from "./attendance";
-import { NotulenPoint, MeetingMinutes } from "./notulen";
+import { NotulenSection, NotulenPoint, MeetingMinutes } from "./notulen";
 export interface Meeting {
   id: string;
   title: string;
   meetingCategoryID: string;
   subMeetingCategoryID?: string;
   agenda: string;
+  dasarSurat?: string; // e.g. "Surat Undangan No. 123"
+  masaSidang?: string; // e.g. "Masa Sidang I Tahun 2024"
   // date: Date;
   date: string;
   startTime: string;
   endTime: string;
   room: string;
-  status: "live" | "completed";
+  status: "scheduled" | "live" | "completed";
   hasAccess: boolean;
   accessControl: MeetingAccessControl;
   createdAt: Date;
@@ -67,6 +41,7 @@ export interface Meeting {
   createdBy: string; // admin/notulis/user ID
 
   // Penandatangan dan Notulis
+  pimpinanRapatId?: string; // ID Anggota Dewan yang memimpin rapat
   sekretarisId: string; // ID user dengan role 'sekwan'
   notulisIds: string[]; // Array user ID dengan role 'notulis'
 
@@ -74,6 +49,27 @@ export interface Meeting {
   invitedAnggotaDewanIds: string[];
   invitedMitraKerjaIds: string[];
   invitedTenagaAhliIds: string[];
+
+  // Attendance
+  attendanceRecords?: AttendanceRecord[];
+
+  // Notulen Persistence
+  notulenSections?: NotulenSection[];
+  minutesData?: MeetingMinutes | null;
+
+  // Lifecycle & Audits
+  actualStartTime?: Date;
+  actualEndTime?: Date;
+  auditLogs?: MeetingAuditLog[];
+}
+
+export interface MeetingAuditLog {
+  id: string;
+  action: "CREATE" | "UPDATE" | "START" | "END" | "SNAPSHOT_ATTENDANCE";
+  userId: string;
+  userName: string;
+  timestamp: Date;
+  details?: string;
 }
 
 export interface MeetingAccessControl {
@@ -88,10 +84,32 @@ export interface MeetingAccessControl {
   updatedAt: Date;
 }
 
+export interface MeetingTypeMemberConfig {
+  memberId: string;
+  name: string;
+  jabatan: string;
+  meetingRole?: string; // e.g. Ketua, Wakil, Anggota
+  displayFormat: string; // The "Format Notulen" field
+}
+
 export interface MeetingCategory {
   id: string; // pleno, komisi-1
   name: string; // Pleno, Komisi I
   color: SemanticTone;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface MeetingTypeVariant {
+  id: string;
+  categoryId: string;
+  subName?: string; // Optional: e.g. "Pembangunan", "LKPJ"
+  defaultSekretarisId?: string; // Optional default sekwan
+  members: MeetingTypeMemberConfig[];
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface SubMeetingCategory {
@@ -121,7 +139,7 @@ export interface MeetingStats {
 }
 
 export interface MeetingDetail extends Meeting {
-  sekretaris: Sekwan;
+  sekretaris: SekretarisDewanProfile;
   notulis: User[]; // array of user dengan role notulis
   attendance: AttendanceRecord[];
   notulenPoints: NotulenPoint[];

@@ -21,14 +21,24 @@ import { MitraInstitution } from "@/types";
 
 import { MitraKerjaModalState } from "@/features/mitra-kerja/types/modal";
 import { useMitraStore } from "@/features/mitra-kerja/store/useMitraKerjaStore";
+import { useAuthStore } from "@/store/useAuthStore";
+import { canManageUsers, canAddMitraKerja } from "@/lib/auth/permissions";
 
 export default function MitraKerjaPage() {
-  const { institutions, isInitialized, setInstitutions, markAsInitialized } =
-    useMitraStore();
+  const { currentUser } = useAuthStore();
+  const canManage = canManageUsers(currentUser);
+  const canAdd = canAddMitraKerja(currentUser);
+
+  const {
+    institutions,
+    isInitialized,
+    setInstitutions,
+    markAsInitialized,
+    _hasHydrated,
+  } = useMitraStore();
 
   // 1. Source of Truth dari Hook CRUD
   const {
-    
     isLoading,
 
     // CRUD
@@ -43,17 +53,16 @@ export default function MitraKerjaPage() {
     selectedMitra,
   } = useMitraCRUD(mockMitraInstitutions);
 
-  
   // 2. UI States
   const [modalState, setModalState] = useState<MitraKerjaModalState>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isInitialized && institutions.length === 0) {
+    if (_hasHydrated && !isInitialized) {
       setInstitutions(mockMitraInstitutions);
       markAsInitialized();
     }
-  }, [isInitialized, institutions.length, setInstitutions, markAsInitialized]);
+  }, [_hasHydrated, isInitialized, setInstitutions, markAsInitialized]);
 
   // 3. Memoized Stats
 
@@ -84,6 +93,8 @@ export default function MitraKerjaPage() {
     if (success) closeModal();
   };
 
+  if (!_hasHydrated) return null;
+
   return (
     <div className="max-w-screen-2xl mx-auto px-4 py-1 relative">
       {/* Global Notification Alert */}
@@ -91,7 +102,7 @@ export default function MitraKerjaPage() {
       <MitraKerjaHeader
         totalInstitutions={stats.totalInstitutions}
         activeInstitutions={stats.activeInstitutions}
-        onAdd={handleOpenAdd}
+        onAdd={canAdd ? handleOpenAdd : undefined}
         onFilter={() => {}} // Tambahkan fungsi filter jika diperlukan
       />
 
@@ -100,6 +111,7 @@ export default function MitraKerjaPage() {
           institutions={institutions}
           onEdit={handleOpenEdit}
           onRequestDelete={openDeleteConfirm}
+          isReadOnly={!canManage}
         />
       </div>
 

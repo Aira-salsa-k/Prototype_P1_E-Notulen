@@ -5,19 +5,17 @@ import { SekretarisDewanPreviewData } from "../components/SekretarisDewanForm.pr
 
 export function resolveSekretarisDewanPreview(
   form: SekretarisDewanFormData,
-  anggota: AnggotaDewan[],
 ): SekretarisDewanPreviewData {
-  const person = anggota.find((a) => a.userId === form.userId);
-
   return {
-    name: person?.name ?? "Belum dipilih",
+    name: form.name || "Nama Belum Diisi",
+    nip: form.nip || "-",
     jabatan: form.jabatan || "-",
     isActive: form.isActive,
     periode:
       form.periodeStart && form.periodeEnd
-        ? `${format(form.periodeStart, "yyyy")} - ${format(
-            form.periodeEnd,
-            "yyyy",
+        ? `${format(new Date(form.periodeStart), "MMMM yyyy")} - ${format(
+            new Date(form.periodeEnd),
+            "MMMM yyyy",
           )}`
         : "-",
   };

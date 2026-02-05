@@ -9,9 +9,12 @@ import {
   ChevronDoubleLeftIcon,
 } from "@heroicons/react/24/outline";
 
+import { useAuthStore } from "@/store/useAuthStore";
+import { useRouter } from "next/navigation";
 import SidebarContent from "@/components/sidebar/SidebarContent";
 
 import UserProfile from "@/components/sidebar/UserProfile";
+import LoginSimulation from "@/features/auth/components/LoginSimulation";
 
 // Main Layout Component
 export default function DashboardLayout({
@@ -21,6 +24,14 @@ export default function DashboardLayout({
 }) {
   const [isCollapsed, setIsCollapsed] = useState(true);
   const pathname = usePathname();
+  const router = useRouter();
+  const { actions } = useAuthStore();
+
+  const handleLogout = () => {
+    actions.logout();
+    router.push("/");
+    setTimeout(() => window.location.reload(), 100);
+  };
 
   return (
     <div className="h-screen flex bg-gray-50 font-sans overflow-hidden">
@@ -52,18 +63,15 @@ export default function DashboardLayout({
           <SidebarContent pathname={pathname} isCollapsed={isCollapsed} />
         </div>
 
-        <UserProfile
-          isCollapsed={isCollapsed}
-          onLogout={() => {
-            console.log("logout");
-          }}
-        />
+        <UserProfile isCollapsed={isCollapsed} onLogout={handleLogout} />
       </aside>
 
       {/* MAIN CONTENT */}
       <main className="flex-1 h-full overflow-y-auto">
         <div className="py-6 px-4 sm:px-4 lg:px-6">{children}</div>
       </main>
+
+      <LoginSimulation />
     </div>
   );
 }

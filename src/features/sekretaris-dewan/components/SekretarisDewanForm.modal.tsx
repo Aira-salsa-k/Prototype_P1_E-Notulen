@@ -31,14 +31,17 @@ export function SekretarisDewanFormModal({
   initialData,
   isLoading,
 }: Props) {
-  const { anggota } = useAnggotaStore();
-
   // Inisialisasi data form (Mapping data jika perlu)
   const mappedInitialData = useMemo(() => {
     if (!initialData) return undefined;
     return {
       ...initialData,
-      // Pastikan konversi tipe data (misal string ke Date) dilakukan di sini
+      periodeStart: initialData.periodeStart
+        ? new Date(initialData.periodeStart)
+        : null,
+      periodeEnd: initialData.periodeEnd
+        ? new Date(initialData.periodeEnd)
+        : null,
     };
   }, [initialData]);
 
@@ -48,11 +51,11 @@ export function SekretarisDewanFormModal({
   );
 
   //state
-  const showPreview = !!data.userId || !!initialData?.id;
+  const showPreview = !!data.name || !!initialData?.id;
 
   const previewData = useMemo(
-    () => resolveSekretarisDewanPreview(data, anggota),
-    [data, anggota],
+    () => resolveSekretarisDewanPreview(data),
+    [data],
   );
 
   const mode = initialData?.id ? "edit" : "add";
@@ -60,7 +63,7 @@ export function SekretarisDewanFormModal({
   if (!isOpen) return null;
 
   return (
-    <ModalBase isOpen={isOpen} onClose={onClose} size="3xl">
+    <ModalBase isOpen={isOpen} onClose={onClose} size="4xl">
       <form onSubmit={handleSubmit(onSubmit)}>
         <ModalHeader className="text-2xl font-bold">
           {mode === "add"
@@ -69,11 +72,9 @@ export function SekretarisDewanFormModal({
         </ModalHeader>
 
         <ModalBody className="space-y-6">
-        
-            <PreviewCard title="Pratinjau Profil">
-              <SekretarisDewanFormPreview data={previewData} />
-            </PreviewCard>
-       
+          <PreviewCard title="Pratinjau Profil">
+            <SekretarisDewanFormPreview data={previewData} />
+          </PreviewCard>
 
           <FormGrid columns={2} gap="lg">
             <SekretarisDewanFormFields

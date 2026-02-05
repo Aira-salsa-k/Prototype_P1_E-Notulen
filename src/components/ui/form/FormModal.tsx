@@ -14,6 +14,7 @@ interface FormModalProps {
   onClose: () => void;
   footer: React.ReactNode;
   children: React.ReactNode;
+  size?: "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl" | "full";
 }
 
 export function FormModal({
@@ -22,9 +23,10 @@ export function FormModal({
   onClose,
   footer,
   children,
+  size = "2xl",
 }: FormModalProps) {
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="2xl" scrollBehavior="outside">
+    <Modal isOpen={isOpen} onClose={onClose} size={size} scrollBehavior="outside">
       <ModalContent>
         <ModalHeader>
           <h1 className="text-xl font-semibold">{title}</h1>

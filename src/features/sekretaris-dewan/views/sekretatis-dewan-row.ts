@@ -3,10 +3,10 @@ import { AnggotaDewan } from "../../../types/anggota-dewan";
 export interface SekretarisDewanRow {
   id: string;
 
-  userId: string; // dari AnggotaDewan
-
   // untuk display
-  name: string; // dari AnggotaDewan
+  name: string; // dari SekretarisDewanProfile
+  username: string; // dari SekretarisDewanProfile
+  nip: string; // dari SekretarisDewanProfile
   jabatan: string; // dari SekretarisDewanProfile
   periode: string; // hasil format // format: "2023 - 2027"
   isActive: boolean;
@@ -14,6 +14,5 @@ export interface SekretarisDewanRow {
   // Metadata untuk keperluan operasional (Edit/Detail)
   _meta: {
     originalProfile: SekretarisDewanProfile;
-    originalAnggota: AnggotaDewan;
   };
 }

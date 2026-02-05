@@ -7,9 +7,7 @@ import {
   CalendarIcon,
   CogIcon,
   DocumentIcon,
-  XMarkIcon,
-  Bars3Icon,
-  ArrowRightOnRectangleIcon,
+  InboxStackIcon,
 } from "@heroicons/react/24/outline";
 import {
   HomeIcon as HomeIconSolid,
@@ -20,6 +18,7 @@ import {
   CalendarIcon as CalendarIconSolid,
   CogIcon as CogIconSolid,
   DocumentIcon as DocumentIconSolid,
+  InboxStackIcon as InboxStackIconSolid,
 } from "@heroicons/react/24/solid";
 import clsx from "clsx";
 
@@ -29,8 +28,13 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 
-
 import UserProfile from "@/components/sidebar/UserProfile";
+
+// auth store
+// auth store
+import { useAuthStore } from "@/store/useAuthStore";
+import { checkIsAdminLike } from "@/lib/auth/permissions";
+import { UserSwitcher } from "@/components/debug/UserSwitcher";
 
 export default function SidebarContent({
   pathname,
@@ -39,62 +43,118 @@ export default function SidebarContent({
   pathname: string;
   isCollapsed: boolean;
 }) {
-  const navigationItems = [
+  const currentUser = useAuthStore((state) => state.currentUser);
+  const isAdminLike = checkIsAdminLike(currentUser);
+  const role = currentUser?.role || "ANGGOTA_DEWAN"; // Default restrictive
+
+  const allNavItems = [
     {
       name: "Dashboard",
-      href: "/dashboard",
+      href: "/dashboard-admin",
       icon: HomeIcon,
       activeIcon: HomeIconSolid,
+      roles: ["ADMIN", "NOTULIS", "ANGGOTA_DEWAN", "SEKWAN"],
     },
     {
       name: "Anggota Dewan",
-      href: "/dashboard/anggota-dewan",
+      href: "/dashboard-admin/anggota-dewan",
       icon: UsersIcon,
       activeIcon: UsersIconSolid,
+      roles: ["ADMIN", "NOTULIS"],
     },
     {
       name: "Mitra Kerja",
-      href: "/dashboard/mitra-kerja",
+      href: "/dashboard-admin/mitra-kerja",
       icon: UserGroupIcon,
       activeIcon: UserGroupIconSolid,
+      roles: ["ADMIN", "NOTULIS"],
     },
     {
       name: "Sekretaris Dewan",
-      href: "/dashboard/sekretaris-dewan",
+      href: "/dashboard-admin/sekretaris-dewan",
       icon: UserIcon,
       activeIcon: UserIconSolid,
+      roles: ["ADMIN"],
     },
     {
       name: "Notulis",
-      href: "/dashboard/notulis",
+      href: "/dashboard-admin/data-notulis",
       icon: DocumentTextIcon,
       activeIcon: DocumentTextIconSolid,
+      roles: ["ADMIN"],
     },
     {
       name: "Jenis Rapat",
-      href: "/dashboard/jenis-rapat",
+      href: "/dashboard-admin/jenis-rapat",
       icon: CalendarIcon,
       activeIcon: CalendarIconSolid,
+      roles: ["ADMIN", "NOTULIS"],
     },
     {
       name: "Data Rapat",
-      href: "/dashboard/data-rapat",
+      href: "/dashboard-admin/data-rapat",
       icon: DocumentIcon,
       activeIcon: DocumentIconSolid,
+      roles: ["ADMIN", "NOTULIS", "ANGGOTA_DEWAN", "SEKWAN"],
+    },
+    {
+      name: "Backup Data",
+      href: "/dashboard-admin/backup-data",
+      icon: InboxStackIcon,
+      activeIcon: InboxStackIconSolid,
+      roles: ["ADMIN", "SEKWAN"],
     },
     {
       name: "Manajemen Akses",
-      href: "/dashboard/manajemen-akses",
+      href: "/dashboard-admin/manajemen-akses",
       icon: CogIcon,
       activeIcon: CogIconSolid,
+      roles: ["ADMIN"],
     },
     {
       name: "Kop Surat",
-      href: "/dashboard/kop-surat",
+      href: "/dashboard-admin/kop-surat",
       icon: DocumentTextIcon,
       activeIcon: DocumentTextIconSolid,
+      roles: ["ADMIN"],
     },
   ];
+
+  const getRolePath = (itemHref: string) => {
+    const dashboardBase = `/dashboard-${role.toLowerCase().replace("_", "-")}`;
+    // If the link is inherently an admin-only feature, keep dashboard-admin
+    // but for shared features like 'data-rapat' or 'dashboard', use the role-specific one.
+    const sharedPaths = [
+      "/dashboard-admin",
+      "/dashboard-admin/data-rapat",
+      "/dashboard-admin/jenis-rapat",
+      "/dashboard-admin/anggota-dewan",
+      "/dashboard-admin/mitra-kerja",
+      "/dashboard-admin/backup-data",
+      "/dashboard-admin/manajemen-akses",
+      "/dashboard-admin/kop-surat",
+      "/dashboard-admin/data-notulis",
+    ];
+
+    if (sharedPaths.includes(itemHref)) {
+      return itemHref.replace("/dashboard-admin", dashboardBase);
+    }
+    return itemHref;
+  };
+
+  const navigationItems = allNavItems
+    .filter((item) => {
+      if (isAdminLike) return true;
+      return item.roles.includes(role);
+    })
+    .map((item) => ({
+      ...item,
+      name:
+        item.name === "Data Rapat" && role === "NOTULIS"
+          ? "Data Rapat"
+          : item.name,
+      href: isAdminLike ? item.href : getRolePath(item.href),
+    }));
 
   // Normalize path by removing trailing slash
   const normalizePath = (path: string) => {
@@ -114,7 +174,7 @@ export default function SidebarContent({
           <div
             className={clsx(
               "flex-shrink-0 transition-transform duration-300 ease-in-out",
-              isCollapsed ? "translate-x-[calc(50%-24.5px)]" : "translate-x-0"
+              isCollapsed ? "translate-x-[calc(50%-24.5px)]" : "translate-x-0",
             )}
           >
             <div className="h-12 w-12 rounded-full bg-indigo-400/10 flex items-center justify-center shadow-md shadow-indigo-900/10 overflow-hidden">
@@ -134,14 +194,14 @@ export default function SidebarContent({
               "overflow-hidden transition-all duration-300 ease-in-out ml-3",
               isCollapsed
                 ? "max-w-0 opacity-0 translate-x-[-8px]"
-                : "max-w-[160px] opacity-100 translate-x-0"
+                : "max-w-[160px] opacity-100 translate-x-0",
             )}
           >
             <div className="whitespace-nowrap">
               <h1 className="text-bold text-md font-bold text-neutral-50 leading-none">
                 E-NTAR
               </h1>
-              <p className="text-[12px] font-bold text-neutral-50 mt-1">
+              <p className="text-[14px] font-bold text-neutral-50 mt-1">
                 Notulen Rapat
               </p>
             </div>
@@ -156,10 +216,17 @@ export default function SidebarContent({
 
           // Check if current path matches exactly or starts with the item path
           // (excluding root "/dashboard" from matching subpaths)
-          const isActive =
-            itemPath === "/dashboard"
-              ? currentPath === "/dashboard"
-              : currentPath.startsWith(itemPath);
+          // Define which paths should use exact matching to avoid prefix collision (the root dashboards)
+          const dashboardBases = [
+            "/dashboard-admin",
+            "/dashboard-notulis",
+            "/dashboard-anggota-dewan",
+            "/dashboard-sekwan",
+          ];
+
+          const isActive = dashboardBases.includes(itemPath)
+            ? currentPath === itemPath
+            : currentPath.startsWith(itemPath);
 
           const Icon = isActive ? item.activeIcon : item.icon;
 
@@ -172,7 +239,7 @@ export default function SidebarContent({
                 isCollapsed ? "px-3 justify-center" : "px-4",
                 isActive
                   ? "bg-indigo-200 text-indigo-900 border-l-4 border-indigo-900/30"
-                  : "text-neutral-100 hover:bg-indigo-900/40 hover:text-netral-200 border-l-4 border-transparent"
+                  : "text-neutral-100 hover:bg-indigo-900/40 hover:text-netral-200 border-l-4 border-transparent",
               )}
               title={isCollapsed ? item.name : ""}
             >
@@ -182,7 +249,7 @@ export default function SidebarContent({
                   isCollapsed ? "h-6 w-6" : "h-5 w-5 mr-3",
                   isActive
                     ? "text-blue-900/80"
-                    : "text-indigo-300 group-hover:text-indigo-300"
+                    : "text-indigo-300 group-hover:text-indigo-300",
                 )}
                 aria-hidden="true"
               />
@@ -191,7 +258,7 @@ export default function SidebarContent({
               <div
                 className={clsx(
                   "overflow-hidden transition-all duration-300 ease-in-out",
-                  isCollapsed ? "max-w-0 opacity-0" : "max-w-40 opacity-100"
+                  isCollapsed ? "max-w-0 opacity-0" : "max-w-40 opacity-100",
                 )}
               >
                 <span className="truncate whitespace-nowrap">{item.name}</span>
@@ -200,6 +267,12 @@ export default function SidebarContent({
           );
         })}
       </nav>
+
+      {!isCollapsed && (
+        <div className="absolute bottom-0 w-full">
+          <UserSwitcher />
+        </div>
+      )}
     </>
   );
 }

@@ -15,6 +15,16 @@ interface ConfirmDeleteModalProps {
   onCancel: () => void;
   onConfirm: () => void;
   isLoading?: boolean;
+  confirmButtonText?: string;
+  confirmButtonColor?:
+    | "danger"
+    | "warning"
+    | "primary"
+    | "secondary"
+    | "success"
+    | "default";
+  confirmWord?: string;
+  actionType?: "delete" | "archive";
 }
 
 export function ConfirmDeleteModal({
@@ -26,6 +36,10 @@ export function ConfirmDeleteModal({
   onCancel,
   onConfirm,
   isLoading,
+  confirmButtonText,
+  confirmButtonColor = "danger",
+  confirmWord = "HAPUS",
+  actionType = "delete",
 }: ConfirmDeleteModalProps) {
   const [confirmText, setConfirmText] = useState("");
 
@@ -33,7 +47,7 @@ export function ConfirmDeleteModal({
     if (!isOpen) setConfirmText("");
   }, [isOpen]);
 
-  const canDelete = confirmText === "HAPUS";
+  const canConfirm = confirmText.toUpperCase() === confirmWord.toUpperCase();
 
   return (
     <ModalBase isOpen={isOpen} onClose={onCancel} size="xl">
@@ -43,7 +57,7 @@ export function ConfirmDeleteModal({
           <h1 className="text-xl font-bold text-gray-900 mb-6">{title}</h1>
 
           <p className="text-sm text-gray-600">
-            Anda akan menghapus{" "}
+            Anda akan {actionType === "archive" ? "mengarsipkan" : "menghapus"}{" "}
             <span className="font-semibold text-gray-800">
               {name || entityLabel}
             </span>
@@ -51,40 +65,51 @@ export function ConfirmDeleteModal({
           </p>
 
           <p className="text-sm text-gray-600 mt-1">
-            {entityLabel} yang dihapus{" "}
-            <span className="font-semibold">tidak dapat dipulihkan</span>.
-            
+            {entityLabel} ini{" "}
+            {actionType === "archive" ? (
+              "akan dipindahkan ke tab Arsip & Sampah"
+            ) : (
+              <span className="font-semibold">tidak dapat dipulihkan</span>
+            )}
+            .
           </p>
         </div>
 
         {/* Warning */}
         <Alert
-          color="warning"
+          color={actionType === "archive" ? "primary" : "warning"}
           variant="flat"
-          title="Saran Sebelum Menghapus"
+          title={
+            actionType === "archive"
+              ? "Informasi Pengarsipan"
+              : "Saran Sebelum Menghapus"
+          }
           description={recommendation}
         />
 
         {/* Confirmation */}
         <Input
-          label="Ketik HAPUS untuk konfirmasi"
+          label={`Ketik ${confirmWord} untuk konfirmasi`}
           value={confirmText}
           onValueChange={setConfirmText}
         />
 
         {/* Actions */}
         <div className="flex justify-end gap-3 pt-2">
-          <AppButton variant="light" onPress={onCancel} isDisabled={isLoading}>
+          <AppButton color={"ungu-muda"} onPress={onCancel} isDisabled={isLoading}>
             Batal
           </AppButton>
 
           <AppButton
-            color="danger"
-            isDisabled={!canDelete}
+            color={confirmButtonColor}
+            isDisabled={!canConfirm}
             isLoading={isLoading}
             onPress={onConfirm}
           >
-            Hapus Permanen
+            {confirmButtonText ||
+              (actionType === "archive"
+                ? "Arsipkan Sekarang"
+                : "Hapus Permanen")}
           </AppButton>
         </div>
       </div>

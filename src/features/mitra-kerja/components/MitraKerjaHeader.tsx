@@ -1,4 +1,3 @@
-
 // app/components/mitra-kerja/MitraKerjaHeader.tsx
 import React from "react";
 // Assuming these are Heroicons or similar
@@ -14,15 +13,17 @@ import { Badge } from "@heroui/badge";
 interface MitraKerjaHeaderProps {
   totalInstitutions: number;
   activeInstitutions: number;
-  onAdd: () => void;
+  onAdd?: () => void;
   onFilter: () => void;
+  isReadOnly?: boolean;
 }
 
-export default function MitraKerjaHeader({ 
-  totalInstitutions, 
-  activeInstitutions, 
-  onAdd, 
-  onFilter 
+export default function MitraKerjaHeader({
+  totalInstitutions,
+  activeInstitutions,
+  onAdd,
+  onFilter,
+  isReadOnly = false,
 }: MitraKerjaHeaderProps) {
   return (
     <div className="mb-8">
@@ -51,7 +52,6 @@ export default function MitraKerjaHeader({
           </div>
         </div>
 
-     
         <div className="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto">
           <div className="w-full sm:w-72 relative">
             <Input
@@ -63,20 +63,21 @@ export default function MitraKerjaHeader({
               }
               size="lg"
               className="w-full"
-            
             />
           </div>
 
-          <AppButton
-            color="kuning"
-            startContent={<PlusIcon className="h-4 w-4" />}
-            onPress={onAdd}
-            // Tombol jadi full width di mobile (di bawah sm),
-            // lalu menyesuaikan konten di atas sm.
-            className="w-full sm:w-auto shadow-sm"
-          >
-            Tambah Mitra Kerja
-          </AppButton>
+          {onAdd && (
+            <AppButton
+              color="kuning"
+              startContent={<PlusIcon className="h-4 w-4" />}
+              onPress={onAdd}
+              // Tombol jadi full width di mobile (di bawah sm),
+              // lalu menyesuaikan konten di atas sm.
+              className="w-full sm:w-auto shadow-sm"
+            >
+              Tambah Mitra Kerja
+            </AppButton>
+          )}
         </div>
       </div>
 

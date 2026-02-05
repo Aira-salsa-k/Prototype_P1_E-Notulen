@@ -1,14 +1,15 @@
 // app/types/forms.ts
 // Cukup satu baris untuk mengambil berbagai tipe
+import { getLocalTimeZone, today, parseDate, parseTime,CalendarDate, Time } from "@internationalized/date";
 import { User, Meeting, AttendanceStatus } from "../types";
 export interface MeetingFormData {
   title: string;
   meetingCategoryID: string;
   subMeetingCategoryID?: string;
   agenda: string;
-  date: Date;
-  startTime: string;
-  endTime: string;
+  date: CalendarDate | null;
+  startTime: Time | null;
+  endTime: Time | null;
   room: string;
   sekretarisId: string;
   notulisIds: string[];
@@ -16,6 +17,20 @@ export interface MeetingFormData {
   invitedMitraKerjaIds: string[];
   invitedTenagaAhliIds: string[];
 }
+
+// export interface MeetingFormData {
+//   title: string;
+//   meetingCategoryID: string;
+//   date: CalendarDate | null;
+//   startTime: Time | null;
+//   endTime: Time | null;
+//   room: string;
+//   agenda: string;
+//   sekretarisId: string;
+//   notulisIds: string[];
+//   invitedAnggotaDewanIds: string[];
+//   status: "live" | "draft" | "completed";
+// }
 
 export interface AttendanceFormData {
   meetingId: string;

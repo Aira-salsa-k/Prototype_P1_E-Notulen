@@ -1,4 +1,5 @@
-// app/components/dashboard/StatsGrid.tsx
+"use client";
+
 import { Card, CardBody } from "@heroui/card";
 
 interface StatsCardProps {
@@ -32,18 +33,90 @@ function StatsCard({ title, value, description, color }: StatsCardProps) {
   );
 }
 
+import { useAuthStore } from "@/store/useAuthStore";
+import { checkIsAdminLike } from "@/lib/auth/permissions";
+import { useDataRapatStore } from "@/features/data-rapat/store/useDataRapatStore";
+import { useJenisRapatStore } from "@/features/jenis-rapat/store/useJenisRapatStore";
+import { useEffect } from "react";
+import { mockMeetings } from "@/mocks/meeting";
+import { mockMeetingCategories } from "@/mocks/meeting-category";
+import { mockMeetingTypeVariants } from "@/mocks/meeting-variants";
+
+import { generateMockSekretarisDewan } from "@/mocks/sekretaris-dewan";
+
 export default function StatsGrid() {
+  const {
+    meetings,
+    isInitialized: isDataInitialized,
+    _hasHydrated: isDataHydrated,
+    actions: dataActions,
+  } = useDataRapatStore();
+  const {
+    isInitialized: isCategoriesInitialized,
+    _hasHydrated: isCategoriesHydrated,
+    actions: categoriesActions,
+  } = useJenisRapatStore();
+  const { currentUser } = useAuthStore();
+
+  // Initialization fallback
+  useEffect(() => {
+    if (isDataHydrated && !isDataInitialized) {
+      dataActions.setMeetings(mockMeetings);
+      dataActions.markAsInitialized();
+    }
+    if (isCategoriesHydrated && !isCategoriesInitialized) {
+      categoriesActions.setCategories(mockMeetingCategories);
+      categoriesActions.setVariants(mockMeetingTypeVariants);
+      categoriesActions.markAsInitialized();
+    }
+  }, [
+    isDataHydrated,
+    isDataInitialized,
+    dataActions,
+    isCategoriesHydrated,
+    isCategoriesInitialized,
+    categoriesActions,
+  ]);
+
+  // Filter meetings based on role
+  const relevantMeetings = meetings.filter((m) => {
+    if (!currentUser) return false;
+    if (checkIsAdminLike(currentUser)) return true;
+
+    if (currentUser.role === "NOTULIS") {
+      return m.notulisIds?.includes(currentUser.id);
+    }
+
+    if (currentUser.role === "SEKWAN") {
+      const profiles = generateMockSekretarisDewan();
+      const profile = profiles.find((p) => p.userId === currentUser.id);
+      return m.sekretarisId === profile?.id;
+    }
+
+    if (currentUser.role === "ANGGOTA_DEWAN") {
+      return m.invitedAnggotaDewanIds?.includes(currentUser.id);
+    }
+
+    return false;
+  });
+
+  const total = relevantMeetings.length;
+  const live = relevantMeetings.filter((m) => m.status === "live").length;
+  const completed = relevantMeetings.filter(
+    (m) => m.status === "completed",
+  ).length;
+  // const scheduled = relevantMeetings.filter(m => m.status === 'scheduled').length;
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-      <StatsCard title="Rapat Terdaftar" value={12} color="blue" />
+      <StatsCard title="Rapat Terdaftar" value={total} color="blue" />
       <StatsCard
         title="Rapat Live"
-        value={2}
+        value={live}
         color="red"
         description="Sedang berlangsung"
-    
       />
-      <StatsCard title="Rapat Selesai" value={5} color="blue" />
+      <StatsCard title="Rapat Selesai" value={completed} color="blue" />
     </div>
   );
 }

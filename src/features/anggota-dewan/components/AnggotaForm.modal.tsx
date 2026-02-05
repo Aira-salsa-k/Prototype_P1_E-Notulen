@@ -32,7 +32,7 @@ export function AnggotaFormModal({
   const initialData = useMemo(() => {
     if (modalState?.type === "edit" && modalState.data) {
       return {
-        name: modalState.data.anggota.name,
+        name: modalState.data.user.name,
         jabatan: modalState.data.anggota.jabatan,
         akd: modalState.data.anggota.akd,
         status: modalState.data.anggota.status,
@@ -73,6 +73,7 @@ export function AnggotaFormModal({
           <FormGrid columns={2} gap="lg">
             <AnggotaFormFields data={data} update={update} mode={mode} />
           </FormGrid>
+          
         </ModalBody>
 
         <ModalFooter className="border-t border-divider/50 mt-4">

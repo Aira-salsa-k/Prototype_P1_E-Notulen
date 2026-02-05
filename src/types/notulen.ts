@@ -9,7 +9,7 @@ export interface NotulenSection {
   meetingID: string;
   participanID: string;
   participantType: "ANGGOTA_DEWAN" | "MITRA_KERJA" | "TENAGA_AHLI";
-  displayFormat: string; // Format: "NAMA ® JABATAN"
+  displayFormat: string; // Format: "NAMA ® JABATAN" (Ambil dari data attendance -> displayFormat)
   points: NotulenPoint[];
   order: number; // Urutan tampilan dalam PDF (1, 2, 3, ...)
   isLocked: boolean;
@@ -35,7 +35,13 @@ export interface MeetingMinutes {
   meetingId: string;
   kesimpulan?: string;
   catatan?: string;
+  decisions?: string[]; // Array of decision points
   dokumentasi: string[]; // Array of image URLs
+  lampiranAbsensi?: {
+    anggotaDewan?: string;
+    mitraKerja?: string;
+    tenagaAhli?: string;
+  };
   pdfUrl?: string; // Generated PDF URL
   isSigned: boolean;
   signedAt?: Date;
@@ -67,6 +73,11 @@ export interface NotulenInputForm {
   kesimpulan?: string;
   catatan?: string;
   dokumentasi?: File[]; // Untuk upload file
+  lampiranAbsensi?: {
+    anggotaDewan?: File;
+    mitraKerja?: File;
+    tenagaAhli?: File;
+  };
 }
 
 export type SignatureContext = "NOTULEN" | "ABSEN";

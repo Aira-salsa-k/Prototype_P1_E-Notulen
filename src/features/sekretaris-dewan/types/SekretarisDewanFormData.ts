@@ -1,6 +1,8 @@
 export interface SekretarisDewanFormData {
-  userId: string; // pilih anggota dari dropdown, maka kita dapat userId-nya
- 
+  username: string;
+  password?: string; // Optional for edit
+  name: string;
+  nip: string;
   jabatan: string;
   periodeStart: Date | null;
   periodeEnd: Date | null;
@@ -9,11 +11,13 @@ export interface SekretarisDewanFormData {
 }
 
 export const defaultSekretarisDewanFormData: SekretarisDewanFormData = {
-  userId: "",
-  
+  username: "",
+  password: "",
+  name: "",
+  nip: "",
   jabatan: "",
   periodeStart: null,
   periodeEnd: null,
   isActive: true,
-//   signatureTemplate: undefined,
+  //   signatureTemplate: undefined,
 };

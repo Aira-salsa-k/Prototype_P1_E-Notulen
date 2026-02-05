@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
 import { Card, CardBody, CardFooter } from "@heroui/card";
@@ -16,6 +17,9 @@ import {
 import { semanticToHeroColor } from "@/lib/semantic/semantic-chip";
 import { MeetingResolved } from "@/types/meeting";
 
+import { useAuthStore } from "@/store/useAuthStore";
+import { checkIsAdminLike } from "@/lib/auth/permissions";
+
 interface MeetingCardProps {
   meeting: MeetingResolved;
   defaultOpen?: boolean;
@@ -26,10 +30,28 @@ export default function MeetingCard({
   defaultOpen = false,
 }: MeetingCardProps) {
   const [open, setOpen] = useState(defaultOpen);
+  const { currentUser } = useAuthStore();
 
   useEffect(() => {
     setOpen(defaultOpen);
   }, [defaultOpen]);
+
+  // Determine dashboard base path based on role
+  const getDashboardPath = () => {
+    if (!currentUser) return "/dashboard-admin";
+
+    // Admin and Sekwan (who is admin-like) go to dashboard-admin
+    if (checkIsAdminLike(currentUser)) return "/dashboard-admin";
+
+    // Role-based dashboard mapping
+    const roleMap: Record<string, string> = {
+      SEKWAN: "/dashboard-sekwan",
+      NOTULIS: "/dashboard-notulis",
+      ANGGOTA_DEWAN: "/dashboard-anggota-dewan",
+    };
+
+    return roleMap[currentUser.role] || "/dashboard-admin";
+  };
 
   return (
     <Card className="mb-6 border border-gray-200 shadow-sm">
@@ -45,9 +67,11 @@ export default function MeetingCard({
             </div>
 
             <div className="flex items-center justify-end gap-3">
-              <Button size="md" color="primary">
-                Masuk ke halaman Rapat
-              </Button>
+              <Link href={`${getDashboardPath()}/data-rapat/${meeting.id}`}>
+                <Button size="md" color="primary">
+                  Masuk ke halaman Rapat
+                </Button>
+              </Link>
             </div>
           </div>
 
@@ -110,15 +134,11 @@ export default function MeetingCard({
                   </h4>
                   {meeting.meetingCategory && (
                     <MeetingTypeBadge
-                      type={meeting.meetingCategory}
+                      categoryName={meeting.meetingCategory.name}
+                      color={meeting.meetingCategory.color}
                       size="md"
+                      subCategoryName={meeting.subMeetingCategory?.name}
                     />
-                  )}
-
-                  {meeting.subMeetingCategory && (
-                    <h3 className="text-sm text-gray-600 mt-1">
-                      {meeting.subMeetingCategory?.name}
-                    </h3>
                   )}
                 </div>
               </div>

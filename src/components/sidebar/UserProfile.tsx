@@ -1,16 +1,22 @@
-import {
-  ArrowRightOnRectangleIcon,
-  UsersIcon,
-} from "@heroicons/react/24/outline";
+import { useAuthStore } from "@/store/useAuthStore";
+import { ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
+import { UsersIcon } from "@heroicons/react/24/outline";
 
 export default function UserProfile({
   onLogout,
   isCollapsed,
 }: {
-    
   onLogout: () => void;
   isCollapsed: boolean;
 }) {
+  const currentUser = useAuthStore((state) => state.currentUser);
+  const logout = useAuthStore((state) => state.actions.logout);
+
+  const handleLogout = () => {
+    logout();
+    // Redirect logic if needed, but for now just clear state
+  };
+
   return (
     <div className="flex-shrink-0 border-t border-indigo-900 bg-indigo-950/70">
       <div
@@ -20,7 +26,7 @@ export default function UserProfile({
       >
         {isCollapsed ? (
           <button
-            onClick={onLogout}
+            onClick={handleLogout}
             title="Log out"
             className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition"
           >
@@ -34,9 +40,11 @@ export default function UserProfile({
 
             <div className="ml-3 flex-1 min-w-0">
               <p className="text-sm font-medium text-neutral-200 truncate">
-                Doris, S.sos
+                {currentUser?.name || "Guest"}
               </p>
-              <p className="text-xs text-gray-500">Admin</p>
+              <p className="text-xs text-gray-500 capitalize">
+                {currentUser?.role?.replace("_", " ") || "No Role"}
+              </p>
             </div>
 
             <button

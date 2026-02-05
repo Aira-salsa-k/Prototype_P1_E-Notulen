@@ -5,7 +5,7 @@ import { Modal, ModalContent } from "@heroui/modal";
 interface ModalBaseProps {
   isOpen: boolean;
   onClose: () => void;
-  size?: "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl";
+  size?: "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl";
   children: React.ReactNode;
 }
 
@@ -20,12 +20,12 @@ export function ModalBase({
       isOpen={isOpen}
       onClose={onClose}
       size={size}
-      scrollBehavior="outside"
+      scrollBehavior="inside"
       placement="center"
       backdrop="opaque"
       classNames={{
-        // Memastikan wrapper memenuhi layar dan konten di tengah
-        wrapper: "items-center sm:items-center justify-center",
+        wrapper: "z-[60]",
+        base: "max-h-[90vh]",
       }}
     >
       <ModalContent>{children}</ModalContent>

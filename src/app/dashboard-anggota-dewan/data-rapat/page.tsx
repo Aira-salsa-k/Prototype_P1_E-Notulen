@@ -1,14 +1,93 @@
-// app/dashboard/page.tsx
-export default function AnggotaDewanPage() {
+"use client";
+
+import { useState, useMemo } from "react";
+import { Input } from "@heroui/input";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { DataRapatList } from "@/features/data-rapat/components/DataRapatList";
+import { useMeetingStore } from "@/features/data-rapat/store/useMeetingStore";
+import { useRouter } from "next/navigation";
+import { DataRapatHeader } from "@/features/data-rapat/components/DataRapatHeader";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useEffect } from "react";
+import { mockMeetings } from "@/mocks/meeting";
+import { ClientOnly } from "@/components/utils/ClientOnly";
+
+export default function DataRapatAnggotaPage() {
+  const router = useRouter();
+  const { meetings, isInitialized, _hasHydrated, actions } = useMeetingStore();
+  const { currentUser } = useAuthStore();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Initialize Data if not already done, OR if data is using old ID format
+  useEffect(() => {
+    if (_hasHydrated) {
+      const hasOldIds = meetings.some((m) =>
+        m.invitedAnggotaDewanIds?.some(
+          (id) => id.startsWith("anggota-") || id.startsWith("sekwan-"),
+        ),
+      );
+
+      if (!isInitialized || hasOldIds) {
+        actions.setMeetings(mockMeetings);
+        actions.markAsInitialized();
+      }
+    }
+  }, [_hasHydrated, isInitialized, actions, meetings]);
+
+  // Filter: Meetings where I am invited
+  const myMeetings = meetings.filter(
+    (m) =>
+      currentUser &&
+      m.invitedAnggotaDewanIds &&
+      m.invitedAnggotaDewanIds.includes(currentUser.id),
+  );
+
+  const filteredMeetings = myMeetings.filter(
+    (m) =>
+      m.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      m.agenda.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
+
+  const stats = useMemo(() => {
+    return {
+      total: myMeetings.length,
+      scheduled: myMeetings.filter((m) => m.status === "scheduled").length,
+      live: myMeetings.filter((m) => m.status === "live").length,
+      completed: myMeetings.filter((m) => m.status === "completed").length,
+    };
+  }, [myMeetings]);
+
   return (
-    <div className="max-w-7xl mx-auto">
-      <h1 className="text-2xl font-bold font-sans text-gray-900 mb-6">
-        Data Rapat
-      </h1>
-      <div className="bg-white rounded-lg shadow p-6">
-        <p className="text-gray-600 font-sans">Data Rapat</p>
-        {/* Tambahkan konten dashboard di sini */}
+    <div className="space-y-6">
+      <DataRapatHeader onAdd={() => {}} stats={stats} />
+
+      <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+        <Input
+          startContent={
+            <MagnifyingGlassIcon className="w-4 h-4 text-gray-400" />
+          }
+          placeholder="Cari agenda..."
+          value={searchQuery}
+          onValueChange={setSearchQuery}
+          variant="bordered"
+        />
       </div>
+
+      <ClientOnly>
+        <DataRapatList
+          meetings={filteredMeetings}
+          onView={(m) =>
+            router.push(`/dashboard-anggota-dewan/data-rapat/${m.id}`)
+          }
+        />
+      </ClientOnly>
+
+      {filteredMeetings.length === 0 && (
+        <div className="text-center text-gray-400 py-10">
+          <p>Tidak ada agenda rapat untuk Anda saat ini.</p>
+          <p className="text-xs mt-2">(ID Simulasi: {currentUser?.id})</p>
+        </div>
+      )}
     </div>
   );
 }

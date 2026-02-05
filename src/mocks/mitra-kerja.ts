@@ -38,6 +38,42 @@ export const mockMitraInstitutions: MitraInstitution[] = [
     createdAt: new Date("2024-01-01"),
     updatedAt: new Date("2024-01-01"),
   },
+  {
+    id: "institution-005",
+    name: "BADAN PERENCANAAN PEMBANGUNAN DAERAH",
+    akdID: "BADAN_ANGGARAN",
+    color: "success",
+    status: "active",
+    createdAt: new Date("2024-01-01"),
+    updatedAt: new Date("2024-01-01"),
+  },
+  {
+    id: "institution-006",
+    name: "BADAN KEPEGAWAIAN DAN PENGEMBANGAN SUMBER DAYA MANUSIA",
+    akdID: "BADAN_ANGGARAN",
+    color: "success",
+    status: "active",
+    createdAt: new Date("2024-01-01"),
+    updatedAt: new Date("2024-01-01"),
+  },
+   {
+    id: "institution-007",
+    name: "DINAS PERIKANAN",
+    akdID: "KOMISI_II",
+    color: "info",
+    status: "active",
+    createdAt: new Date("2024-01-01"),
+    updatedAt: new Date("2024-01-01"),
+  },
+     {
+    id: "institution-008",
+    name: "DINAS PERTANIAN DAN PETERNAKAN",
+    akdID: "KOMISI_I",
+    color: "info",
+    status: "active",
+    createdAt: new Date("2024-01-01"),
+    updatedAt: new Date("2024-01-01"),
+  },
 ];
 
 export const mockMitraKerja: MitraKerja[] = [

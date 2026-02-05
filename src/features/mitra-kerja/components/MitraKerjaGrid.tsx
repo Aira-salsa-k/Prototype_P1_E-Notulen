@@ -7,12 +7,14 @@ interface MitraKerjaGridProps {
   institutions: MitraInstitution[];
   onEdit: (institution: MitraInstitution) => void;
   onRequestDelete: (institution: MitraInstitution) => void;
+  isReadOnly?: boolean;
 }
 
 export default function MitraKerjaGrid({
   institutions,
   onEdit,
   onRequestDelete,
+  isReadOnly = false,
 }: MitraKerjaGridProps) {
   // Group institutions by AKD
   const groupedByAKD = institutions.reduce(
@@ -39,6 +41,7 @@ export default function MitraKerjaGrid({
           institutions={groupedByAKD[akd]}
           onEdit={onEdit}
           onRequestDelete={onRequestDelete}
+          isReadOnly={isReadOnly}
         />
       ))}
 

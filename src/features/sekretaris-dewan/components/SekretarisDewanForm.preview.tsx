@@ -4,6 +4,7 @@ import { SekretarisDewanFormData } from "../types/SekretarisDewanFormData";
 import clsx from "clsx";
 export interface SekretarisDewanPreviewData {
   name: string;
+  nip: string;
   jabatan: string;
   periode: string;
   isActive: boolean;
@@ -14,7 +15,6 @@ interface Props {
 }
 
 export function SekretarisDewanFormPreview({ data }: Props) {
-  
   return (
     <div className="flex items-center gap-4">
       {/* Avatar */}
@@ -27,6 +27,9 @@ export function SekretarisDewanFormPreview({ data }: Props) {
       {/* Info */}
       <div className="flex flex-col">
         <span className="text-lg font-semibold text-gray-900">{data.name}</span>
+        <span className="text-sm text-gray-500 font-mono">
+          NIP. {data.nip || "—"}
+        </span>
         <span className="text-md text-gray-600">{data.jabatan}</span>
         <span className="text-md text-gray-500">{data.periode}</span>
       </div>

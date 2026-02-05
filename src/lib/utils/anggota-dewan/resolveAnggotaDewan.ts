@@ -15,6 +15,7 @@ export function resolveAnggotaDewanTable(
       anggota: a,
       user: {
         username: user?.username ?? "-",
+        name: user?.name ?? "-",
         isActive: user?.isActive ?? false,
       },
       passwordStatus: "OK",

@@ -1,127 +1,65 @@
 // app/components/anggota-dewan/AnggotaDewanFilter.tsx
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
-import { Select, SelectItem } from "@heroui/select";
 import { Card, CardBody } from "@heroui/card";
 import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { AnggotaFilter } from "@/types/anggota-dewan";
-import { AKD } from "@/types/anggota-dewan";
-import { AKD_CONFIG } from "@/lib/config/akd";
 
 interface AnggotaDewanFilterProps {
   filter: AnggotaFilter;
   onFilterChange: (filter: AnggotaFilter) => void;
   onReset: () => void;
+  onClose?: () => void;
 }
 
 export default function AnggotaDewanFilter({
   filter,
   onFilterChange,
   onReset,
+  onClose,
 }: AnggotaDewanFilterProps) {
-  const statusOptions = [
-    { key: "all", label: "Semua Status" },
-    { key: "active", label: "Active" },
-    { key: "inactive", label: "Inactive" },
-  ];
-
-  const AKDOptions = Object.entries(AKD_CONFIG).map(([key, value]) => ({
-    key: key as AKD,
-    label: value.label,
-  }));
-
-  const sortOptions = [
-    { key: "name", label: "Nama" },
-    { key: "jabatan", label: "Jabatan" },
-    { key: "akd", label: "AKD" },
-    { key: "status", label: "Status" },
-  ];
+  const handleClose = () => {
+    onReset(); // Otomatis reset saat ditutup
+    onClose?.();
+  };
 
   return (
-    <Card className="mb-6 bg-primary/50">
-      <CardBody>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <Card className="mb-6 bg-primary/10 border-none shadow-sm">
+      <CardBody className="py-4">
+        <div className="flex flex-col sm:flex-row items-center gap-4">
           {/* Search Input */}
-          <Input
-            isClearable
-            label="Cari Anggota"
-            placeholder="Nama atau jabatan..."
-            value={filter.search}
-            onValueChange={(value) =>
-              onFilterChange({ ...filter, search: value })
-            }
-            startContent={
-              <MagnifyingGlassIcon className="h-4 w-4 text-gray-400" />
-            }
-            size="sm"
-            className="max-w-xs"
-          />
+          <div className="flex-1 w-full">
+            <Input
+              isClearable
+              placeholder="Cari nama atau jabatan anggota dewan..."
+              value={filter.search}
+              onValueChange={(value) =>
+                onFilterChange({ ...filter, search: value })
+              }
+              startContent={
+                <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
+              }
+              variant="flat"
+              size="lg"
+              classNames={{
+                inputWrapper: "bg-white border-none shadow-sm h-12",
+              }}
+              onClear={() => onReset()}
+            />
+          </div>
 
-          {/* Status Filter */}
-          <Select
-            label="Status"
-            selectedKeys={[filter.status]}
-            onChange={(e) =>
-              onFilterChange({
-                ...filter,
-                status: e.target.value as AnggotaFilter["status"],
-              })
-            }
-            size="sm"
-            className="max-w-xs"
-          >
-            {statusOptions.map((option) => (
-              <SelectItem key={option.key}>{option.label}</SelectItem>
-            ))}
-          </Select>
-
-          {/* Sort By */}
-          <Select
-            label="Urutkan Berdasarkan"
-            selectedKeys={[filter.sortBy]}
-            onChange={(e) =>
-              onFilterChange({
-                ...filter,
-                sortBy: e.target.value as AnggotaFilter["sortBy"],
-              })
-            }
-            size="sm"
-            className="max-w-xs"
-          >
-            {sortOptions.map((option) => (
-              <SelectItem key={option.key}>{option.label}</SelectItem>
-            ))}
-          </Select>
-
-          {/* Sort Order */}
-          <Select
-            label="Urutan"
-            selectedKeys={[filter.sortOrder]}
-            onChange={(e) =>
-              onFilterChange({
-                ...filter,
-                sortOrder: e.target.value as AnggotaFilter["sortOrder"],
-              })
-            }
-            size="sm"
-            className="max-w-xs"
-          >
-            <SelectItem key="asc">A - Z</SelectItem>
-            <SelectItem key="desc">Z - A</SelectItem>
-          </Select>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex justify-end gap-2 mt-4">
-          <Button
-            className="font-semibold border-2 border-indigo-900/30 text-red-950"
-            color="danger"
-            startContent={<XMarkIcon className="h-4 w-4" />}
-            onPress={onReset}
-            size="sm"
-          >
-            Reset Filter
-          </Button>
+          {/* Close Button Only */}
+          {onClose && (
+            <Button
+              isIconOnly
+              variant="light"
+              onPress={handleClose}
+              size="lg"
+              className="text-gray-400 hover:text-danger rounded-full"
+            >
+              <XMarkIcon className="h-6 w-6" />
+            </Button>
+          )}
         </div>
       </CardBody>
     </Card>

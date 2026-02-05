@@ -17,10 +17,16 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { SekretarisDewanFormData } from "../types/SekretarisDewanFormData";
 
-export function useSekretarisForm(initialData?: SekretarisDewanFormData, isOpen?: boolean) {
+export function useSekretarisForm(
+  initialData?: SekretarisDewanFormData,
+  isOpen?: boolean,
+) {
   const form = useForm<SekretarisDewanFormData>({
     defaultValues: {
-      userId: "",
+      username: "",
+      password: "",
+      name: "",
+      nip: "",
       jabatan: "",
       periodeStart: null,
       periodeEnd: null,
@@ -31,13 +37,18 @@ export function useSekretarisForm(initialData?: SekretarisDewanFormData, isOpen?
   // Sinkronisasi data saat modal dibuka atau data berganti
   useEffect(() => {
     if (isOpen) {
-      form.reset(initialData || {
-        userId: "",
-        jabatan: "",
-        periodeStart: null,
-        periodeEnd: null,
-        isActive: true,
-      });
+      form.reset(
+        initialData || {
+          username: "",
+          password: "",
+          name: "",
+          nip: "",
+          jabatan: "",
+          periodeStart: null,
+          periodeEnd: null,
+          isActive: true,
+        },
+      );
     }
   }, [isOpen, initialData, form]);
 

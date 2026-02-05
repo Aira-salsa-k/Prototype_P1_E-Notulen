@@ -29,6 +29,9 @@ interface AnggotaDewanTableProps {
   onEdit?: (row: AnggotaDewanRow) => void;
   onDelete?: (row: AnggotaDewanRow) => void;
   onResetPassword?: (row: AnggotaDewanRow) => void;
+  canEdit?: boolean;
+  canDelete?: boolean;
+  canResetPassword?: boolean;
 }
 
 export const AnggotaDewanTable = ({
@@ -36,6 +39,9 @@ export const AnggotaDewanTable = ({
   onEdit,
   onDelete,
   onResetPassword,
+  canEdit = true,
+  canDelete = true,
+  canResetPassword = true,
 }: AnggotaDewanTableProps) => {
   const columns = [
     { key: "name", label: "Nama" },
@@ -43,13 +49,15 @@ export const AnggotaDewanTable = ({
     { key: "akd", label: "AKD" },
     { key: "username", label: "Username" },
     { key: "status", label: "Status" },
-    { key: "actions", label: "Aksi" },
+    ...(canEdit || canDelete || canResetPassword
+      ? [{ key: "actions", label: "Aksi" }]
+      : []),
   ];
 
   const renderCell = (item: AnggotaDewanRow, columnKey: React.Key) => {
     switch (columnKey) {
       case "name":
-        return <p className="font-medium text-gray-900">{item.anggota.name}</p>;
+        return <p className="font-medium text-gray-900">{item.user.name}</p>;
 
       case "jabatan":
         return <p className="text-gray-900">{item.anggota.jabatan}</p>;
@@ -75,44 +83,50 @@ export const AnggotaDewanTable = ({
             {/* DESKTOP ACTIONS */}
 
             <div className="hidden lg:flex items-center gap-1.5">
-              <Tooltip content="Reset Password" color="warning">
-                <Button
-                  isIconOnly
-                  size="sm"
-                  variant="flat"
-                  color="warning"
-                  onPress={() => onResetPassword?.(item)}
-                  className="hover:scale-105 transition-transform"
-                >
-                  <KeyIcon className="h-5 w-5" />
-                </Button>
-              </Tooltip>
+              {canResetPassword && (
+                <Tooltip content="Reset Password" color="warning">
+                  <Button
+                    isIconOnly
+                    size="sm"
+                    variant="flat"
+                    color="warning"
+                    onPress={() => onResetPassword?.(item)}
+                    className="hover:scale-105 transition-transform"
+                  >
+                    <KeyIcon className="h-5 w-5" />
+                  </Button>
+                </Tooltip>
+              )}
 
-              <Tooltip content="Edit" color="primary">
-                <Button
-                  isIconOnly
-                  size="sm"
-                  variant="flat"
-                  color="primary"
-                  onPress={() => onEdit?.(item)}
-                  className="text-primary hover:scale-105 transition-transform"
-                >
-                  <PencilIcon className="h-5 w-5" />
-                </Button>
-              </Tooltip>
+              {canEdit && (
+                <Tooltip content="Edit" color="primary">
+                  <Button
+                    isIconOnly
+                    size="sm"
+                    variant="flat"
+                    color="primary"
+                    onPress={() => onEdit?.(item)}
+                    className="text-primary hover:scale-105 transition-transform"
+                  >
+                    <PencilIcon className="h-5 w-5" />
+                  </Button>
+                </Tooltip>
+              )}
 
-              <Tooltip color="danger" content="Hapus">
-                <Button
-                  isIconOnly
-                  size="sm"
-                  variant="flat"
-                  color="danger"
-                  onPress={() => onDelete?.(item)}
-                  className="text-danger"
-                >
-                  <TrashIcon className="h-5 w-5" />
-                </Button>
-              </Tooltip>
+              {canDelete && (
+                <Tooltip color="danger" content="Hapus">
+                  <Button
+                    isIconOnly
+                    size="sm"
+                    variant="flat"
+                    color="danger"
+                    onPress={() => onDelete?.(item)}
+                    className="text-danger"
+                  >
+                    <TrashIcon className="h-5 w-5" />
+                  </Button>
+                </Tooltip>
+              )}
             </div>
 
             {/* MOBILE / TABLET ACTIONS */}
@@ -125,30 +139,36 @@ export const AnggotaDewanTable = ({
                 </DropdownTrigger>
 
                 <DropdownMenu aria-label="Aksi">
-                  <DropdownItem
-                    key="reset"
-                    startContent={<KeyIcon className="h-4 w-4" />}
-                    onPress={() => onResetPassword?.(item)}
-                  >
-                    Reset Password
-                  </DropdownItem>
+                  {canResetPassword ? (
+                    <DropdownItem
+                      key="reset"
+                      startContent={<KeyIcon className="h-4 w-4" />}
+                      onPress={() => onResetPassword?.(item)}
+                    >
+                      Reset Password
+                    </DropdownItem>
+                  ) : null}
 
-                  <DropdownItem
-                    key="edit"
-                    startContent={<PencilIcon className="h-4 w-4" />}
-                    onPress={() => onEdit?.(item)}
-                  >
-                    Edit
-                  </DropdownItem>
+                  {canEdit ? (
+                    <DropdownItem
+                      key="edit"
+                      startContent={<PencilIcon className="h-4 w-4" />}
+                      onPress={() => onEdit?.(item)}
+                    >
+                      Edit
+                    </DropdownItem>
+                  ) : null}
 
-                  <DropdownItem
-                    key="delete"
-                    color="danger"
-                    startContent={<TrashIcon className="h-4 w-4" />}
-                    onPress={() => onDelete?.(item)}
-                  >
-                    Hapus
-                  </DropdownItem>
+                  {canDelete ? (
+                    <DropdownItem
+                      key="delete"
+                      color="danger"
+                      startContent={<TrashIcon className="h-4 w-4" />}
+                      onPress={() => onDelete?.(item)}
+                    >
+                      Hapus
+                    </DropdownItem>
+                  ) : null}
                 </DropdownMenu>
               </Dropdown>
             </div>
@@ -172,4 +192,4 @@ export const AnggotaDewanTable = ({
       </div>
     </div>
   );
-}
+};

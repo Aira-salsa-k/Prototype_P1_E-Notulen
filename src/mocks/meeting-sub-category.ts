@@ -22,22 +22,3 @@ export const mockSubMeetingCategories: SubMeetingCategory[] = [
     meetingCategoryID: "category-bamus",
   },
 ];
-
-// export const MOCK_SUB_MEETING_CATEGORIES: SubMeetingCategory[] = [
-//   {
-//     id: "sm1",
-//     name: "Pembangunan Jalan",
-//     meetingCategoryID: "m4",
-//   },
-//   {
-//     id: "sm2",
-//     name: "LKPJ",
-//     meetingCategoryID: "m6",
-//   },
-
-//   {
-//     id: "sm3",
-//     name: "Penanaman pohon",
-//     meetingCategoryID: "m4",
-//   },
-// ];
