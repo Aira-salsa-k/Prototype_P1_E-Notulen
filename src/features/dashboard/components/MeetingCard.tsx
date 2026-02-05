@@ -19,6 +19,7 @@ import { MeetingResolved } from "@/types/meeting";
 
 import { useAuthStore } from "@/store/useAuthStore";
 import { checkIsAdminLike } from "@/lib/auth/permissions";
+import { AppButton } from "@/components/ui/button/AppButton";
 
 interface MeetingCardProps {
   meeting: MeetingResolved;
@@ -68,9 +69,9 @@ export default function MeetingCard({
 
             <div className="flex items-center justify-end gap-3">
               <Link href={`${getDashboardPath()}/data-rapat/${meeting.id}`}>
-                <Button size="md" color="primary">
+                <AppButton size="sm" color="hijau">
                   Masuk ke halaman Rapat
-                </Button>
+                </AppButton>
               </Link>
             </div>
           </div>

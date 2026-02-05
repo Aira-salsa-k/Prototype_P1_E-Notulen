@@ -7,8 +7,7 @@ import { SekretarisDewanProfile } from "@/types/sekretaris-dewan";
 import { MemberSelectionMethods } from "./members/MemberSelectionMethods";
 import { PendingPreviewTable } from "./members/PendingPreviewTable";
 import { FinalMemberTable } from "./members/FinalMemberTable";
-
-import { mockUsers } from "@/mocks/user";
+import { User } from "@/types/user";
 
 interface MeetingTypeFormMembersProps {
   akdOptions: string[];
@@ -16,6 +15,7 @@ interface MeetingTypeFormMembersProps {
   onAKDChange: (akd: string) => void;
   allMembers: any[];
   sekwans: SekretarisDewanProfile[];
+  users: User[];
 }
 
 export function MeetingTypeFormMembers({
@@ -24,6 +24,7 @@ export function MeetingTypeFormMembers({
   onAKDChange,
   allMembers,
   sekwans,
+  users,
 }: MeetingTypeFormMembersProps) {
   const { control, getValues } = useFormContext<MeetingTypeVariant>();
   const { fields, remove, append } = useFieldArray({
@@ -67,7 +68,7 @@ export function MeetingTypeFormMembers({
           !existingPreviewIds.has(String(m.id)),
       )
       .map((m) => {
-        const user = mockUsers.find((u) => u.id === m.userId);
+        const user = users.find((u) => u.id === m.userId);
         const name = user?.name || "Tanpa Nama";
         return {
           memberId: String(m.id),
@@ -95,7 +96,7 @@ export function MeetingTypeFormMembers({
     // Check if already in preview
     if (previewMembers.some((m) => m.memberId === String(member.id))) return;
 
-    const user = mockUsers.find((u) => u.id === member.userId);
+    const user = users.find((u) => u.id === member.userId);
     const name = user?.name || "Tanpa Nama";
 
     const newMember: MeetingTypeMemberConfig = {
@@ -121,7 +122,7 @@ export function MeetingTypeFormMembers({
     // Check preview
     if (previewMembers.some((m) => m.memberId === String(s.id))) return;
 
-    const user = mockUsers.find((u) => u.id === s.userId);
+    const user = users.find((u) => u.id === s.userId);
     const name = user?.name || "Tanpa Nama";
 
     const newMember: MeetingTypeMemberConfig = {
@@ -177,6 +178,7 @@ export function MeetingTypeFormMembers({
         onManualSelect={handleManualSelect}
         sekwans={sekwans}
         onSekwanSelect={handleSekwanSelect}
+        users={users}
       />
 
       {/* SECTION 2: PENDING PREVIEW TABLE (Editable) */}

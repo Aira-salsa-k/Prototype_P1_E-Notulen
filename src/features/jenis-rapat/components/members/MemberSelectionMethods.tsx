@@ -10,8 +10,7 @@ import {
 import { SekretarisDewanProfile } from "@/types/sekretaris-dewan";
 import { Controller, useFormContext } from "react-hook-form"; // Import controller
 import { MeetingTypeVariant } from "@/types/meeting";
-
-import { mockUsers } from "@/mocks/user";
+import { User } from "@/types/user";
 
 interface MemberSelectionMethodsProps {
   akdOptions: string[];
@@ -24,6 +23,7 @@ interface MemberSelectionMethodsProps {
 
   sekwans: SekretarisDewanProfile[];
   onSekwanSelect: (sekwanId: string) => void;
+  users: User[];
 }
 
 export function MemberSelectionMethods({
@@ -35,6 +35,7 @@ export function MemberSelectionMethods({
   onManualSelect,
   sekwans,
   onSekwanSelect,
+  users,
 }: MemberSelectionMethodsProps) {
   const {
     control,
@@ -135,7 +136,7 @@ export function MemberSelectionMethods({
                 }
               >
                 {allMembers.map((item) => {
-                  const user = mockUsers.find((u) => u.id === item.userId);
+                  const user = users.find((u) => u.id === item.userId);
                   const name = user?.name || "Tanpa Nama";
                   return (
                     <AutocompleteItem key={String(item.id)} textValue={name}>
@@ -181,9 +182,7 @@ export function MemberSelectionMethods({
                     }
                   >
                     {sekwans.map((sekwan) => {
-                      const user = mockUsers.find(
-                        (u) => u.id === sekwan.userId,
-                      );
+                      const user = users.find((u) => u.id === sekwan.userId);
                       const name = user?.name || "Tanpa Nama";
                       return (
                         <AutocompleteItem key={sekwan.id} textValue={name}>

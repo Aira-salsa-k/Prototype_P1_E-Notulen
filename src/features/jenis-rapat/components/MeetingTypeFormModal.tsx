@@ -10,6 +10,8 @@ import { generateMockSekretarisDewan } from "@/mocks/sekretaris-dewan";
 import { mockUsers } from "@/mocks/user";
 import { MeetingCategory, MeetingTypeVariant } from "@/types/meeting";
 import { useJenisRapatStore } from "../store/useJenisRapatStore";
+import { useAnggotaStore } from "@/features/anggota-dewan/store/useAnggotaStore";
+import { useSekretarisDewanStore } from "@/features/sekretaris-dewan/store/useSekretarisDewanStore";
 import { MeetingTypeFormInfo } from "./MeetingTypeForm.info";
 import { MeetingTypeFormMembers } from "./MeetingTypeForm.members";
 import { nanoid } from "@/lib/utils";
@@ -40,27 +42,81 @@ export function MeetingTypeFormModal({
   isLoading,
 }: Props) {
   const isEdit = !!initialData;
-  const mockAnggotaDewan = useMemo(() => {
-    const raw = generateMockAnggota();
-    return raw.map((m) => {
-      const user = mockUsers.find((u) => u.id === m.userId);
+  const {
+    anggota,
+    users: anggotaUsers,
+    isInitialized: isAnggotaInit,
+    _hasHydrated: isAnggotaHydrated,
+    setAnggota,
+    setUsers: setAnggotaUsers,
+    markAsInitialized: markAnggotaInit,
+  } = useAnggotaStore();
+
+  const {
+    sekretarisDewan: sekwanProfiles,
+    users: sekwanUsers,
+    isInitialized: isSekwanInit,
+    _hasHydrated: isSekwanHydrated,
+    setSekretarisDewan,
+    setUsers: setSekwanUsers,
+    markAsInitialized: markSekwanInit,
+  } = useSekretarisDewanStore();
+
+  // 0. SILENT INITIALIZATION
+  // Ensure we have data even if user lands directly here (Fix for Vercel persistence issue)
+  useEffect(() => {
+    if (isAnggotaHydrated && !isAnggotaInit) {
+      setAnggota(generateMockAnggota());
+      setAnggotaUsers(mockUsers);
+      markAnggotaInit();
+    }
+    if (isSekwanHydrated && !isSekwanInit) {
+      setSekretarisDewan(generateMockSekretarisDewan());
+      setSekwanUsers(mockUsers);
+      markSekwanInit();
+    }
+  }, [
+    isAnggotaHydrated,
+    isAnggotaInit,
+    setAnggota,
+    setAnggotaUsers,
+    markAnggotaInit,
+    isSekwanHydrated,
+    isSekwanInit,
+    setSekretarisDewan,
+    setSekwanUsers,
+    markSekwanInit,
+  ]);
+
+  const allUsers = useMemo(() => {
+    // Merge users from both stores and mocks to be safe
+    const map = new Map();
+    [...mockUsers, ...anggotaUsers, ...sekwanUsers].forEach((u) => {
+      map.set(u.id, u);
+    });
+    return Array.from(map.values());
+  }, [anggotaUsers, sekwanUsers]);
+
+  const resolvedAnggota = useMemo(() => {
+    return anggota.map((m) => {
+      const user = allUsers.find((u) => u.id === m.userId);
       return {
         ...m,
         name: user?.name || "Tanpa Nama",
         username: user?.username || "-",
       };
     });
-  }, []);
-  const sekwans = useMemo(() => {
-    const profiles = generateMockSekretarisDewan();
-    return profiles.map((s) => {
-      const user = mockUsers.find((u) => u.id === s.userId);
+  }, [anggota, allUsers]);
+
+  const resolvedSekwans = useMemo(() => {
+    return sekwanProfiles.map((s) => {
+      const user = allUsers.find((u) => u.id === s.userId);
       return {
         ...s,
         name: user?.name || "Tanpa Nama",
       };
     });
-  }, []);
+  }, [sekwanProfiles, allUsers]);
 
   const { categories, actions } = useJenisRapatStore();
   const [isNewCategory, setIsNewCategory] = useState(false);
@@ -179,8 +235,9 @@ export function MeetingTypeFormModal({
               akdOptions={akdOptions}
               selectedAKD={selectedAKD}
               onAKDChange={setSelectedAKD}
-              allMembers={mockAnggotaDewan}
-              sekwans={sekwans}
+              allMembers={resolvedAnggota}
+              sekwans={resolvedSekwans}
+              users={allUsers}
             />
           </ModalBody>
 
