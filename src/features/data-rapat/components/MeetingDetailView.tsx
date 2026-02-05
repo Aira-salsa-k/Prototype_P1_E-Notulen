@@ -36,6 +36,7 @@ import { checkIsAdminLike, canManageLifecycle } from "@/lib/auth/permissions";
 import { useNotulenStore } from "@/features/notulen/store/useNotulenStore";
 import { useAttendance } from "@/features/notulen/hooks/useAttendance";
 import NotulenPreview from "@/features/notulen/components/notulen/NotulenPreview";
+import { MeetingTypeBadge } from "@/components/ui/badges/meeting-type-badge";
 
 // Tabs
 import TabAbsensi from "@/features/notulen/TabAbsensi";
@@ -180,7 +181,7 @@ export function MeetingDetailView({ meetingId, role }: MeetingDetailViewProps) {
       <div className="flex justify-between items-center bg-transparent px-2">
         <div className="flex gap-2">
           <Button
-            variant="light"
+            variant="flat"
             startContent={<ArrowLeftIcon className="w-4 h-4" />}
             onPress={() => router.back()}
             className="text-gray-500 hover:text-gray-900 transition-colors"
@@ -217,7 +218,7 @@ export function MeetingDetailView({ meetingId, role }: MeetingDetailViewProps) {
               color="danger"
               variant="solid"
               startContent={<CheckBadgeIcon className="w-4 h-4" />}
-              className="font-black text-white shadow-lg shadow-red-500/30 px-6"
+              className="font-black text-white shadow-sm shadow-red-500/30 px-6"
               onPress={handleFinishMeeting}
             >
               SELESAIKAN & KUNCI RAPAT
@@ -246,24 +247,14 @@ export function MeetingDetailView({ meetingId, role }: MeetingDetailViewProps) {
           <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-8">
             <div className="space-y-4">
               <div className="flex flex-wrap items-center gap-2">
-                <Chip
+                <MeetingTypeBadge
+                  categoryName={
+                    category?.name || meeting.meetingCategoryID || "RAPAT"
+                  }
+                  subCategoryName={variant?.subName}
+                  color={category?.color || "default"}
                   size="sm"
-                  color="primary"
-                  variant="flat"
-                  className="uppercase font-bold tracking-wider px-3"
-                >
-                  {category?.name || meeting.meetingCategoryID || "RAPAT"}
-                </Chip>
-                {variant && (
-                  <Chip
-                    size="sm"
-                    color="secondary"
-                    variant="flat"
-                    className="uppercase font-bold tracking-wider px-3"
-                  >
-                    {variant.subName}
-                  </Chip>
-                )}
+                />
                 {meeting.status === "live" && (
                   <Chip
                     size="sm"

@@ -6,6 +6,7 @@ import { Button } from "@heroui/button";
 import { UserPlusIcon, PrinterIcon, PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { AttendanceRecord, AttendanceStatus, ParticipantType } from "@/types/attendance";
 import { STATUS_OPTIONS } from "../../constants/attendance";
+import { AppButton } from "@/components/ui/button/AppButton";
 
 interface AttendanceTableProps {
   type: ParticipantType;
@@ -54,25 +55,25 @@ export const AttendanceTable = ({
         </div>
         <div className="flex gap-2">
           {!isReadOnly && canAdd && (
-            <Button
-              size="sm"
+            <AppButton
+              size="xs"
               color="primary"
-              variant="flat"
               onPress={onAdd}
               startContent={<UserPlusIcon className="w-4 h-4" />}
               className="font-bold"
+             
             >
               Tambah {title}
-            </Button>
+            </AppButton>
           )}
-          <Button
-            size="sm"
-            variant="bordered"
+          <AppButton
+            size="xs"
+            color="kuning"
             onPress={() => onPrint(type, title)}
             startContent={<PrinterIcon className="w-4 h-4" />}
           >
             Cetak Absensi
-          </Button>
+          </AppButton>
         </div>
       </div>
 
@@ -88,7 +89,10 @@ export const AttendanceTable = ({
             </TableColumn>
           )}
         </TableHeader>
-        <TableBody items={data} emptyContent={`Belum ada data ${title.toLowerCase()}.`}>
+        <TableBody
+          items={data}
+          emptyContent={`Belum ada data ${title.toLowerCase()}.`}
+        >
           {(record: AttendanceRecord) => (
             <TableRow key={record.id} className="hover:bg-gray-50">
               {(columnKey) => (
@@ -97,17 +101,22 @@ export const AttendanceTable = ({
 
                   {columnKey === "name" && (
                     <>
-                      <div className="font-bold text-gray-900">{record.name}</div>
-                      {record.institution && record.institution !== record.name && (
-                        <div className="text-[10px] text-primary font-bold uppercase">
-                          {record.institution}
-                        </div>
-                      )}
+                      <div className="font-bold text-gray-900">
+                        {record.name}
+                      </div>
+                      {record.institution &&
+                        record.institution !== record.name && (
+                          <div className="text-[10px] text-primary font-bold uppercase">
+                            {record.institution}
+                          </div>
+                        )}
                     </>
                   )}
 
                   {columnKey === "jabatan" && (
-                    <div className="text-sm text-gray-600">{record.jabatan}</div>
+                    <div className="text-sm text-gray-600">
+                      {record.jabatan}
+                    </div>
                   )}
 
                   {columnKey === "status" &&
@@ -115,16 +124,27 @@ export const AttendanceTable = ({
                       <Chip
                         size="sm"
                         variant="flat"
-                        color={STATUS_OPTIONS.find((o) => o.key === record.status)?.color as any}
+                        color={
+                          STATUS_OPTIONS.find((o) => o.key === record.status)
+                            ?.color as any
+                        }
                       >
-                        {STATUS_OPTIONS.find((o) => o.key === record.status)?.label}
+                        {
+                          STATUS_OPTIONS.find((o) => o.key === record.status)
+                            ?.label
+                        }
                       </Chip>
                     ) : (
                       <Select
                         size="sm"
                         variant="bordered"
                         selectedKeys={[record.status]}
-                        onChange={(e) => onStatusChange(record.id, e.target.value as AttendanceStatus)}
+                        onChange={(e) =>
+                          onStatusChange(
+                            record.id,
+                            e.target.value as AttendanceStatus,
+                          )
+                        }
                         aria-label="Pilih Status"
                         className="w-40"
                         renderValue={(items) => {
@@ -133,7 +153,11 @@ export const AttendanceTable = ({
                               key={item.key}
                               size="sm"
                               variant="flat"
-                              color={STATUS_OPTIONS.find((o) => o.key === record.status)?.color as any}
+                              color={
+                                STATUS_OPTIONS.find(
+                                  (o) => o.key === record.status,
+                                )?.color as any
+                              }
                             >
                               {item.textValue}
                             </Chip>
@@ -142,7 +166,11 @@ export const AttendanceTable = ({
                       >
                         {STATUS_OPTIONS.map((opt) => (
                           <SelectItem key={opt.key} textValue={opt.label}>
-                            <Chip size="sm" variant="flat" color={opt.color as any}>
+                            <Chip
+                              size="sm"
+                              variant="flat"
+                              color={opt.color as any}
+                            >
                               {opt.label}
                             </Chip>
                           </SelectItem>
@@ -152,7 +180,12 @@ export const AttendanceTable = ({
 
                   {columnKey === "actions" && (
                     <div className="flex justify-center gap-1">
-                      <Button isIconOnly size="sm" variant="light" onPress={() => onEdit(record)}>
+                      <Button
+                        isIconOnly
+                        size="sm"
+                        variant="light"
+                        onPress={() => onEdit(record)}
+                      >
                         <PencilSquareIcon className="w-4 h-4 text-gray-400" />
                       </Button>
                       <Button

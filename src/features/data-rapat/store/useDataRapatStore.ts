@@ -136,7 +136,14 @@ export const useDataRapatStore = create<
     }),
     {
       name: "data-rapat-storage",
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => localStorage, {
+        reviver: (key, value) => {
+          if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}T/.test(value)) {
+            return new Date(value);
+          }
+          return value;
+        },
+      }),
       onRehydrateStorage: () => (state) => {
         state?.actions.setHasHydrated(true);
       },

@@ -30,13 +30,7 @@ export default function DataRapatPage() {
   // Initialize Data
   useEffect(() => {
     if (_hasHydrated) {
-      const hasOldIds = meetings.some((m) =>
-        m.invitedAnggotaDewanIds?.some(
-          (id) => id.startsWith("anggota-") || id.startsWith("sekwan-"),
-        ),
-      );
-
-      if (!isInitialized || hasOldIds) {
+      if (!isInitialized) {
         actions.setMeetings(mockMeetings);
         actions.markAsInitialized();
       }

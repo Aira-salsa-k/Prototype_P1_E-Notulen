@@ -20,16 +20,10 @@ export default function DataRapatNotulisPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMeeting, setEditingMeeting] = useState<Meeting | null>(null);
 
-  // Initialize Data or Reset if using old ID format
+  // Initialize Data
   useEffect(() => {
     if (_hasHydrated) {
-      const hasOldIds = meetings.some((m) =>
-        m.invitedAnggotaDewanIds?.some(
-          (id) => id.startsWith("anggota-") || id.startsWith("sekwan-"),
-        ),
-      );
-
-      if (!isInitialized || hasOldIds) {
+      if (!isInitialized) {
         actions.setMeetings(mockMeetings);
         actions.markAsInitialized();
       }

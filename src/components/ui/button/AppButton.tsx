@@ -10,7 +10,7 @@ export const AppButton = extendVariants(Button, {
       ungu: "bg-indigo-900/89 text-indigo-50 hover:bg-indigo-800 hover:text-indigo-100 active:bg-indigo-900",
 
       "ungu-muda":
-        "bg-indigo-200/30 text-indigo-900 hover:bg-indigo-200 hover:text-indigo-900  active:bg-indigo-200",
+        "bg-indigo-200/40 text-indigo-900 hover:bg-indigo-200/30  active:bg-indigo-200",
 
       "btn-batal":
         "text-indigo-800 hover:bg-indigo-200/30 active:bg-indigo-300/70",

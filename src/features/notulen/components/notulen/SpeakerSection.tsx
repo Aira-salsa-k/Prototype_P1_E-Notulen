@@ -9,6 +9,7 @@ import {
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import { NotulenPoint } from "@/types/notulen";
+import { AppButton } from "@/components/ui/button/AppButton";
 
 interface SpeakerSectionProps {
   id: string; // section id
@@ -134,15 +135,14 @@ export default function SpeakerSection({
       {/* ADD BUTTON */}
       {isEditable && (
         <div className="mt-4 flex justify-start">
-          <Button
+          <AppButton
             size="sm"
-            variant="light"
-            color="primary"
+            color="ungu-muda"
             startContent={<PlusIcon className="w-4 h-4" />}
             onPress={onAddPoint}
           >
-            Tambah Poin
-          </Button>
+            Tambah Point Pembicaraan
+          </AppButton>
         </div>
       )}
     </div>

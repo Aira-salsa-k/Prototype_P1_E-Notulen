@@ -10,6 +10,7 @@ import {
   CheckCircleIcon,
   ArrowPathIcon,
 } from "@heroicons/react/24/outline";
+import { AppButton } from "@/components/ui/button/AppButton";
 
 interface TabKesimpulanProps {
   isReadOnly?: boolean;
@@ -131,15 +132,15 @@ export default function TabKesimpulan({
               Masukan poin-poin keputusan rapat (minimal 2 poin).
             </p>
           </div>
-          <Button
+          <AppButton
             size="sm"
-            color="primary"
-            variant="flat"
+            color="ungu-muda"
+           
             startContent={<PlusIcon className="w-4 h-4" />}
             onClick={addDecision}
           >
             Tambah Poin
-          </Button>
+          </AppButton>
         </div>
 
         <div className="space-y-3">

@@ -16,6 +16,7 @@ import NotulenEditor from "./components/notulen/NotulenEditor";
 import NotulenPreview from "./components/notulen/NotulenPreview";
 import { NotulenPrintDocument } from "./components/notulen/NotulenPrintDocument";
 import { useAttendance } from "./hooks/useAttendance";
+import { AppButton } from "@/components/ui/button/AppButton";
 
 interface TabNotulensiProps {
   meeting: Meeting;
@@ -85,14 +86,14 @@ export default function TabNotulensi({
           />
         </Tabs>
 
-        <Button
-          color="secondary"
-          variant="flat"
+        <AppButton
+          color="kuning"
           startContent={<PrinterIcon className="w-4 h-4" />}
           onPress={handlePrint}
+          size="sm"
         >
-          Cetak PDF
-        </Button>
+          Cetak Notulen
+        </AppButton>
       </div>
 
       {/* CONTENT AREA */}
