@@ -234,9 +234,17 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <div className="text-center text-xs text-gray-400 mt-auto pt-8">
-            &copy; 2026 Sekretariat Dewan Perwakilan Rakyat Daerah. <br />
-            All rights reserved.
+          <div className="text-center text-xs text-gray-400 mt-auto pt-8 flex flex-col items-center gap-2">
+            <span>
+              &copy; 2026 Sekretariat Dewan Perwakilan Rakyat Daerah. <br />
+              All rights reserved.
+            </span>
+            <a
+              href="/design-system"
+              className="text-[12px] bg-indigo-600 text-white px-2 py-1 rounded-full hover:text-indigo-500 transition-colors"
+            >
+              Design System --
+            </a>
           </div>
         </div>
       </div>
