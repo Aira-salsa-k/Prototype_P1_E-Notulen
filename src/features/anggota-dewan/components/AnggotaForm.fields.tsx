@@ -1,5 +1,5 @@
 import { Input } from "@heroui/input";
-import { Select, SelectItem} from "@heroui/select";
+import { Select, SelectItem } from "@heroui/select";
 import { AKD } from "@/types/anggota-dewan";
 import { AnggotaFormData } from "../types/AnggotaFormData";
 import { AKD_OPTIONS } from "@/lib/akd";
@@ -7,18 +7,17 @@ import { AKDBadge } from "@/components/ui/badges/AKDBadge";
 import React from "react";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 
-
 interface Props {
   data: AnggotaFormData;
   update: <K extends keyof AnggotaFormData>(
     key: K,
-    value: AnggotaFormData[K]
+    value: AnggotaFormData[K],
   ) => void;
   mode: "add" | "edit";
 }
 
 export function AnggotaFormFields({ data, update, mode }: Props) {
-    const [isVisible, setIsVisible] = React.useState(false);
+  const [isVisible, setIsVisible] = React.useState(false);
 
   const toggleVisibility = () => setIsVisible(!isVisible);
   return (
@@ -34,7 +33,7 @@ export function AnggotaFormFields({ data, update, mode }: Props) {
       <Input
         label="Jabatan"
         value={data.jabatan}
-        onChange={(e) => update("jabatan", e.target.value)}
+        onChange={(e) => update("jabatan", e.target.value.toUpperCase())}
         required
       />
 

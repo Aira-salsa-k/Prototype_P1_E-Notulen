@@ -243,7 +243,7 @@ export const NotulenPrintDocument = ({
                       <td className="border border-black px-2 py-1">
                         {p.name}
                       </td>
-                      <td className="border border-black px-2 py-1 text-center">
+                      <td className="border border-black px-2 py-1 text-center uppercase">
                         {p.jabatan}
                       </td>
                     </tr>
@@ -291,7 +291,7 @@ export const NotulenPrintDocument = ({
                       <td className="border border-black px-2 py-1">
                         {p.name}
                       </td>
-                      <td className="border border-black px-2 py-1 text-center">
+                      <td className="border border-black px-2 py-1 text-center uppercase">
                         {p.jabatan ? `(${p.jabatan})` : ""}
                       </td>
                     </tr>
@@ -337,7 +337,7 @@ export const NotulenPrintDocument = ({
                       <td className="border border-black px-2 py-1">
                         {p.name}
                       </td>
-                      <td className="border border-black px-2 py-1 text-center">
+                      <td className="border border-black px-2 py-1 text-center uppercase">
                         {p.jabatan}
                       </td>
                     </tr>

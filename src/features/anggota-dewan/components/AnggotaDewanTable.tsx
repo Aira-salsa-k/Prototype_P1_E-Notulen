@@ -97,7 +97,9 @@ export const AnggotaDewanTable = ({
         return <p className="font-medium text-gray-900">{item.user.name}</p>;
 
       case "jabatan":
-        return <p className="text-gray-900">{item.anggota.jabatan}</p>;
+        return (
+          <p className="text-gray-900 uppercase">{item.anggota.jabatan}</p>
+        );
 
       case "akd":
         return (
