@@ -18,6 +18,7 @@ import {
   DropdownItem,
 } from "@heroui/dropdown";
 
+import { useMemo } from "react";
 import { AnggotaDewanRow } from "@/features/anggota-dewan/view/anggota-dewan-row";
 import { DataTable } from "@/components/ui/table/DataTable";
 
@@ -43,6 +44,42 @@ export const AnggotaDewanTable = ({
   canDelete = true,
   canResetPassword = true,
 }: AnggotaDewanTableProps) => {
+  // Sort members by status (Aktif first) then priority (Ketua > W. Ketua I-III > Anggota)
+  const sortedAnggota = useMemo(() => {
+    const getPriority = (jabatan: string) => {
+      const up = jabatan.toUpperCase();
+      if (up.includes("KETUA") && !up.includes("WAKIL")) return 1;
+      if (
+        up.includes("WAKIL KETUA I") &&
+        !up.includes("WAKIL KETUA II") &&
+        !up.includes("WAKIL KETUA III")
+      )
+        return 2;
+      if (up.includes("WAKIL KETUA II") && !up.includes("WAKIL KETUA III"))
+        return 3;
+      if (up.includes("WAKIL KETUA III")) return 4;
+      if (up.includes("ANGGOTA")) return 5;
+      return 99;
+    };
+
+    return [...anggota].sort((a, b) => {
+      // 1. Sort by Status (active first)
+      const statusA = a.anggota.status === "active" ? 0 : 1;
+      const statusB = b.anggota.status === "active" ? 0 : 1;
+
+      if (statusA !== statusB) return statusA - statusB;
+
+      // 2. Sort by Position Hierarchy
+      const pA = getPriority(a.anggota.jabatan || "");
+      const pB = getPriority(b.anggota.jabatan || "");
+
+      if (pA !== pB) return pA - pB;
+
+      // 3. Secondary sort by name
+      return a.user.name.localeCompare(b.user.name);
+    });
+  }, [anggota]);
+
   const columns = [
     { key: "name", label: "Nama" },
     { key: "jabatan", label: "Jabatan" },
@@ -91,7 +128,7 @@ export const AnggotaDewanTable = ({
                     variant="flat"
                     color="warning"
                     onPress={() => onResetPassword?.(item)}
-                    className="hover:scale-105 transition-transform"
+                    className="hover:scale-105 transition-transform bg-amber-200/90"
                   >
                     <KeyIcon className="h-5 w-5" />
                   </Button>
@@ -185,7 +222,7 @@ export const AnggotaDewanTable = ({
       <div className="min-w-[1100px]">
         <DataTable
           columns={columns}
-          items={anggota}
+          items={sortedAnggota}
           renderCell={renderCell}
           emptyContent="Tidak ada data anggota dewan"
         />
