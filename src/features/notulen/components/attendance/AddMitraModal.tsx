@@ -1,5 +1,11 @@
 import React from "react";
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@heroui/modal";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from "@heroui/modal";
 import { Button } from "@heroui/button";
 import { Select, SelectItem } from "@heroui/select";
 import { Input } from "@heroui/input";
@@ -47,7 +53,9 @@ export const AddMitraModal = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
       <ModalContent>
-        <ModalHeader className="border-b">Tambah Peserta Mitra Kerja</ModalHeader>
+        <ModalHeader className="border-b">
+          Tambah Peserta Mitra Kerja
+        </ModalHeader>
         <ModalBody className="py-4 space-y-4">
           <div className="bg-gray-50 p-3 rounded-lg border border-gray-100 mb-2">
             <Select
@@ -58,7 +66,9 @@ export const AddMitraModal = ({
               onChange={(e) => setFilterAKD(e.target.value)}
             >
               {AKD_LIST.map((akd) => (
-                <SelectItem key={akd.id} textValue={akd.name}>{akd.name}</SelectItem>
+                <SelectItem key={akd.id} textValue={akd.name}>
+                  {akd.name}
+                </SelectItem>
               ))}
             </Select>
           </div>
@@ -79,11 +89,15 @@ export const AddMitraModal = ({
                 label="Pilih Instansi"
                 variant="bordered"
                 placeholder="Cari Instansi..."
-                selectedKeys={selectedInstitutionId ? [selectedInstitutionId] : []}
+                selectedKeys={
+                  selectedInstitutionId ? [selectedInstitutionId] : []
+                }
                 onChange={(e) => setSelectedInstitutionId(e.target.value)}
               >
                 {filteredInstitutions.map((inst) => (
-                  <SelectItem key={inst.id} textValue={inst.name}>{inst.name}</SelectItem>
+                  <SelectItem key={inst.id} textValue={inst.name}>
+                    {inst.name}
+                  </SelectItem>
                 ))}
               </Select>
               <div className="grid grid-cols-2 gap-4">
@@ -92,14 +106,18 @@ export const AddMitraModal = ({
                   placeholder="Opsional"
                   variant="bordered"
                   value={mitraPersonName}
-                  onChange={(e) => setMitraPersonName(e.target.value)}
+                  onChange={(e) =>
+                    setMitraPersonName(e.target.value.toUpperCase())
+                  }
                 />
                 <Input
                   label="Jabatan Utusan"
                   placeholder="Opsional"
                   variant="bordered"
                   value={mitraPosition}
-                  onChange={(e) => setMitraPosition(e.target.value)}
+                  onChange={(e) =>
+                    setMitraPosition(e.target.value.toUpperCase())
+                  }
                 />
               </div>
             </div>
@@ -111,20 +129,26 @@ export const AddMitraModal = ({
                 label="Nama Instansi Baru"
                 variant="bordered"
                 value={manualInstitutionName}
-                onChange={(e) => setManualInstitutionName(e.target.value)}
+                onChange={(e) =>
+                  setManualInstitutionName(e.target.value.toUpperCase())
+                }
               />
               <div className="grid grid-cols-2 gap-4">
                 <Input
                   label="Nama Utusan"
                   variant="bordered"
                   value={mitraPersonName}
-                  onChange={(e) => setMitraPersonName(e.target.value)}
+                  onChange={(e) =>
+                    setMitraPersonName(e.target.value.toUpperCase())
+                  }
                 />
                 <Input
                   label="Jabatan Utusan"
                   variant="bordered"
                   value={mitraPosition}
-                  onChange={(e) => setMitraPosition(e.target.value)}
+                  onChange={(e) =>
+                    setMitraPosition(e.target.value.toUpperCase())
+                  }
                 />
               </div>
             </div>

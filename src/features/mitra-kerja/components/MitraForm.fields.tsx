@@ -22,7 +22,7 @@ export function MitraFormFields({ data, update, mode }: Props) {
         labelPlacement="outside"
         placeholder="Masukkan nama instansi"
         value={data.name}
-        onValueChange={(val) => update("name", val)}
+        onValueChange={(val) => update("name", val.toUpperCase())}
         autoFocus
         isRequired
       />

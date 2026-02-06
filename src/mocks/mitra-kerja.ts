@@ -1,5 +1,5 @@
 // app/mocks/mitra-kerja.ts
-import { MitraKerja, MitraInstitution ,AKD} from "@/types";
+import { MitraKerja, MitraInstitution, AKD } from "@/types";
 
 export const mockMitraInstitutions: MitraInstitution[] = [
   {
@@ -56,7 +56,7 @@ export const mockMitraInstitutions: MitraInstitution[] = [
     createdAt: new Date("2024-01-01"),
     updatedAt: new Date("2024-01-01"),
   },
-   {
+  {
     id: "institution-007",
     name: "DINAS PERIKANAN",
     akdID: "KOMISI_II",
@@ -65,7 +65,7 @@ export const mockMitraInstitutions: MitraInstitution[] = [
     createdAt: new Date("2024-01-01"),
     updatedAt: new Date("2024-01-01"),
   },
-     {
+  {
     id: "institution-008",
     name: "DINAS PERTANIAN DAN PETERNAKAN",
     akdID: "KOMISI_I",
@@ -100,7 +100,7 @@ export const mockMitraKerja: MitraKerja[] = [
     updatedAt: new Date("2024-01-01"),
   },
   {
-    id: "mitra-003",
+    id: "mitra-010",
     institutionId: "institution-002",
     name: "Dr. H. AHMAD FUADI, Sp.PD.",
     position: "KEPALA DINAS",

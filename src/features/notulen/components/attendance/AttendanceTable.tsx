@@ -1,10 +1,26 @@
 import React from "react";
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from "@heroui/table";
+import {
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+} from "@heroui/table";
 import { Chip } from "@heroui/chip";
 import { Select, SelectItem } from "@heroui/select";
 import { Button } from "@heroui/button";
-import { UserPlusIcon, PrinterIcon, PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
-import { AttendanceRecord, AttendanceStatus, ParticipantType } from "@/types/attendance";
+import {
+  UserPlusIcon,
+  PrinterIcon,
+  PencilSquareIcon,
+  TrashIcon,
+} from "@heroicons/react/24/outline";
+import {
+  AttendanceRecord,
+  AttendanceStatus,
+  ParticipantType,
+} from "@/types/attendance";
 import { STATUS_OPTIONS } from "../../constants/attendance";
 import { AppButton } from "@/components/ui/button/AppButton";
 
@@ -43,7 +59,11 @@ export const AttendanceTable = ({
   ];
 
   if (showActions) {
-    columns.push({ key: "actions", label: "AKSI", className: "w-24 text-center" });
+    columns.push({
+      key: "actions",
+      label: "AKSI",
+      className: "w-24 text-center",
+    });
   }
 
   return (
@@ -61,7 +81,6 @@ export const AttendanceTable = ({
               onPress={onAdd}
               startContent={<UserPlusIcon className="w-4 h-4" />}
               className="font-bold"
-             
             >
               Tambah {title}
             </AppButton>
@@ -114,7 +133,7 @@ export const AttendanceTable = ({
                   )}
 
                   {columnKey === "jabatan" && (
-                    <div className="text-sm text-gray-600">
+                    <div className="text-sm text-gray-600 uppercase">
                       {record.jabatan}
                     </div>
                   )}
