@@ -153,7 +153,7 @@ export function MeetingTypeFormMembers({
 
       // Auto-uppercase for specific fields
       let finalValue = value;
-      if (field === "meetingRole" || field === "displayFormat") {
+      if (field === "displayFormat") {
         finalValue = value.toUpperCase();
       }
 

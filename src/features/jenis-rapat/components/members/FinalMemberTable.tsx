@@ -149,7 +149,7 @@ function SortableRow({
           size="sm"
           variant="bordered"
           allowsCustomValue
-          classNames={{ base: "max-w-[200px]" }}
+          classNames={{ base: "max-w-[300px]" }}
         >
           {(role) => (
             <AutocompleteItem key={role.value}>{role.label}</AutocompleteItem>
@@ -246,7 +246,7 @@ export function FinalMemberTable({
                 <th className="p-4 text-xs font-bold text-gray-500">
                   NAMA ANGGOTA
                 </th>
-                <th className="p-4 text-xs font-bold text-gray-500 w-[200px]">
+                <th className="p-4 text-xs font-bold text-gray-500 w-[320px]">
                   JABATAN RAPAT
                 </th>
                 <th className="p-4 text-xs font-bold text-gray-500 w-[550px]">
