@@ -74,11 +74,26 @@ export function canEditMeeting(user: User | null, meeting: any): boolean {
   if (!user) return false;
   if (checkIsAdminLike(user)) return true;
 
-  // Notulis can edit if meeting is not completed (Live is okay)
+  // Notulis logic
   if (user.role === "NOTULIS") {
-    return (
-      meeting.notulisIds?.includes(user.id) && meeting.status !== "completed"
-    );
+    // Must be assigned to this meeting
+    if (!meeting.notulisIds?.includes(user.id)) return false;
+
+    // If not completed (scheduled/live), always allow
+    if (meeting.status !== "completed") return true;
+
+    // If completed, check 5-hour grace period
+    if (meeting.actualEndTime) {
+      const endTime = new Date(meeting.actualEndTime);
+      const now = new Date();
+      const diffMs = now.getTime() - endTime.getTime();
+      const diffHours = diffMs / (1000 * 60 * 60);
+
+      // Allow edit if less than 5 hours has passed
+      return diffHours < 5;
+    }
+
+    return false;
   }
 
   return false;

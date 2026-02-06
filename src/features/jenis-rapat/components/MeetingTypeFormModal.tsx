@@ -12,9 +12,12 @@ import { MeetingCategory, MeetingTypeVariant } from "@/types/meeting";
 import { useJenisRapatStore } from "../store/useJenisRapatStore";
 import { useAnggotaStore } from "@/features/anggota-dewan/store/useAnggotaStore";
 import { useSekretarisDewanStore } from "@/features/sekretaris-dewan/store/useSekretarisDewanStore";
+import { AKD } from "@/types/anggota-dewan";
+import { AKD_CONFIG } from "@/lib/config/akd";
 import { MeetingTypeFormInfo } from "./MeetingTypeForm.info";
 import { MeetingTypeFormMembers } from "./MeetingTypeForm.members";
 import { nanoid } from "@/lib/utils";
+import { SwatchIcon as SwatchIconSolid } from "@heroicons/react/24/solid";
 
 interface MeetingTypeFormData extends Omit<
   MeetingTypeVariant,
@@ -98,24 +101,28 @@ export function MeetingTypeFormModal({
   }, [anggotaUsers, sekwanUsers]);
 
   const resolvedAnggota = useMemo(() => {
-    return anggota.map((m) => {
-      const user = allUsers.find((u) => u.id === m.userId);
-      return {
-        ...m,
-        name: user?.name || "Tanpa Nama",
-        username: user?.username || "-",
-      };
-    });
+    return anggota
+      .filter((m) => m.status === "active")
+      .map((m) => {
+        const user = allUsers.find((u) => u.id === m.userId);
+        return {
+          ...m,
+          name: user?.name || "Tanpa Nama",
+          username: user?.username || "-",
+        };
+      });
   }, [anggota, allUsers]);
 
   const resolvedSekwans = useMemo(() => {
-    return sekwanProfiles.map((s) => {
-      const user = allUsers.find((u) => u.id === s.userId);
-      return {
-        ...s,
-        name: user?.name || "Tanpa Nama",
-      };
-    });
+    return sekwanProfiles
+      .filter((s) => s.isActive)
+      .map((s) => {
+        const user = allUsers.find((u) => u.id === s.userId);
+        return {
+          ...s,
+          name: user?.name || "Tanpa Nama",
+        };
+      });
   }, [sekwanProfiles, allUsers]);
 
   const { categories, actions } = useJenisRapatStore();
@@ -203,27 +210,36 @@ export function MeetingTypeFormModal({
     onSubmit(variant);
   };
 
-  const akdOptions = [
-    "KOMISI_I",
-    "KOMISI_II",
-    "KOMISI_III",
-    "BADAN_MUSYAWARAH",
-    "BADAN_ANGGARAN",
-    "ALL",
-  ];
+  const akdOptions = useMemo(() => {
+    const options = Object.entries(AKD_CONFIG).map(([value, config]) => ({
+      value: value as AKD,
+      label: config.label,
+    }));
+    return [{ value: "ALL", label: "SEMUA ANGGOTA" }, ...options];
+  }, []);
 
   return (
-    <ModalBase isOpen={isOpen} onClose={onClose} size="5xl">
+    <ModalBase
+      isOpen={isOpen}
+      onClose={onClose}
+      size="full"
+      scrollBehavior="outside"
+      classNames={{
+        base: "bg-white max-w-full m-0 rounded-none shadow-none !h-auto",
+        wrapper: "p-0 !items-start",
+      }}
+    >
       <FormProvider {...methods}>
         <form
           onSubmit={handleSubmit(handleFormSubmit)}
-          className="flex flex-col max-h-[90vh] overflow-hidden"
+          className="flex flex-col"
         >
-          <ModalHeader className="text-2xl font-bold pt-8 px-8">
+          <ModalHeader className="text-md text-white font-bold px-12 border-b border-divider/90 bg-primary">
+            <SwatchIconSolid className="w-5 h-5 mr-2 text-primary-70" />{" "}
             {isEdit ? "Edit Konfigurasi Rapat" : "Buat Jenis Rapat Baru"}
           </ModalHeader>
 
-          <ModalBody className="px-8 py-4 space-y-8">
+          <ModalBody className="px-12 py-6 space-y-6">
             <MeetingTypeFormInfo
               categories={categories}
               isEdit={isEdit}
@@ -241,15 +257,22 @@ export function MeetingTypeFormModal({
             />
           </ModalBody>
 
-          <ModalFooter className="px-8 pb-8 pt-4 border-t border-divider/50 mt-4">
-            <AppButton variant="light" color="btn-batal" onPress={onClose}>
+          <ModalFooter className="px-12 pb-2 pt-2 border-t border-divider/50 gap-4">
+            <AppButton
+              variant="light"
+              color="btn-batal"
+              onPress={onClose}
+              size="sm"
+              className="min-w-[160px]"
+            >
               Batal
             </AppButton>
             <AppButton
-              color="primary"
+              color="ungu"
               type="submit"
               isLoading={isLoading}
-              className="font-bold px-8"
+              size="sm"
+              className=" min-w-[200px]"
             >
               {isEdit ? "Simpan Perubahan" : "Buat Jenis Rapat"}
             </AppButton>

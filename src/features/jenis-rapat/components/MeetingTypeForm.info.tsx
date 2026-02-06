@@ -41,9 +41,9 @@ export function MeetingTypeFormInfo({
   ];
 
   return (
-    <div className="bg-white border-2 border-gray-100 rounded-2xl p-6 shadow-sm">
-      <h3 className="font-bold text-gray-800 pb-4 text-sm uppercase tracking-wide border-b border-gray-200 mb-4">
-        1. Informasi & Kategori Rapat
+    <div className="bg-white px-2">
+      <h3 className="font-bold text-gray-800 pb-4 text-base border-b border-gray-200 mb-6">
+        1. Pilih Kategori dan sub kategori rapat
       </h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -57,7 +57,7 @@ export function MeetingTypeFormInfo({
                 render={({ field }) => (
                   <Select
                     {...field}
-                    label="Kategori Utama"
+                    label="Pilih Kategori"
                     placeholder="Pilih atau Buat Baru"
                     variant="bordered"
                     labelPlacement="outside"
@@ -152,10 +152,9 @@ export function MeetingTypeFormInfo({
         <div className="space-y-4">
           <Input
             {...register("subName")}
-            label="Nama Sub Jenis Rapat"
+            label="Nama Sub Jenis Rapat (Opsional)"
             labelPlacement="outside"
             placeholder="Contoh: LKPJ, Pembahasan APBD"
-            description="Nama spesifik untuk konfigurasi jenis rapat ini"
             variant="bordered"
           />
         </div>

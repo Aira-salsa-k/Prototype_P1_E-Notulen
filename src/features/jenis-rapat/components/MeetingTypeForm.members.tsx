@@ -1,16 +1,16 @@
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { MeetingTypeMemberConfig, MeetingTypeVariant } from "@/types/meeting";
-import { useState, useCallback } from "react"; // Added useCallback
+import { useState, useCallback, useEffect, useRef } from "react"; // Added useCallback, useEffect, useRef
+import { arrayMove } from "@dnd-kit/sortable";
 import { SekretarisDewanProfile } from "@/types/sekretaris-dewan";
 
 // Sub-components
 import { MemberSelectionMethods } from "./members/MemberSelectionMethods";
-import { PendingPreviewTable } from "./members/PendingPreviewTable";
 import { FinalMemberTable } from "./members/FinalMemberTable";
 import { User } from "@/types/user";
 
 interface MeetingTypeFormMembersProps {
-  akdOptions: string[];
+  akdOptions: { value: string; label: string }[];
   selectedAKD: string;
   onAKDChange: (akd: string) => void;
   allMembers: any[];
@@ -27,17 +27,12 @@ export function MeetingTypeFormMembers({
   users,
 }: MeetingTypeFormMembersProps) {
   const { control, getValues } = useFormContext<MeetingTypeVariant>();
-  const { fields, remove, append } = useFieldArray({
+  const { fields, remove, append, update } = useFieldArray({
     control,
     name: "members",
   });
 
-  // -- STATE: Pending Preview --
-  // This holds members that are selected (from AKD, Manual, or Sekwan) but NOT YET added to the final form list.
-  // They are editable here.
-  const [previewMembers, setPreviewMembers] = useState<
-    MeetingTypeMemberConfig[]
-  >([]);
+  const [isLoadingAKD, setIsLoadingAKD] = useState(false);
 
   // Helper: Get set of IDs already in the *Final List* (to prevent adding duplicates to final)
   const getExistingFinalIds = useCallback(() => {
@@ -58,15 +53,8 @@ export function MeetingTypeFormMembers({
 
     const existingFinal = getExistingFinalIds();
 
-    // Also filter out any that are ALREADY in the current preview to avoid dupes in preview
-    const existingPreviewIds = new Set(previewMembers.map((m) => m.memberId));
-
     const available = loaded
-      .filter(
-        (m) =>
-          !existingFinal.has(String(m.id)) &&
-          !existingPreviewIds.has(String(m.id)),
-      )
+      .filter((m) => !existingFinal.has(String(m.id)))
       .map((m) => {
         const user = users.find((u) => u.id === m.userId);
         const name = user?.name || "Tanpa Nama";
@@ -80,9 +68,30 @@ export function MeetingTypeFormMembers({
       });
 
     if (available.length > 0) {
-      setPreviewMembers((prev) => [...prev, ...available]);
+      append(available);
     }
+    setIsLoadingAKD(false);
   };
+
+  // Ref to track if it's the first render to avoid auto-load on mount
+  const isFirstRender = useRef(true);
+
+  // Auto-load when AKD selection changes
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    if (selectedAKD && selectedAKD !== "") {
+      setIsLoadingAKD(true);
+      // Small delay for better UX
+      const timer = setTimeout(() => {
+        handleLoadAKDPreview();
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [selectedAKD]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 2. Select Manual (Anggota)
   const handleManualSelect = (memberId: string) => {
@@ -92,9 +101,6 @@ export function MeetingTypeFormMembers({
     // Check if in final list
     const existingFinal = getExistingFinalIds();
     if (existingFinal.has(String(member.id))) return;
-
-    // Check if already in preview
-    if (previewMembers.some((m) => m.memberId === String(member.id))) return;
 
     const user = users.find((u) => u.id === member.userId);
     const name = user?.name || "Tanpa Nama";
@@ -107,7 +113,7 @@ export function MeetingTypeFormMembers({
       displayFormat: `${name} ® ${member.jabatan || "Anggota"}`,
     };
 
-    setPreviewMembers((prev) => [...prev, newMember]);
+    append(newMember);
   };
 
   // 3. Select Sekwan
@@ -118,9 +124,6 @@ export function MeetingTypeFormMembers({
     // Check final
     const existingFinal = getExistingFinalIds();
     if (existingFinal.has(String(s.id))) return;
-
-    // Check preview
-    if (previewMembers.some((m) => m.memberId === String(s.id))) return;
 
     const user = users.find((u) => u.id === s.userId);
     const name = user?.name || "Tanpa Nama";
@@ -133,36 +136,23 @@ export function MeetingTypeFormMembers({
       displayFormat: `${name} ® ${s.jabatan}`,
     };
 
-    setPreviewMembers((prev) => [...prev, newMember]);
+    append(newMember);
   };
 
-  // 4. Update Member in Preview (Edit Role/Display)
-  const handleUpdatePreview = (
-    id: string,
+  // 4. Update Member directly in Final List
+  const handleUpdateMember = (
+    index: number,
     field: keyof MeetingTypeMemberConfig,
     value: string,
   ) => {
-    setPreviewMembers((prev) =>
-      prev.map((m) => (m.memberId === id ? { ...m, [field]: value } : m)),
-    );
-  };
-
-  // 5. Remove from Preview
-  const handleRemovePreview = (id: string) => {
-    setPreviewMembers((prev) => prev.filter((m) => m.memberId !== id));
-  };
-
-  // 6. Add Single to Final
-  const handleAddToFinal = (member: MeetingTypeMemberConfig) => {
-    append(member);
-    handleRemovePreview(member.memberId);
-  };
-
-  // 7. Add All to Final
-  const handleAddAllToFinal = () => {
-    if (previewMembers.length > 0) {
-      append(previewMembers);
-      setPreviewMembers([]);
+    // We update using update() from useFieldArray to keep UI in sync
+    // fields[index] contains the current item data
+    if (fields[index]) {
+      const currentItem = fields[index] as MeetingTypeMemberConfig;
+      // We need to cast because update expects the full object
+      const updatedItem = { ...currentItem, [field]: value };
+      // @ts-ignore - update signature mismatch in some RHF versions but this is valid
+      update(index, updatedItem);
     }
   };
 
@@ -173,7 +163,7 @@ export function MeetingTypeFormMembers({
         akdOptions={akdOptions}
         selectedAKD={selectedAKD}
         onAKDChange={onAKDChange}
-        onLoadAKDPreview={handleLoadAKDPreview}
+        isLoadingAKD={isLoadingAKD}
         allMembers={allMembers}
         onManualSelect={handleManualSelect}
         sekwans={sekwans}
@@ -181,19 +171,18 @@ export function MeetingTypeFormMembers({
         users={users}
       />
 
-      {/* SECTION 2: PENDING PREVIEW TABLE (Editable) */}
-      <PendingPreviewTable
-        previewMembers={previewMembers}
-        onUpdateMember={handleUpdatePreview}
-        onAddMember={handleAddToFinal}
-        onAddAll={handleAddAllToFinal}
-        onRemovePreview={handleRemovePreview}
-      />
-
-      {/* SECTION 3: FINAL LIST TABLE */}
+      {/* SECTION 2: FINAL LIST TABLE (NOW UNIFIED) */}
       <FinalMemberTable
         fields={fields as (MeetingTypeMemberConfig & { id: string })[]}
         onRemove={remove}
+        onReorder={(oldIndex: number, newIndex: number) => {
+          const current = getValues("members") || [];
+          const reordered = arrayMove(current, oldIndex, newIndex);
+          // Update all members at once
+          fields.forEach((_, idx) => remove(0));
+          append(reordered);
+        }}
+        onUpdate={handleUpdateMember}
       />
     </div>
   );

@@ -9,9 +9,16 @@ import { DataRapatHeader } from "@/features/data-rapat/components/DataRapatHeade
 import { DataRapatFilter } from "@/features/data-rapat/components/DataRapatFilter";
 import { DataRapatList } from "@/features/data-rapat/components/DataRapatList";
 import { mockMeetings } from "@/mocks/meeting";
+import { mockMeetingTypeVariants } from "@/mocks/meeting-variants";
+import { mockMeetingCategories } from "@/mocks/meeting-category";
+import { mockNotulis } from "@/mocks/notulis";
+import { mockUsers } from "@/mocks/user";
+import { generateMockSekretarisDewan } from "@/mocks/sekretaris-dewan";
 import { Meeting } from "@/types/meeting";
 import { ClientOnly } from "@/components/utils/ClientOnly";
 import { MeetingFormModal } from "@/features/data-rapat/components/MeetingFormModal";
+import { useNotulisStore } from "@/features/data-notulis/store/useNotulisStore";
+import { useSekretarisDewanStore } from "@/features/sekretaris-dewan/store/useSekretarisDewanStore";
 
 export default function DataRapatPage() {
   const router = useRouter();
@@ -25,7 +32,67 @@ export default function DataRapatPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMeeting, setEditingMeeting] = useState<Meeting | null>(null);
 
-  const { variants } = useJenisRapatStore();
+  const {
+    variants,
+    isInitialized: jenisRapatInitialized,
+    _hasHydrated: jenisRapatHydrated,
+    actions: jenisRapatActions,
+  } = useJenisRapatStore();
+
+  const {
+    isInitialized: notulisInitialized,
+    _hasHydrated: notulisHydrated,
+    setNotulisList,
+    setUsers: setNotulisUsers,
+    markAsInitialized: markNotulisInit,
+  } = useNotulisStore();
+
+  const {
+    isInitialized: sekwanInitialized,
+    _hasHydrated: sekwanHydrated,
+    setSekretarisDewan,
+    setUsers: setSekwanUsers,
+    markAsInitialized: markSekwanInit,
+  } = useSekretarisDewanStore();
+
+  // Initialize Jenis Rapat Data
+  useEffect(() => {
+    if (jenisRapatHydrated && !jenisRapatInitialized) {
+      jenisRapatActions.setCategories(mockMeetingCategories);
+      jenisRapatActions.setVariants(mockMeetingTypeVariants);
+      jenisRapatActions.markAsInitialized();
+    }
+  }, [jenisRapatHydrated, jenisRapatInitialized, jenisRapatActions]);
+
+  // Initialize Notulis Data
+  useEffect(() => {
+    if (notulisHydrated && !notulisInitialized) {
+      setNotulisList(mockNotulis);
+      setNotulisUsers(mockUsers);
+      markNotulisInit();
+    }
+  }, [
+    notulisHydrated,
+    notulisInitialized,
+    setNotulisList,
+    setNotulisUsers,
+    markNotulisInit,
+  ]);
+
+  // Initialize Sekwan Data
+  useEffect(() => {
+    if (sekwanHydrated && !sekwanInitialized) {
+      setSekretarisDewan(generateMockSekretarisDewan());
+      setSekwanUsers(mockUsers);
+      markSekwanInit();
+    }
+  }, [
+    sekwanHydrated,
+    sekwanInitialized,
+    setSekretarisDewan,
+    setSekwanUsers,
+    markSekwanInit,
+  ]);
 
   // Initialize Data
   useEffect(() => {

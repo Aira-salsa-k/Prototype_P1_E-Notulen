@@ -90,7 +90,7 @@ export const mockMeetings: Meeting[] = [
   {
     id: "meeting-002",
     title:
-      "RAPAT DENGAR PENDAPAT KOMISI II DENGAN DINAS KESEHATAN TERKAIT PELAYANAN RSUD KEEROM",
+      "RAPAT DENGAR PENDAPAT KOMISI II DENGAN DINASS KESEHATAN TERKAIT PELAYANAN RSUD KEEROM",
     meetingCategoryID: "m2", // Komisi II
     subMeetingCategoryID: "var-2", // Evaluasi Tahunan Komisi II
     agenda:
@@ -109,7 +109,7 @@ export const mockMeetings: Meeting[] = [
       isMeetingSpecificAccessOn: true,
       allowedAnggotaDewanIds: [
         "user-anggota-002",
-        "user-anggota-008",
+        "user-anggota-009",
         "user-anggota-007",
         "user-anggota-008",
       ],
@@ -141,7 +141,7 @@ export const mockMeetings: Meeting[] = [
     notulisIds: ["user-notulis-001"],
     invitedAnggotaDewanIds: [
       "user-anggota-002",
-      "user-anggota-008",
+      "user-anggota-009",
       "user-anggota-007",
       "user-anggota-008",
     ],

@@ -67,7 +67,7 @@ export function VariantCard({
           aria-label="Tabel Anggota Rapat"
           removeWrapper
           classNames={{
-            th: "bg-gray-50 text-gray-600 font-bold uppercase text-sm tracking-wider py-3",
+            th: "bg-gray-50 text-gray-600 font-bold uppercase text-xs py-3",
             td: "py-3 text-md text-gray-700 ",
             tr: [
               "hover:bg-primary/5 transition-colors duration-200", // Efek hover yang sinkron
@@ -99,10 +99,10 @@ export function VariantCard({
                 </TableCell>
                 <TableCell>
                   <div className="flex flex-col">
-                    <span className="font-bold text-gray-900">
+                    <span className="font-bold text-sm text-gray-900">
                       {member.name}
                     </span>
-                    <span className="text-sm text-gray-500">
+                    <span className="text-xs text-gray-500">
                       {member.jabatan}
                     </span>
                   </div>
@@ -112,7 +112,7 @@ export function VariantCard({
                     <Chip
                       size="md"
                       variant="flat"
-                      className="font-medium  text-gray"
+                      className="font-medium text-xs text-gray"
                     >
                       {member.meetingRole}
                     </Chip>
@@ -121,7 +121,7 @@ export function VariantCard({
                   )}
                 </TableCell>
                 <TableCell>
-                  <code className="text-sm bg-gray-100 px-1.5 py-0.5 rounded text-gray-600 border border-gray-200">
+                  <code className="text-xs bg-gray-100 px-1.5 py-0.5 rounded text-gray-600 border border-gray-200">
                     {member.displayFormat}
                   </code>
                 </TableCell>

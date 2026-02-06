@@ -26,7 +26,24 @@ export const NotulenPrintDocument = ({
   points,
   minutesData,
 }: NotulenPrintDocumentProps) => {
-  const sortedSections = [...sections].sort((a, b) => a.order - b.order);
+  // Sort sections based on the timestamp of their first point
+  const sortedSections = [...sections]
+    .filter((section) => points[section.id]?.length > 0) // Only show sections with points
+    .sort((a, b) => {
+      const pointsA = points[a.id] || [];
+      const pointsB = points[b.id] || [];
+
+      const firstPointTimeA =
+        pointsA.length > 0
+          ? new Date(pointsA[0].createdAt).getTime()
+          : Infinity;
+      const firstPointTimeB =
+        pointsB.length > 0
+          ? new Date(pointsB[0].createdAt).getTime()
+          : Infinity;
+
+      return firstPointTimeA - firstPointTimeB;
+    });
 
   // Group attendance
   const dewan = participants.filter((p) => p.type === "ANGGOTA_DEWAN");
@@ -205,10 +222,10 @@ export const NotulenPrintDocument = ({
             <table className="w-full text-sm border border-black border-collapse">
               <thead>
                 <tr className="bg-gray-100">
-                  <th className="border border-black px-2 py-1 w-10 text-center">
+                  <th className="border border-black px-2 py-1 w-12 text-center">
                     NO
                   </th>
-                  <th className="border border-black px-2 py-1 text-center">
+                  <th className="border border-black px-2 py-1 w-1/2 text-center">
                     NAMA
                   </th>
                   <th className="border border-black px-2 py-1 text-center">
@@ -253,10 +270,10 @@ export const NotulenPrintDocument = ({
             <table className="w-full text-sm border border-black border-collapse">
               <thead>
                 <tr className="bg-gray-100">
-                  <th className="border border-black px-2 py-1 w-10 text-center">
+                  <th className="border border-black px-2 py-1 w-12 text-center">
                     NO
                   </th>
-                  <th className="border border-black px-2 py-1 text-center">
+                  <th className="border border-black px-2 py-1 w-1/2 text-center">
                     NAMA
                   </th>
                   <th className="border border-black px-2 py-1 text-center">
@@ -299,10 +316,10 @@ export const NotulenPrintDocument = ({
             <table className="w-full text-sm border border-black border-collapse">
               <thead>
                 <tr className="bg-gray-100 italic">
-                  <th className="border border-black px-2 py-1 w-10 text-center">
+                  <th className="border border-black px-2 py-1 w-12 text-center">
                     NO
                   </th>
-                  <th className="border border-black px-2 py-1 text-center">
+                  <th className="border border-black px-2 py-1 w-1/2 text-center">
                     NAMA
                   </th>
                   <th className="border border-black px-2 py-1 text-center">
@@ -342,7 +359,10 @@ export const NotulenPrintDocument = ({
 
         {/* OPENING SECTION */}
         <div className="mb-8 font-arimo text-justify text-sm">
-          <p className="mb-4">Rapat dibuka oleh …</p>
+          <p className="mb-4">
+            Rapat dimulai oleh{" "}
+            <span className="font-bold">{toTitleCase(pimpinanNames)}</span>
+          </p>
         </div>
 
         {/* DISCUSSION FLOW SECTION */}

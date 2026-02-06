@@ -19,7 +19,6 @@ interface DataRapatActions {
   setHasHydrated: (state: boolean) => void;
   startMeeting: (id: string, userId: string, userName: string) => void;
   finishMeeting: (id: string, userId: string, userName: string) => void;
-  reopenMeeting: (id: string, userId: string, userName: string) => void;
 }
 
 export const useDataRapatStore = create<
@@ -55,14 +54,7 @@ export const useDataRapatStore = create<
             if (!meeting) return {};
 
             const now = new Date();
-            const newAuditLog: any = {
-              id: `log-${now.getTime()}`,
-              action: "START",
-              userId,
-              userName,
-              timestamp: now,
-              details: "Rapat dimulai dan absensi dikunci (snapshot).",
-            };
+            // Audit logs removed as per request
 
             return {
               meetings: state.meetings.map((m) =>
@@ -72,7 +64,6 @@ export const useDataRapatStore = create<
                       status: "live",
                       actualStartTime: now,
                       updatedAt: now,
-                      auditLogs: [...(m.auditLogs || []), newAuditLog],
                     }
                   : m,
               ),
@@ -82,51 +73,16 @@ export const useDataRapatStore = create<
         finishMeeting: (id: string, userId: string, userName: string) =>
           set((state) => {
             const now = new Date();
-            const newAuditLog: any = {
-              id: `log-${now.getTime()}`,
-              action: "END",
-              userId,
-              userName,
-              timestamp: now,
-              details: "Rapat diselesaikan. Notulensi difinalisasi.",
-            };
+            // Audit logs removed as per request
 
             return {
               meetings: state.meetings.map((m) =>
                 m.id === id
                   ? {
                       ...m,
-                      status: "completed",
-                      actualEndTime: now,
+                      // status: "completed", // Removed immediate completion
+                      closingStartedAt: now, // Start countdown
                       updatedAt: now,
-                      auditLogs: [...(m.auditLogs || []), newAuditLog],
-                    }
-                  : m,
-              ),
-            };
-          }),
-
-        reopenMeeting: (id: string, userId: string, userName: string) =>
-          set((state) => {
-            const now = new Date();
-            const newAuditLog: any = {
-              id: `log-${now.getTime()}`,
-              action: "REOPEN",
-              userId,
-              userName,
-              timestamp: now,
-              details: "DARURAT: Status dikembalikan ke Live (Koreksi).",
-            };
-
-            return {
-              meetings: state.meetings.map((m) =>
-                m.id === id
-                  ? {
-                      ...m,
-                      status: "live",
-                      actualEndTime: undefined,
-                      updatedAt: now,
-                      auditLogs: [...(m.auditLogs || []), newAuditLog],
                     }
                   : m,
               ),

@@ -21,6 +21,7 @@ export function MeetingTypeBadge({
   return (
     <BaseBadge
       label={label}
+      
       className="border-none font-bold uppercase tracking-wide px-2"
       tone={color as any}
       size={size}

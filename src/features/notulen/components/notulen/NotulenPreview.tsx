@@ -23,7 +23,24 @@ export default function NotulenPreview({
 }: NotulenPreviewProps) {
   const { sections, points, minutesData } = useNotulenStore();
 
-  const sortedSections = [...sections].sort((a, b) => a.order - b.order);
+  // Sort sections based on the timestamp of their first point
+  const sortedSections = [...sections]
+    .filter((section) => points[section.id]?.length > 0) // Only show sections with points
+    .sort((a, b) => {
+      const pointsA = points[a.id] || [];
+      const pointsB = points[b.id] || [];
+
+      const firstPointTimeA =
+        pointsA.length > 0
+          ? new Date(pointsA[0].createdAt).getTime()
+          : Infinity;
+      const firstPointTimeB =
+        pointsB.length > 0
+          ? new Date(pointsB[0].createdAt).getTime()
+          : Infinity;
+
+      return firstPointTimeA - firstPointTimeB;
+    });
 
   // Group attendance by type
   const dewan = participants.filter((p) => p.type === "ANGGOTA_DEWAN");
@@ -124,7 +141,7 @@ export default function NotulenPreview({
     <div className="bg-white border rounded-xl shadow-sm pt-8 pb-10 px-16 max-w-[210mm] mx-auto min-h-[297mm] text-black font-arimo">
       {/* KOP SURAT PREVIEW */}
       <div className="text-center mb-8 pb-4">
-        <KopSuratHeader/>
+        <KopSuratHeader />
       </div>
 
       <div className="text-center mb-8">
@@ -199,10 +216,10 @@ export default function NotulenPreview({
           <table className="w-full text-sm border border-black border-collapse">
             <thead>
               <tr className="bg-gray-100">
-                <th className="border border-black px-2 py-1 w-10 text-center">
+                <th className="border border-black px-2 py-1 w-12 text-center">
                   NO
                 </th>
-                <th className="border border-black px-2 py-1 text-center">
+                <th className="border border-black px-2 py-1 w-1/2 text-center">
                   NAMA
                 </th>
                 <th className="border border-black px-2 py-1 text-center">
@@ -245,10 +262,10 @@ export default function NotulenPreview({
           <table className="w-full text-sm border border-black border-collapse">
             <thead>
               <tr className="bg-gray-100">
-                <th className="border border-black px-2 py-1 w-10 text-center">
+                <th className="border border-black px-2 py-1 w-12 text-center">
                   NO
                 </th>
-                <th className="border border-black px-2 py-1 text-center">
+                <th className="border border-black px-2 py-1 w-1/2 text-center">
                   NAMA
                 </th>
                 <th className="border border-black px-2 py-1 text-center">
@@ -289,10 +306,10 @@ export default function NotulenPreview({
           <table className="w-full text-sm border border-black border-collapse">
             <thead>
               <tr className="bg-gray-100">
-                <th className="border border-black px-2 py-1 w-10 text-center">
+                <th className="border border-black px-2 py-1 w-12 text-center">
                   NO
                 </th>
-                <th className="border border-black px-2 py-1 text-center">
+                <th className="border border-black px-2 py-1 w-1/2 text-center">
                   NAMA
                 </th>
                 <th className="border border-black px-2 py-1 text-center">
@@ -331,7 +348,10 @@ export default function NotulenPreview({
       {/* MINUTES CONTENT */}
       <div className="mb-8">
         <div className="mb-4 text-justify leading-relaxed text-sm">
-          <p>Rapat dibuka oleh …</p>
+          <p>
+            Rapat dimulai oleh{" "}
+            <span className="font-bold">{toTitleCase(pimpinanNames)}</span>
+          </p>
         </div>
 
         <div className="space-y-6">

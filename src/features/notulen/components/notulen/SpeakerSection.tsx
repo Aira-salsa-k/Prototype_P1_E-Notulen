@@ -55,7 +55,7 @@ export default function SpeakerSection({
 
   return (
     <div
-      className={`border rounded-xl p-6 transition-all ${
+      className={`border rounded-xl p-4 transition-all ${
         isLockedByOther
           ? "bg-gray-50 border-gray-200 opacity-75" // Locked by someone else
           : isLocked

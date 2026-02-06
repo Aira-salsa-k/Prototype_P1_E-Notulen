@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import {
   Modal,
   ModalContent,
@@ -63,15 +63,7 @@ export function MeetingFormModal({
   const { variants } = useJenisRapatStore();
   const [step, setStep] = useState(1);
 
-  const {
-    control,
-    handleSubmit,
-    watch,
-    setValue,
-    reset,
-    trigger,
-    formState: { errors },
-  } = useForm<MeetingFormData>({
+  const methods = useForm<MeetingFormData>({
     defaultValues: {
       title: "",
       meetingCategoryID: "",
@@ -88,6 +80,15 @@ export function MeetingFormModal({
       invitedAnggotaDewanIds: [],
     },
   });
+
+  const {
+    handleSubmit,
+    reset,
+    trigger,
+    setValue,
+    watch,
+    formState: { errors },
+  } = methods;
 
   // Handle Initial Data for Edit Mode
   useEffect(() => {
@@ -141,28 +142,15 @@ export function MeetingFormModal({
     }
   }, [isOpen, initialData, reset]);
 
-  const selectedVariantId = watch("meetingVariantID");
-
-  // Auto-populate Attendees when Variant Changes
-  useEffect(() => {
-    if (selectedVariantId) {
-      const variant = variants.find((v) => v.id === selectedVariantId);
-      if (variant) {
-        const memberIds = variant.members.map((m) => m.memberId);
-        setValue("invitedAnggotaDewanIds", memberIds);
-        setValue("meetingCategoryID", variant.categoryId);
-      }
-    }
-  }, [selectedVariantId, variants, setValue]);
+  // Removed automatic effect for invitedAnggotaDewanIds - will be handled in input component
 
   const handleNext = async () => {
+    // Validate Step 1 fields only
     const isValid = await trigger([
       "title",
       "meetingVariantID",
-      "date",
-      "startTime",
-      "endTime",
-      "room",
+      "agenda",
+      "masaSidang",
     ]);
     if (isValid) {
       setStep(2);
@@ -206,12 +194,12 @@ export function MeetingFormModal({
       size="full" // Full width for "lega" feel
       scrollBehavior="inside"
       classNames={{
-        base: "bg-white", // Ensure solid background
-        header: "border-b border-gray-100 px-8 py-5", // More padding
-        body: "p-0 bg-gray-50/30",
-        footer: "border-t border-gray-100 px-8 py-5 bg-white",
-        backdrop: "bg-black/60 backdrop-blur-md", // Premium backdrop
-        wrapper: "z-[9999]",
+        base: "bg-white max-h-[95vh] my-8",
+        header: "border-b border-primary-700 px-12 py-4 !static",
+        body: "p-0 bg-gray-50/20",
+        footer: "border-t border-gray-100 px-12 py-2 bg-white !static",
+        backdrop: "bg-black/60 backdrop-blur-md",
+        wrapper: "z-[9999] px-4",
       }}
       closeButton={
         <Button
@@ -227,83 +215,76 @@ export function MeetingFormModal({
     >
       <ModalContent>
         {(onClose) => (
-          <form className="flex flex-col h-full w-full">
-            <ModalHeader className="flex flex-row justify-between items-center bg-white sticky top-0 z-10 shadow-sm">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 leading-tight">
+          <FormProvider {...methods}>
+            <form className="flex flex-col h-full w-full">
+              <ModalHeader className="flex flex-row justify-between items-center bg-primary !static">
+                <h2 className="text-xl font-bold text-white">
                   {initialData ? "Edit Data Rapat" : "Buat Jadwal Rapat Baru"}
                 </h2>
-                <p className="text-sm font-normal text-gray-500 mt-1">
-                  {step === 1
-                    ? "Lengkapi detail informasi rapat"
-                    : "Atur petugas dan undangan rapat"}
-                </p>
-              </div>
-              <StepIndicator currentStep={step} />
-            </ModalHeader>
+                <StepIndicator currentStep={step} />
+              </ModalHeader>
 
-            <ModalBody className="overflow-y-auto w-full max-w-7xl mx-auto">
-              {step === 1 && <MeetingInfoStep control={control} />}
-              {step === 2 && (
-                <ParticipantsStep control={control} watch={watch} />
-              )}
-            </ModalBody>
+              <ModalBody className="overflow-y-auto w-full max-w-[1600px] mx-auto px-4">
+                {step === 1 && <MeetingInfoStep />}
+                {step === 2 && <ParticipantsStep />}
+              </ModalBody>
 
-            <ModalFooter className="bg-white border-t border-gray-100 flex justify-between items-center px-8 py-5">
-              <div className="flex gap-4">
-                {step === 2 && (
+              <ModalFooter className="bg-white border-t border-gray-100 flex justify-between items-center px-8 py-4 !static">
+                <div className="flex gap-4">
+                  {step === 2 && (
+                    <Button
+                      type="button"
+                      variant="flat"
+                      color="default"
+                      size="md"
+                      startContent={<ChevronLeftIcon className="w-5 h-5" />}
+                      onPress={handleBack}
+                      className="font-semibold text-gray-600"
+                    >
+                      Kembali
+                    </Button>
+                  )}
+                </div>
+                <div className="flex gap-4 items-center">
                   <Button
                     type="button"
-                    variant="flat"
-                    color="default"
-                    size="lg"
-                    startContent={<ChevronLeftIcon className="w-5 h-5" />}
-                    onPress={handleBack}
-                    className="font-semibold text-gray-600"
+                    color="danger"
+                    size="md"
+                    variant="light"
+                    onPress={onClose}
+                    isDisabled={isLoading}
+                    className="font-semibold"
                   >
-                    Kembali
+                    Batal
                   </Button>
-                )}
-              </div>
-              <div className="flex gap-4 items-center">
-                <Button
-                  type="button"
-                  color="danger"
-                  variant="light"
-                  size="lg"
-                  onPress={onClose}
-                  isDisabled={isLoading}
-                  className="font-semibold"
-                >
-                  Batal
-                </Button>
-                {step === 1 ? (
-                  <Button
-                    type="button"
-                    color="primary"
-                    size="lg"
-                    onPress={handleNext}
-                    endContent={<ChevronRightIcon className="w-5 h-5" />}
-                    className="font-bold px-10 shadow-lg shadow-blue-500/30"
-                  >
-                    Lanjut
-                  </Button>
-                ) : (
-                  <Button
-                    color="primary"
-                    type="button"
-                    size="lg"
-                    className="font-bold px-10 shadow-lg shadow-blue-500/30"
-                    isLoading={isLoading}
-                    startContent={<CheckIcon className="w-5 h-5" />}
-                    onPress={() => handleSubmit(handleFormSubmit)()}
-                  >
-                    {initialData ? "Simpan Perubahan" : "Terbitkan Jadwal"}
-                  </Button>
-                )}
-              </div>
-            </ModalFooter>
-          </form>
+                  {step === 1 ? (
+                    <Button
+                      type="button"
+                      color="primary"
+                      size="md"
+                      onPress={handleNext}
+                      endContent={<ChevronRightIcon className="w-5 h-5" />}
+                      className="font-semibold"
+                    >
+                      Lanjut
+                    </Button>
+                  ) : (
+                    <Button
+                      color="primary"
+                      type="button"
+                      size="md"
+                      className="font-bold"
+                      isLoading={isLoading}
+                      startContent={<CheckIcon className="w-5 h-5" />}
+                      onPress={() => handleSubmit(handleFormSubmit)()}
+                    >
+                      {initialData ? "Simpan Perubahan" : "Terbitkan Jadwal"}
+                    </Button>
+                  )}
+                </div>
+              </ModalFooter>
+            </form>
+          </FormProvider>
         )}
       </ModalContent>
     </Modal>

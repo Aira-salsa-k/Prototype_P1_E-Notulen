@@ -104,7 +104,7 @@ export function CategorySection({
                             <div
                               role="button"
                               tabIndex={0}
-                              className="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors cursor-pointer"
+                              className="p-2 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors cursor-pointer"
                               title="Edit Varian"
                               onClick={() => onEdit(variant)}
                             >

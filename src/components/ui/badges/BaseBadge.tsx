@@ -22,7 +22,7 @@ export function BaseBadge({
   return (
     <Chip
       size={size}
-      variant="flat"
+      variant="bordered"
       // Casting 'as any' diperlukan karena mapping string kita
       // mungkin lebih luas dari tipe internal HeroUI
       color={semanticToHeroColor[tone] as any}

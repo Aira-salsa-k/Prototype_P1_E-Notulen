@@ -57,19 +57,10 @@ export interface Meeting {
   notulenSections?: NotulenSection[];
   minutesData?: MeetingMinutes | null;
 
-  // Lifecycle & Audits
+  // Lifecycle
   actualStartTime?: Date;
   actualEndTime?: Date;
-  auditLogs?: MeetingAuditLog[];
-}
-
-export interface MeetingAuditLog {
-  id: string;
-  action: "CREATE" | "UPDATE" | "START" | "END" | "SNAPSHOT_ATTENDANCE";
-  userId: string;
-  userName: string;
-  timestamp: Date;
-  details?: string;
+  closingStartedAt?: Date; // Start of the 5-hour countdown
 }
 
 export interface MeetingAccessControl {
