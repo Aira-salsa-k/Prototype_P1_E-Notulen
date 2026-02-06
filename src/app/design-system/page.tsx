@@ -20,6 +20,7 @@ import {
   CalendarIcon,
   DocumentTextIcon,
 } from "@heroicons/react/24/outline";
+import { HomeIcon as HomeIconSolid, InboxStackIcon as InboxStackIconSolid } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { AKD_CONFIG } from "@/lib/config/akd";
@@ -444,6 +445,7 @@ export default function DesignSystemPage() {
               label="Reset Password"
               color="warning"
               tooltipContent="Reset Password"
+              className="bg-amber-200/80"
               code={`<Tooltip content="Reset Password" color="warning">
   <Button
     isIconOnly
@@ -451,7 +453,7 @@ export default function DesignSystemPage() {
     variant="flat"
     color="warning"
     onPress={() => onResetPassword?.(item)}
-    className="hover:scale-105 transition-transform"
+    className="hover:scale-105 transition-transform bg-amber-200/80"
   >
     <KeyIcon className="h-5 w-5" />
   </Button>
@@ -541,17 +543,17 @@ export default function DesignSystemPage() {
                 <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded text-[10px]">
                   @heroicons/react/24/solid
                 </span>
-                Common Icons (Filled)
+                Common Icons solid
               </h3>
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 <IconPreview
-                  icon={<ArrowLeftIcon className="w-6 h-6" />}
-                  name="ArrowLeftIcon"
+                  icon={<InboxStackIconSolid className="w-6 h-6 text-primary/90" />}
+                  name="InboxStackIconSolid"
                   variant="solid"
                 />
                 <IconPreview
-                  icon={<HomeIcon className="w-6 h-6" />}
-                  name="HomeIcon"
+                  icon={<HomeIconSolid className="w-6 h-6 text-primary/90" />}
+                  name="HomeIconSolid"
                   variant="solid"
                 />
               </div>
@@ -735,12 +737,14 @@ function TableActionPreview({
   color,
   tooltipContent,
   code,
+  className,
 }: {
   icon: React.ReactNode;
   label: string;
   color: "primary" | "danger" | "warning";
   tooltipContent: string;
   code: string;
+  className?: string;
 }) {
   const [copied, setCopied] = useState(false);
 
@@ -760,13 +764,16 @@ function TableActionPreview({
               size="sm"
               variant="flat"
               color={color}
-              className={
-                color === "primary"
-                  ? "text-primary hover:scale-105 transition-transform"
-                  : color === "danger"
-                    ? "text-danger"
-                    : "hover:scale-105 transition-transform"
-              }
+              className={`
+                ${
+                  color === "primary"
+                    ? "text-primary hover:scale-105 transition-transform"
+                    : color === "danger"
+                      ? "text-danger"
+                      : "hover:scale-105 transition-transform"
+                }
+                ${className || ""}
+              `}
             >
               {icon}
             </Button>

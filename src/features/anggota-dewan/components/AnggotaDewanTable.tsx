@@ -130,7 +130,7 @@ export const AnggotaDewanTable = ({
                     variant="flat"
                     color="warning"
                     onPress={() => onResetPassword?.(item)}
-                    className="hover:scale-105 transition-transform bg-amber-200/90"
+                    className="hover:scale-105 transition-transform bg-amber-200/80"
                   >
                     <KeyIcon className="h-5 w-5" />
                   </Button>
