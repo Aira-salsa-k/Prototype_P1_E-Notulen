@@ -48,6 +48,11 @@ const COMMON_ROLES = [
   "Koordinator",
 ];
 
+const MAPPED_ROLES = COMMON_ROLES.map((r) => ({
+  value: r,
+  label: r,
+}));
+
 // Sortable Row Component using standard HTML <tr>
 function SortableRow({
   field,
@@ -72,6 +77,16 @@ function SortableRow({
     transition,
     isDragging,
   } = useSortable({ id: field.id });
+
+  // Use local state for the input value to prevent table re-renders on every keystroke
+  const [localMeetingRole, setLocalMeetingRole] = React.useState(
+    field.meetingRole || "",
+  );
+
+  // Sync with group value if it changes externally (e.g. reorder)
+  React.useEffect(() => {
+    setLocalMeetingRole(field.meetingRole || "");
+  }, [field.meetingRole]);
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -118,12 +133,19 @@ function SortableRow({
       <td className="p-4 align-middle">
         <Autocomplete
           aria-label="Pilih Jabatan Rapat"
-          defaultItems={COMMON_ROLES.map((r) => ({
-            value: r,
-            label: r,
-          }))}
-          inputValue={field.meetingRole || ""}
-          onInputChange={(val) => onUpdate(index, "meetingRole", val)}
+          defaultItems={MAPPED_ROLES}
+          inputValue={localMeetingRole}
+          onInputChange={(val) => setLocalMeetingRole(val)}
+          onSelectionChange={(key) => {
+            if (key) {
+              const val = String(key);
+              setLocalMeetingRole(val);
+              onUpdate(index, "meetingRole", val);
+            }
+          }}
+          onBlur={() => {
+            onUpdate(index, "meetingRole", localMeetingRole);
+          }}
           size="sm"
           variant="bordered"
           allowsCustomValue

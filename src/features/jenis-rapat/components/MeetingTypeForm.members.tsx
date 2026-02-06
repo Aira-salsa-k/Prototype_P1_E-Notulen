@@ -58,12 +58,13 @@ export function MeetingTypeFormMembers({
       .map((m) => {
         const user = users.find((u) => u.id === m.userId);
         const name = user?.name || "Tanpa Nama";
+        const jabatan = m.jabatan || "Anggota";
         return {
           memberId: String(m.id),
           name: name,
-          jabatan: m.jabatan || "Anggota",
+          jabatan: jabatan,
           meetingRole: "Anggota",
-          displayFormat: `${name} ® ${m.jabatan || "Anggota"}`,
+          displayFormat: `${name} ® ${jabatan}`.toUpperCase(),
         };
       });
 
@@ -104,13 +105,14 @@ export function MeetingTypeFormMembers({
 
     const user = users.find((u) => u.id === member.userId);
     const name = user?.name || "Tanpa Nama";
+    const jabatan = member.jabatan || "Anggota";
 
     const newMember: MeetingTypeMemberConfig = {
       memberId: String(member.id),
       name: name,
-      jabatan: member.jabatan || "Anggota",
+      jabatan: jabatan,
       meetingRole: "Anggota",
-      displayFormat: `${name} ® ${member.jabatan || "Anggota"}`,
+      displayFormat: `${name} ® ${jabatan}`.toUpperCase(),
     };
 
     append(newMember);
@@ -127,13 +129,14 @@ export function MeetingTypeFormMembers({
 
     const user = users.find((u) => u.id === s.userId);
     const name = user?.name || "Tanpa Nama";
+    const jabatan = s.jabatan || "Sekretaris";
 
     const newMember: MeetingTypeMemberConfig = {
       memberId: String(s.id),
       name: name,
-      jabatan: s.jabatan,
+      jabatan: jabatan,
       meetingRole: "Sekretaris",
-      displayFormat: `${name} ® ${s.jabatan}`,
+      displayFormat: `${name} ® ${jabatan}`.toUpperCase(),
     };
 
     append(newMember);
@@ -145,13 +148,17 @@ export function MeetingTypeFormMembers({
     field: keyof MeetingTypeMemberConfig,
     value: string,
   ) => {
-    // We update using update() from useFieldArray to keep UI in sync
-    // fields[index] contains the current item data
     if (fields[index]) {
       const currentItem = fields[index] as MeetingTypeMemberConfig;
-      // We need to cast because update expects the full object
-      const updatedItem = { ...currentItem, [field]: value };
-      // @ts-ignore - update signature mismatch in some RHF versions but this is valid
+
+      // Auto-uppercase for specific fields
+      let finalValue = value;
+      if (field === "meetingRole" || field === "displayFormat") {
+        finalValue = value.toUpperCase();
+      }
+
+      const updatedItem = { ...currentItem, [field]: finalValue };
+      // @ts-ignore
       update(index, updatedItem);
     }
   };
