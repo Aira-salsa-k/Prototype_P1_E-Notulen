@@ -9,6 +9,7 @@ import { canManageLifecycle } from "@/lib/auth/permissions";
 import { User } from "@/types/user";
 import { Meeting } from "@/types/meeting";
 import { LifecycleConfirmationModal } from "./LifecycleConfirmationModal";
+import { useDataRapatStore } from "@/features/data-rapat/store/useDataRapatStore";
 
 interface MeetingHeaderProps {
   meeting: Meeting;
@@ -74,7 +75,10 @@ export function MeetingHeader({
                 SELESAIKAN & KUNCI RAPAT
               </Button>
             ) : (
-              <CountdownTimer closingStartedAt={meeting.closingStartedAt} />
+              <CountdownTimer
+                meetingId={meeting.id}
+                closingStartedAt={meeting.closingStartedAt}
+              />
             )}
           </>
         )}
@@ -91,11 +95,14 @@ export function MeetingHeader({
 }
 
 function CountdownTimer({
+  meetingId,
   closingStartedAt,
 }: {
+  meetingId: string;
   closingStartedAt: Date | string;
 }) {
   const [timeLeft, setTimeLeft] = useState("");
+  const { actions } = useDataRapatStore();
 
   useEffect(() => {
     const calculateTimeLeft = () => {
@@ -111,18 +118,21 @@ function CountdownTimer({
 
         return `${hours}h ${minutes}m ${seconds}s`;
       } else {
+        // Auto-complete the meeting in store when time is up
+        actions.updateMeeting(meetingId, { status: "completed" });
         return "Locked";
       }
     };
 
     const timer = setInterval(() => {
-      setTimeLeft(calculateTimeLeft());
+      const newTime = calculateTimeLeft();
+      setTimeLeft(newTime);
     }, 1000);
 
     setTimeLeft(calculateTimeLeft());
 
     return () => clearInterval(timer);
-  }, [closingStartedAt]);
+  }, [closingStartedAt, meetingId, actions]);
 
   return (
     <div className="flex items-center gap-2 bg-red-50 text-red-600 px-4 py-2 rounded-lg border border-red-200">

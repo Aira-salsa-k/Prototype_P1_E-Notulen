@@ -101,7 +101,31 @@ export const useDataRapatStore = create<
         },
       }),
       onRehydrateStorage: () => (state) => {
-        state?.actions.setHasHydrated(true);
+        if (state) {
+          const now = new Date().getTime();
+          const fiveHours = 5 * 60 * 60 * 1000;
+
+          const updatedMeetings = state.meetings.map((m) => {
+            if (m.status === "live" && m.closingStartedAt) {
+              const closingTime =
+                new Date(m.closingStartedAt).getTime() + fiveHours;
+              if (now > closingTime) {
+                return { ...m, status: "completed" as const };
+              }
+            }
+            return m;
+          });
+
+          // Update meetings list if any changes were made
+          const hasChanges = updatedMeetings.some(
+            (m, i) => m.status !== state.meetings[i].status,
+          );
+          if (hasChanges) {
+            state.meetings = updatedMeetings;
+          }
+
+          state.actions.setHasHydrated(true);
+        }
       },
       partialize: (state) => ({
         meetings: state.meetings,

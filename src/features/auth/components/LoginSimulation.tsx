@@ -11,11 +11,32 @@ import {
 import { checkIsAdminLike } from "@/lib/auth/permissions";
 import { mockUsers } from "@/mocks/user";
 
+import { useDataRapatStore } from "@/features/data-rapat/store/useDataRapatStore";
+
 export default function LoginSimulation() {
   const { currentUser, actions } = useAuthStore();
   const { login } = actions;
+  const meetings = useDataRapatStore((state) => state.meetings);
   const [isOpen, setIsOpen] = useState(true);
   const router = useRouter();
+
+  const getMeetingCount = (userId: string, role: string) => {
+    return meetings.filter((m) => {
+      if (role === "ADMIN") return true; // Admin see all
+      if (role === "NOTULIS") return m.notulisIds?.includes(userId);
+      if (role === "SEKWAN")
+        return m.sekretarisId === userId || m.sekretarisId === "sekwan-002"; // Match by ID or static mock
+      if (role === "ANGGOTA_DEWAN") {
+        // Members might be listed by user-anggota-XXX or anggota-XXX
+        return m.invitedAnggotaDewanIds?.some(
+          (id) =>
+            id === userId ||
+            id.replace("user-", "") === userId.replace("user-", ""),
+        );
+      }
+      return false;
+    }).length;
+  };
 
   const users = [
     {
@@ -48,10 +69,17 @@ export default function LoginSimulation() {
     },
     {
       id: "user-anggota-001",
-      label: "Ketua Dewan (Kanisius)",
+      label: "Pimpinan (Kanisius)",
       role: "ANGGOTA_DEWAN",
       name: "Kanisius Kango",
       color: "bg-indigo-600",
+    },
+    {
+      id: "user-anggota-005",
+      label: "Anggota (Dominika)",
+      role: "ANGGOTA_DEWAN",
+      name: "Dominika Tafor, SH",
+      color: "bg-pink-600",
     },
   ];
 
@@ -101,9 +129,17 @@ export default function LoginSimulation() {
       <div className="space-y-3">
         <div className="p-3 bg-gray-50 rounded-lg border border-gray-100 mb-4">
           <p className="text-xs text-gray-500 mb-1">Sedang Login Sebagai:</p>
-          <p className="font-bold text-gray-800">
-            {currentUser?.name || "Guest (Belum Login)"}
-          </p>
+          <div className="flex justify-between items-center">
+            <p className="font-bold text-gray-800">
+              {currentUser?.name || "Guest (Belum Login)"}
+            </p>
+            {currentUser && (
+              <div className="flex items-center gap-1 bg-primary/10 text-primary px-2 py-0.5 rounded text-[10px] font-bold">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                ONLINE
+              </div>
+            )}
+          </div>
           <div className="flex justify-between items-center mt-1">
             <span className="text-[10px] font-mono text-gray-500 uppercase">
               {currentUser?.role || "-"}
@@ -116,35 +152,42 @@ export default function LoginSimulation() {
           </div>
         </div>
 
-        <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
-          {users.map((user) => (
-            <button
-              key={user.id}
-              onClick={() => handleLogin(user.id, user.role)}
-              disabled={currentUser?.id === user.id}
-              className={`w-full text-left px-4 py-3 rounded-lg text-sm border transition-all relative overflow-hidden group
-                  ${
-                    currentUser?.id === user.id
-                      ? "bg-gray-900 border-gray-900 text-white shadow-md ring-2 ring-offset-2 ring-gray-900"
-                      : "bg-white border-gray-200 hover:bg-gray-50 text-gray-700 hover:border-gray-300 shadow-sm"
-                  }
-               `}
-            >
-              <div className="flex justify-between items-start mb-1">
-                <span
-                  className={`font-bold ${currentUser?.id === user.id ? "text-white" : "text-gray-900"}`}
-                >
-                  {user.label}
-                </span>
-                <span className={`w-2 h-2 rounded-full ${user.color}`}></span>
-              </div>
-              <div
-                className={`text-xs ${currentUser?.id === user.id ? "text-gray-300" : "text-gray-500"}`}
+        <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1 scrollbar-hide">
+          {users.map((user) => {
+            const mCount = getMeetingCount(user.id, user.role);
+            return (
+              <button
+                key={user.id}
+                onClick={() => handleLogin(user.id, user.role)}
+                disabled={currentUser?.id === user.id}
+                className={`w-full text-left px-4 py-3 rounded-lg text-sm border transition-all relative overflow-hidden group
+                    ${
+                      currentUser?.id === user.id
+                        ? "bg-gray-900 border-gray-900 text-white shadow-md ring-2 ring-offset-2 ring-gray-900"
+                        : "bg-white border-gray-200 hover:bg-gray-50 text-gray-700 hover:border-gray-300 shadow-sm"
+                    }
+                 `}
               >
-                {user.name}
-              </div>
-            </button>
-          ))}
+                <div className="flex justify-between items-start mb-1">
+                  <span
+                    className={`font-bold ${currentUser?.id === user.id ? "text-white" : "text-gray-900"}`}
+                  >
+                    {user.label}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`w-2 h-2 rounded-full ${user.color}`}
+                    ></span>
+                  </div>
+                </div>
+                <div
+                  className={`text-xs ${currentUser?.id === user.id ? "text-gray-300" : "text-gray-500"}`}
+                >
+                  {user.name}
+                </div>
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>

@@ -108,7 +108,12 @@ export default function SpeakerSection({
               minRows={1}
               isDisabled={!isEditable}
               value={point.content}
-              onChange={(e) => onUpdatePoint(point.id, e.target.value)}
+              onChange={(e) => {
+                const val = e.target.value;
+                // Auto format: Capitalize only the first letter of the sentence
+                const formatted = val.charAt(0).toUpperCase() + val.slice(1);
+                onUpdatePoint(point.id, formatted);
+              }}
               placeholder={`Poin ${index + 1}...`}
               variant="bordered"
               className="flex-1"

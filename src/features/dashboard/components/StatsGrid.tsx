@@ -1,6 +1,9 @@
 "use client";
 
 import { Card, CardBody } from "@heroui/card";
+import { useMemo, useEffect } from "react";
+import { useAnggotaStore } from "@/features/anggota-dewan/store/useAnggotaStore";
+import { AnggotaDewan } from "@/types/anggota-dewan";
 
 interface StatsCardProps {
   title: string;
@@ -37,7 +40,6 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { checkIsAdminLike } from "@/lib/auth/permissions";
 import { useDataRapatStore } from "@/features/data-rapat/store/useDataRapatStore";
 import { useJenisRapatStore } from "@/features/jenis-rapat/store/useJenisRapatStore";
-import { useEffect } from "react";
 import { mockMeetings } from "@/mocks/meeting";
 import { mockMeetingCategories } from "@/mocks/meeting-category";
 import { mockMeetingTypeVariants } from "@/mocks/meeting-variants";
@@ -56,7 +58,17 @@ export default function StatsGrid() {
     _hasHydrated: isCategoriesHydrated,
     actions: categoriesActions,
   } = useJenisRapatStore();
+  const { anggota: allAnggota } = useAnggotaStore();
   const { currentUser } = useAuthStore();
+
+  // Resolve current user's Anggota ID
+  const myAnggotaId = useMemo(() => {
+    if (!currentUser || currentUser.role !== "ANGGOTA_DEWAN") return null;
+    const profile = allAnggota.find(
+      (a: AnggotaDewan) => a.userId === currentUser.id,
+    );
+    return profile?.id || null;
+  }, [currentUser, allAnggota]);
 
   // Initialization fallback
   useEffect(() => {
@@ -94,7 +106,10 @@ export default function StatsGrid() {
     }
 
     if (currentUser.role === "ANGGOTA_DEWAN") {
-      return m.invitedAnggotaDewanIds?.includes(currentUser.id);
+      return (
+        m.invitedAnggotaDewanIds?.includes(currentUser.id) ||
+        (myAnggotaId && m.invitedAnggotaDewanIds?.includes(myAnggotaId))
+      );
     }
 
     return false;

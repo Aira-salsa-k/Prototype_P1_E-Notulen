@@ -8,8 +8,10 @@ import { resolveMeeting } from "@/lib/utils/meeting/meetingResolver";
 import { useDataRapatStore } from "@/features/data-rapat/store/useDataRapatStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import { checkIsAdminLike } from "@/lib/auth/permissions";
-import { useEffect } from "react";
+import { useMemo, useEffect } from "react";
 import { mockMeetings } from "@/mocks/meeting";
+import { useAnggotaStore } from "@/features/anggota-dewan/store/useAnggotaStore";
+import { AnggotaDewan } from "@/types/anggota-dewan";
 
 import { generateMockSekretarisDewan } from "@/mocks/sekretaris-dewan";
 
@@ -20,7 +22,17 @@ export default function LiveMeetings() {
     _hasHydrated: isDataHydrated,
     actions: dataActions,
   } = useDataRapatStore();
+  const { anggota: allAnggota } = useAnggotaStore();
   const { currentUser } = useAuthStore();
+
+  // Resolve current user's Anggota ID
+  const myAnggotaId = useMemo(() => {
+    if (!currentUser || currentUser.role !== "ANGGOTA_DEWAN") return null;
+    const profile = allAnggota.find(
+      (a: AnggotaDewan) => a.userId === currentUser.id,
+    );
+    return profile?.id || null;
+  }, [currentUser, allAnggota]);
 
   // Initialization fallback
   useEffect(() => {
@@ -53,9 +65,12 @@ export default function LiveMeetings() {
         return m.sekretarisId === profile?.id;
       }
 
-      // Anggota Dewan see INVITED only
+      // Anggota Dewan see INVITED only (check both User ID and Anggota ID)
       if (currentUser.role === "ANGGOTA_DEWAN") {
-        return m.invitedAnggotaDewanIds?.includes(currentUser.id);
+        return (
+          m.invitedAnggotaDewanIds?.includes(currentUser.id) ||
+          (myAnggotaId && m.invitedAnggotaDewanIds?.includes(myAnggotaId))
+        );
       }
 
       return false;

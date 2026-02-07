@@ -8,32 +8,33 @@ import { useMeetingStore } from "@/features/data-rapat/store/useMeetingStore";
 import { useRouter } from "next/navigation";
 import { DataRapatHeader } from "@/features/data-rapat/components/DataRapatHeader";
 import { useAuthStore } from "@/store/useAuthStore";
-import { useEffect } from "react";
-import { mockMeetings } from "@/mocks/meeting";
 import { ClientOnly } from "@/components/utils/ClientOnly";
+import { useAnggotaStore } from "@/features/anggota-dewan/store/useAnggotaStore";
+import { AnggotaDewan } from "@/types/anggota-dewan";
 
 export default function DataRapatAnggotaPage() {
   const router = useRouter();
   const { meetings, isInitialized, _hasHydrated, actions } = useMeetingStore();
+  const { anggota: allAnggota } = useAnggotaStore();
   const { currentUser } = useAuthStore();
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Initialize Data
-  useEffect(() => {
-    if (_hasHydrated) {
-      if (!isInitialized) {
-        actions.setMeetings(mockMeetings);
-        actions.markAsInitialized();
-      }
-    }
-  }, [_hasHydrated, isInitialized, actions, meetings]);
+  // Resolve current user's Anggota ID
+  const myAnggotaId = useMemo(() => {
+    if (!currentUser) return null;
+    const profile = allAnggota.find(
+      (a: AnggotaDewan) => a.userId === currentUser.id,
+    );
+    return profile?.id || null;
+  }, [currentUser, allAnggota]);
 
-  // Filter: Meetings where I am invited
+  // Filter: Meetings where I am invited (Check both User ID and Anggota ID)
   const myMeetings = meetings.filter(
     (m) =>
       currentUser &&
       m.invitedAnggotaDewanIds &&
-      m.invitedAnggotaDewanIds.includes(currentUser.id),
+      (m.invitedAnggotaDewanIds.includes(currentUser.id) ||
+        (myAnggotaId && m.invitedAnggotaDewanIds.includes(myAnggotaId))),
   );
 
   const filteredMeetings = myMeetings.filter(
@@ -57,6 +58,7 @@ export default function DataRapatAnggotaPage() {
 
       <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
         <Input
+          id="search-meeting-input"
           startContent={
             <MagnifyingGlassIcon className="w-4 h-4 text-gray-400" />
           }
