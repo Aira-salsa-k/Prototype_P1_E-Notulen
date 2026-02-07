@@ -244,7 +244,7 @@ export default function NotulenSidebar({
               isOpen={expanded.ta}
               onToggle={() => toggleGroup("ta")}
               icon={UserCircleIcon}
-              colorClass="bg-sky-100 hover:bg-sky-200 text-sky-700"
+              colorClass="bg-sky-100 hover:bg-sky-200 text-sky-800"
             >
               {groupedParticipants.ta.map((p) =>
                 renderParticipantButton(
