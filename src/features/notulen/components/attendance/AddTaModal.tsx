@@ -1,5 +1,11 @@
 import React from "react";
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@heroui/modal";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from "@heroui/modal";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 
@@ -35,6 +41,7 @@ export const AddTaModal = ({
           />
           <Input
             label="Jabatan/Spesialisasi"
+            placeholder="Opsional"
             variant="bordered"
             value={jabatan}
             onChange={(e) => setJabatan(e.target.value)}

@@ -46,7 +46,9 @@ export function MeetingDetailView({ meetingId, role }: MeetingDetailViewProps) {
   const isTimeUp = closingTime ? new Date().getTime() > closingTime : false;
 
   const isReadOnly =
-    role === "anggota_dewan" || meeting.status === "completed" || isTimeUp;
+    role === "anggota_dewan" ||
+    (role !== "admin" && (meeting.status === "completed" || isTimeUp));
+
   const showPreview =
     role === "anggota_dewan" ||
     (role === "notulis" && (meeting.status === "completed" || isTimeUp));

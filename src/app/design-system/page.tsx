@@ -5,6 +5,7 @@ import { Card, CardBody, CardHeader } from "@heroui/card";
 import { AppButton } from "@/components/ui/button/AppButton";
 import { StatusBadge } from "@/components/ui/badges/StatusBadge";
 import { MeetingTypeBadge } from "@/components/ui/badges/meeting-type-badge";
+import { MeetingStatusBadge } from "@/components/ui/badges/MeetingStatusBadge";
 import { AKDBadge } from "@/components/ui/badges/AKDBadge";
 import {
   HomeIcon,
@@ -20,7 +21,10 @@ import {
   CalendarIcon,
   DocumentTextIcon,
 } from "@heroicons/react/24/outline";
-import { HomeIcon as HomeIconSolid, InboxStackIcon as InboxStackIconSolid } from "@heroicons/react/24/solid";
+import {
+  HomeIcon as HomeIconSolid,
+  InboxStackIcon as InboxStackIconSolid,
+} from "@heroicons/react/24/solid";
 import Link from "next/link";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { AKD_CONFIG } from "@/lib/config/akd";
@@ -391,6 +395,33 @@ export default function DesignSystemPage() {
                 ))}
               </div>
             </div>
+
+            <div>
+              <h3 className="text-sm uppercase tracking-wider font-semibold text-gray-500 mb-4">
+                Meeting Status Badge
+              </h3>
+              <div className="flex flex-wrap gap-4">
+                <MeetingStatusBadge status="scheduled" />
+                <MeetingStatusBadge status="live" />
+                <MeetingStatusBadge status="completed" />
+              </div>
+              <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+                <p className="text-xs text-blue-700 font-medium mb-2">
+                  Color Mapping:
+                </p>
+                <ul className="text-xs text-blue-600 space-y-1">
+                  <li>
+                    • <strong>Terjadwal</strong> → Purple (Primary)
+                  </li>
+                  <li>
+                    • <strong>Sedang Berlangsung</strong> → Red (Danger)
+                  </li>
+                  <li>
+                    • <strong>Selesai</strong> → Slate (Default)
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -547,7 +578,9 @@ export default function DesignSystemPage() {
               </h3>
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 <IconPreview
-                  icon={<InboxStackIconSolid className="w-6 h-6 text-primary/90" />}
+                  icon={
+                    <InboxStackIconSolid className="w-6 h-6 text-primary/90" />
+                  }
                   name="InboxStackIconSolid"
                   variant="solid"
                 />

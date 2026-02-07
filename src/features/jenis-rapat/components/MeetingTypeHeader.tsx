@@ -23,7 +23,7 @@ export function MeetingTypeHeader({
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-6">
         <div className="flex-1 min-w-0">
           <h1 className="text-3xl font-bold text-gray-900 leading-tight">
-            Manajemen Jenis Rapat
+            Manajemen Data Anggota Rapat
           </h1>
 
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-sm">

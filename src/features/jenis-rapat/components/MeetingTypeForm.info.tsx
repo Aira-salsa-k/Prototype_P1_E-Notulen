@@ -149,11 +149,14 @@ export function MeetingTypeFormInfo({
         </div>
 
         {/* Variant/SubName Input */}
-        <div className="space-y-4">
+        <div className="space-y-1">
+          <label className="text-sm font-semibold text-gray-700">
+            Nama Sub Jenis Rapat{" "}
+            <span className="text-red-500 font-bold">(Opsional khusus untuk jenis rapat NON AKD)</span>
+          </label>
+
           <Input
             {...register("subName")}
-            label="Nama Sub Jenis Rapat (Opsional)"
-            labelPlacement="outside"
             placeholder="Contoh: LKPJ, Pembahasan APBD"
             variant="bordered"
           />

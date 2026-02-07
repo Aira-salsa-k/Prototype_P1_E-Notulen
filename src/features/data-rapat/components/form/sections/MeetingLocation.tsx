@@ -1,7 +1,7 @@
 "use client";
 
 import { Controller, useFormContext } from "react-hook-form";
-import { Input } from "@heroui/input";
+import { Textarea } from "@heroui/input";
 import { MapPinIcon } from "@heroicons/react/24/outline";
 import { MeetingFormData } from "../../MeetingFormModal";
 
@@ -21,13 +21,13 @@ export function MeetingLocation() {
           <p className="text-sm text-gray-500">Tempat dan dasar pelaksanaan</p>
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-6">
+      <div className="space-y-6">
         <Controller
           name="room"
           control={control}
           rules={{ required: "Lokasi wajib diisi" }}
           render={({ field, fieldState }) => (
-            <Input
+            <Textarea
               {...field}
               startContent={<MapPinIcon className="w-5 h-5 text-gray-400" />}
               label="Lokasi / Ruangan"
@@ -35,6 +35,7 @@ export function MeetingLocation() {
               variant="bordered"
               labelPlacement="outside"
               size="lg"
+              minRows={2}
               isInvalid={!!fieldState.error}
               errorMessage={fieldState.error?.message}
               classNames={{
@@ -49,13 +50,14 @@ export function MeetingLocation() {
           control={control}
           rules={{ required: "Dasar surat wajib diisi" }}
           render={({ field, fieldState }) => (
-            <Input
+            <Textarea
               {...field}
               label="Dasar Surat"
               placeholder="No. Surat Undangan..."
               variant="bordered"
               labelPlacement="outside"
               size="lg"
+              minRows={2}
               isInvalid={!!fieldState.error}
               errorMessage={fieldState.error?.message}
               classNames={{

@@ -350,7 +350,7 @@ export default function NotulenPreview({
         <div className="mb-4 text-justify leading-relaxed text-sm">
           <p>
             Rapat dimulai oleh{" "}
-            <span className="font-bold">{toTitleCase(pimpinanNames)}</span>
+            <span className="font-bold">{(pimpinanNames)}</span>
           </p>
         </div>
 

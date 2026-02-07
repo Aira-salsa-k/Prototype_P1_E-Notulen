@@ -127,9 +127,7 @@ export default function DataRapatPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm("Apakah Anda yakin ingin menghapus jadwal rapat ini?")) {
-      await deleteMeeting(id);
-    }
+    await deleteMeeting(id);
   };
 
   if (!_hasHydrated) return null;

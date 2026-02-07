@@ -121,10 +121,9 @@ export function useAttendanceForms({
       entityId: `manual-ta-${Date.now()}`,
       type: "TENAGA_AHLI",
       status: "HADIR",
-      name: newTaName.toUpperCase(),
-      jabatan: (newTaJabatan || "Tenaga Ahli").toUpperCase(),
-      displayFormat:
-        `${newTaName} ® ${newTaJabatan || "TENAGA AHLI"}`.toUpperCase(),
+      name: newTaName,
+      jabatan: newTaJabatan || "Tenaga Ahli",
+      displayFormat: `${newTaName} ® ${newTaJabatan || "TENAGA AHLI"}`,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -155,8 +154,7 @@ export function useAttendanceForms({
       newDisplayFormat =
         `${editingRecord.name} ® ${editingRecord.institution || "INSTANSI TERKAIT"}`.toUpperCase();
     } else if (editingRecord.type === "TENAGA_AHLI") {
-      newDisplayFormat =
-        `${editingRecord.name} ® ${editingRecord.jabatan || "TENAGA AHLI"}`.toUpperCase();
+      newDisplayFormat = `${editingRecord.name} ® ${editingRecord.jabatan || "TENAGA AHLI"}`;
     }
 
     const updatedRecord = { ...editingRecord, displayFormat: newDisplayFormat };

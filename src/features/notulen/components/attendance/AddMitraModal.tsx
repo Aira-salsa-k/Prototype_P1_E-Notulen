@@ -107,7 +107,7 @@ export const AddMitraModal = ({
                   variant="bordered"
                   value={mitraPersonName}
                   onChange={(e) =>
-                    setMitraPersonName(e.target.value.toUpperCase())
+                    setMitraPersonName(e.target.value)
                   }
                 />
                 <Input
@@ -116,7 +116,7 @@ export const AddMitraModal = ({
                   variant="bordered"
                   value={mitraPosition}
                   onChange={(e) =>
-                    setMitraPosition(e.target.value.toUpperCase())
+                    setMitraPosition(e.target.value)
                   }
                 />
               </div>
@@ -130,7 +130,7 @@ export const AddMitraModal = ({
                 variant="bordered"
                 value={manualInstitutionName}
                 onChange={(e) =>
-                  setManualInstitutionName(e.target.value.toUpperCase())
+                  setManualInstitutionName(e.target.value)
                 }
               />
               <div className="grid grid-cols-2 gap-4">
@@ -139,7 +139,7 @@ export const AddMitraModal = ({
                   variant="bordered"
                   value={mitraPersonName}
                   onChange={(e) =>
-                    setMitraPersonName(e.target.value.toUpperCase())
+                    setMitraPersonName(e.target.value)
                   }
                 />
                 <Input
@@ -147,7 +147,7 @@ export const AddMitraModal = ({
                   variant="bordered"
                   value={mitraPosition}
                   onChange={(e) =>
-                    setMitraPosition(e.target.value.toUpperCase())
+                    setMitraPosition(e.target.value)
                   }
                 />
               </div>

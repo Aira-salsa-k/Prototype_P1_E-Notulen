@@ -173,7 +173,7 @@ export const AttendancePrintDocument = ({
                       className="align-top"
                       style={{ padding: "1px 0", lineHeight: "1" }}
                     >
-                      {meeting.startTime} - {meeting.endTime}
+                      {meeting.startTime} - {meeting.endTime} WIT
                     </td>
                   </tr>
                   <tr>
@@ -201,7 +201,7 @@ export const AttendancePrintDocument = ({
                       className="font-bold align-top"
                       style={{ padding: "1px 0", lineHeight: "1" }}
                     >
-                      Acara
+                      Agenda
                     </td>
                     <td
                       className="align-top"
@@ -213,7 +213,7 @@ export const AttendancePrintDocument = ({
                       className="align-top"
                       style={{ padding: "1px 0", lineHeight: "1" }}
                     >
-                      {meeting.title}
+                      {meeting.agenda}
                     </td>
                   </tr>
                 </tbody>

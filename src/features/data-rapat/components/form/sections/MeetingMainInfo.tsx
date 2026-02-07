@@ -1,7 +1,8 @@
 "use client";
 
 import { Controller, useFormContext } from "react-hook-form";
-import { Input } from "@heroui/input";
+
+import { Textarea } from "@heroui/input";
 import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
 import { DocumentTextIcon } from "@heroicons/react/24/outline";
 import { useJenisRapatStore } from "@/features/jenis-rapat/store/useJenisRapatStore";
@@ -31,18 +32,19 @@ export function MeetingMainInfo() {
         control={control}
         rules={{ required: "Judul rapat wajib diisi" }}
         render={({ field, fieldState }) => (
-          <Input
+          <Textarea
             {...field}
             label="Judul Rapat"
             placeholder="Contoh: Rapat Paripurna I Masa Sidang I"
             variant="bordered"
             labelPlacement="outside"
             size="lg"
+            minRows={2}
             isInvalid={!!fieldState.error}
             errorMessage={fieldState.error?.message}
             classNames={{
               inputWrapper: "bg-white",
-              label: "font-semibold text-gray-700",
+              label: "font-semibold text-gray-700 text-base",
             }}
           />
         )}

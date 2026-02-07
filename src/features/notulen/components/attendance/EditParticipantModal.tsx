@@ -61,7 +61,13 @@ export const EditParticipantModal = ({
             variant="bordered"
             value={record.name || ""}
             onChange={(e) =>
-              setRecord({ ...record, name: e.target.value.toUpperCase() })
+              setRecord({
+                ...record,
+                name:
+                  record.type === "TENAGA_AHLI"
+                    ? e.target.value
+                    : e.target.value.toUpperCase(),
+              })
             }
           />
           <Input
@@ -69,7 +75,13 @@ export const EditParticipantModal = ({
             variant="bordered"
             value={record.jabatan || ""}
             onChange={(e) =>
-              setRecord({ ...record, jabatan: e.target.value.toUpperCase() })
+              setRecord({
+                ...record,
+                jabatan:
+                  record.type === "TENAGA_AHLI"
+                    ? e.target.value
+                    : e.target.value.toUpperCase(),
+              })
             }
           />
 

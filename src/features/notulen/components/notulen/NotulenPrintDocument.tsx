@@ -189,7 +189,7 @@ export const NotulenPrintDocument = ({
             <tr>
               <td className="w-32 py-1 align-top">Pimpinan Rapat</td>
               <td className="w-4 py-1 align-top">:</td>
-              <td className="py-1 align-top">{toTitleCase(pimpinanNames)}</td>
+              <td className="py-1 align-top">{pimpinanNames}</td>
             </tr>
             <tr>
               <td className="w-32 py-1 align-top">Notulis</td>

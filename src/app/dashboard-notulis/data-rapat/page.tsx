@@ -85,9 +85,7 @@ export default function DataRapatNotulisPage() {
   };
 
   const handleDelete = (id: string) => {
-    if (confirm("Apakah Anda yakin ingin menghapus jadwal rapat ini?")) {
-      actions.deleteMeeting(id);
-    }
+    actions.deleteMeeting(id);
   };
 
   if (!_hasHydrated) return null;

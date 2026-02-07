@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useMemo } from "react";
 import {
   Table,
   TableHeader,
@@ -8,7 +9,6 @@ import {
   TableRow,
   TableCell,
 } from "@heroui/table";
-import { Chip } from "@heroui/chip";
 import {
   CalendarIcon,
   MapPinIcon,
@@ -19,12 +19,10 @@ import { Meeting } from "@/types/meeting";
 import { useJenisRapatStore } from "@/features/jenis-rapat/store/useJenisRapatStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import { MeetingTypeBadge } from "@/components/ui/badges/meeting-type-badge";
-import {
-  formatDateSimple,
-  getStatusColor,
-  getStatusLabel,
-} from "@/features/data-rapat/utils";
+import { MeetingStatusBadge } from "@/components/ui/badges/MeetingStatusBadge";
+import { formatDateSimple } from "@/features/data-rapat/utils";
 import { DataRapatActions } from "./list/DataRapatActions";
+import { ConfirmDeleteModal } from "@/components/shared/ConfirmDeleteModal";
 
 interface DataRapatListProps {
   meetings: Meeting[];
@@ -41,6 +39,42 @@ export function DataRapatList({
 }: DataRapatListProps) {
   const { currentUser } = useAuthStore();
   const { categories, variants } = useJenisRapatStore();
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  // Sort meetings: live > scheduled > completed
+  const sortedMeetings = useMemo(() => {
+    const statusPriority = {
+      live: 1,
+      scheduled: 2,
+      completed: 3,
+    };
+
+    return [...meetings].sort((a, b) => {
+      const priorityA =
+        statusPriority[a.status as keyof typeof statusPriority] || 999;
+      const priorityB =
+        statusPriority[b.status as keyof typeof statusPriority] || 999;
+
+      // Sort by status priority first
+      if (priorityA !== priorityB) {
+        return priorityA - priorityB;
+      }
+
+      // If same status, sort by date (newest first)
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    });
+  }, [meetings]);
+
+  const handleDeleteClick = (id: string) => {
+    setDeleteId(id);
+  };
+
+  const handleConfirmDelete = () => {
+    if (deleteId && onDelete) {
+      onDelete(deleteId);
+      setDeleteId(null);
+    }
+  };
 
   return (
     <div className="border border-gray-200 rounded-2xl overflow-hidden shadow-xs bg-white">
@@ -74,7 +108,7 @@ export function DataRapatList({
             </div>
           }
         >
-          {meetings.map((meeting) => {
+          {sortedMeetings.map((meeting) => {
             const category = categories.find(
               (c) => c.id === meeting.meetingCategoryID,
             );
@@ -140,14 +174,7 @@ export function DataRapatList({
 
                 <TableCell className="py-6 align-top">
                   <div className="flex flex-col items-start gap-3">
-                    <Chip
-                      color={getStatusColor(meeting.status) as any}
-                      variant="flat"
-                      size="sm"
-                      className="font-bold capitalize px-2 h-7"
-                    >
-                      {getStatusLabel(meeting.status)}
-                    </Chip>
+                    <MeetingStatusBadge status={meeting.status as any} />
                     <div
                       className="text-xs text-gray-500 flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100 cursor-help"
                       title={
@@ -173,7 +200,7 @@ export function DataRapatList({
                     currentUser={currentUser}
                     onView={onView}
                     onEdit={onEdit}
-                    onDelete={onDelete}
+                    onDelete={handleDeleteClick}
                   />
                 </TableCell>
               </TableRow>
@@ -181,6 +208,17 @@ export function DataRapatList({
           })}
         </TableBody>
       </Table>
+
+      <ConfirmDeleteModal
+        isOpen={!!deleteId}
+        onCancel={() => setDeleteId(null)}
+        onConfirm={handleConfirmDelete}
+        title="Hapus Jadwal Rapat"
+        entityLabel="jadwal rapat"
+        name={meetings.find((m) => m.id === deleteId)?.title}
+        actionType="delete"
+        confirmWord="HAPUS"
+      />
     </div>
   );
 }

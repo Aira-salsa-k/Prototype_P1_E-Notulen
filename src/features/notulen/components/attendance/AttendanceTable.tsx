@@ -125,7 +125,7 @@ export const AttendanceTable = ({
                       </div>
                       {record.institution &&
                         record.institution !== record.name && (
-                          <div className="text-[10px] text-primary font-bold uppercase">
+                          <div className="text-[10px] text-primary font-bold">
                             {record.institution}
                           </div>
                         )}
@@ -133,7 +133,7 @@ export const AttendanceTable = ({
                   )}
 
                   {columnKey === "jabatan" && (
-                    <div className="text-sm text-gray-600 uppercase">
+                    <div className="text-sm text-gray-600">
                       {record.jabatan}
                     </div>
                   )}

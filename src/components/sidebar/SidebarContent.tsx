@@ -8,6 +8,8 @@ import {
   CogIcon,
   DocumentIcon,
   InboxStackIcon,
+  StarIcon,
+  
 } from "@heroicons/react/24/outline";
 import {
   HomeIcon as HomeIconSolid,
@@ -19,12 +21,9 @@ import {
   CogIcon as CogIconSolid,
   DocumentIcon as DocumentIconSolid,
   InboxStackIcon as InboxStackIconSolid,
+  StarIcon as StarIconSolid,
 } from "@heroicons/react/24/solid";
 import clsx from "clsx";
-
-import { useSelectedLayoutSegment } from "next/navigation";
-import { UserCircleIcon } from "@heroicons/react/24/outline";
-import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -84,17 +83,17 @@ export default function SidebarContent({
       roles: ["ADMIN"],
     },
     {
-      name: "Jenis Rapat",
+      name: "Anggota Rapat",
       href: "/dashboard-admin/jenis-rapat",
-      icon: CalendarIcon,
-      activeIcon: CalendarIconSolid,
+      icon: StarIcon,
+      activeIcon: StarIconSolid,
       roles: ["ADMIN", "NOTULIS"],
     },
     {
       name: "Data Rapat",
       href: "/dashboard-admin/data-rapat",
-      icon: DocumentIcon,
-      activeIcon: DocumentIconSolid,
+      icon: CalendarIcon,
+      activeIcon: CalendarIconSolid,
       roles: ["ADMIN", "NOTULIS", "ANGGOTA_DEWAN", "SEKWAN"],
     },
     {

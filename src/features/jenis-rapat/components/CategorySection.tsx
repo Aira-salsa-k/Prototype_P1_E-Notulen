@@ -43,7 +43,7 @@ export function CategorySection({
             onPress={() => onCreate(category.id)}
             startContent={<PlusIcon className="h-5 w-5" />}
           >
-            Tambah Sub Jenis Rapat
+            Tambah Sub Jenis Rapat (Khusus Non-AKD)
           </Button>
         </div>
       )}
@@ -57,10 +57,10 @@ export function CategorySection({
                 <ListBulletIcon className="h-8 w-8 text-gray-400" />
               </div>
               <h4 className="text-lg font-semibold text-gray-700 mb-2">
-                Belum ada varian rapat
+                Belum ada sub jenis rapat
               </h4>
               <p className="text-gray-500 mb-6">
-                Buat varian rapat pertama untuk kategori {category.name}
+                Buat sub jenis rapat pertama untuk kategori {category.name}
               </p>
               {!isReadOnly && onCreate && (
                 <Button
@@ -68,8 +68,9 @@ export function CategorySection({
                   variant="flat"
                   onPress={() => onCreate(category.id)}
                   startContent={<PlusIcon className="h-5 w-5" />}
+                  className="text-primary"
                 >
-                  Buat Varian Pertama
+                  Buat Sub Jenis Rapat
                 </Button>
               )}
             </div>
