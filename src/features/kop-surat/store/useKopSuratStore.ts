@@ -10,7 +10,7 @@ interface KopSuratStore {
 
 const defaultConfig: KopSuratConfig = {
   logoUrl: "/logo-dprk.png",
-  institutionName: "DEWAN PERWAKILAN RAKYAT DAERAH",
+  institutionName: "DEWAN PERWAKILAN RAKYAT",
   districtName: "KABUPATEN KEEROM",
   address: "Jl. Trans Papua No. ...",
   phone: "...",

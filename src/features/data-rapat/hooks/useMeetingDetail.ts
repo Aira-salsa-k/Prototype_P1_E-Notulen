@@ -23,6 +23,7 @@ export function useMeetingDetail(meetingId: string, role: string) {
     actions: jenisActions,
   } = useJenisRapatStore();
   const {
+    notulisList: allNotulisProfiles,
     users: allNotulisUsers,
     isInitialized: notulisInit,
     _hasHydrated: notulisHydrated,
@@ -44,6 +45,12 @@ export function useMeetingDetail(meetingId: string, role: string) {
     ...sekwanActions
   } = useSekretarisDewanStore();
 
+  const consolidatedUsers = [
+    ...allNotulisUsers,
+    ...allSekwanUsers,
+    ...allUsers,
+  ];
+
   // 1. Data Loading / Hydration Guard
   // Enhanced check: Wait for actual DATA, not just hydration flag
   const isHydrating =
@@ -54,6 +61,7 @@ export function useMeetingDetail(meetingId: string, role: string) {
 
   // Safety Net: If hydration finishes but data is empty, force populate locally
   useEffect(() => {
+    // 1. Anggota & Base Users
     if (anggotaHydrated && allAnggota.length === 0) {
       import("@/mocks/anggota-dewan").then((m) => {
         anggotaActions.setAnggota(m.generateMockAnggota());
@@ -63,7 +71,39 @@ export function useMeetingDetail(meetingId: string, role: string) {
       });
       anggotaActions.markAsInitialized();
     }
-  }, [anggotaHydrated, allAnggota.length, anggotaActions]);
+
+    // 2. Sekwan
+    if (sekwanHydrated && allSekwanProfiles.length === 0) {
+      import("@/mocks/sekretaris-dewan").then((m) => {
+        sekwanActions.setSekretarisDewan(m.generateMockSekretarisDewan());
+      });
+      import("@/mocks/user").then((m) => {
+        sekwanActions.setUsers(m.mockUsers);
+      });
+      sekwanActions.markAsInitialized();
+    }
+
+    // 3. Notulis
+    if (notulisHydrated && allNotulisUsers.length === 0) {
+      import("@/mocks/notulis").then((m) => {
+        notulisActions.setNotulisList(m.mockNotulis);
+      });
+      import("@/mocks/user").then((m) => {
+        notulisActions.setUsers(m.mockUsers);
+      });
+      notulisActions.markAsInitialized();
+    }
+  }, [
+    anggotaHydrated,
+    allAnggota.length,
+    anggotaActions,
+    sekwanHydrated,
+    allSekwanProfiles.length,
+    sekwanActions,
+    notulisHydrated,
+    allNotulisUsers.length,
+    notulisActions,
+  ]);
 
   // Source meeting directly from store to avoid local state hydration delays
   const meeting = meetings.find((m) => m.id === meetingId) || null;
@@ -73,14 +113,30 @@ export function useMeetingDetail(meetingId: string, role: string) {
   const category = categories.find((c) => c.id === meeting?.meetingCategoryID);
 
   const sekwanProfile = allSekwanProfiles.find(
-    (s) => s.id === meeting?.sekretarisId,
+    (s) => s.id === meeting?.sekretarisId || s.userId === meeting?.sekretarisId,
   );
-  const sekwanUser = allSekwanUsers.find((u) => u.id === sekwanProfile?.userId);
+  const sekwanUserId = sekwanProfile
+    ? sekwanProfile.userId
+    : meeting?.sekretarisId;
+  const sekwanUser = allSekwanUsers.find((u) => u.id === sekwanUserId);
 
   const notulisUsers =
     meeting?.notulisIds
-      ?.map((id) => allNotulisUsers.find((u) => u.id === id))
-      .filter(Boolean) || [];
+      ?.map((id) => {
+        // 1. Try find direct user in NOTULIS store users
+        const user = allNotulisUsers.find((u) => u.id === id);
+        if (user) return user;
+
+        // 2. Try find via notulis profile
+        const profile = allNotulisProfiles.find(
+          (n) => n.id === id || n.userID === id,
+        );
+        if (profile) {
+          return allNotulisUsers.find((u) => u.id === profile.userID);
+        }
+        return null;
+      })
+      .filter((u): u is NonNullable<typeof u> => u !== null) || [];
 
   // Robust Signatories Resolution
   // Iterate over the invited IDs directly to guarantee we try to resolve every invitation
@@ -95,7 +151,7 @@ export function useMeetingDetail(meetingId: string, role: string) {
       const userId = anggota ? anggota.userId : invitedId;
 
       // 3. Find the User entity (source of Name)
-      const user = allUsers.find((u) => u.id === userId);
+      const user = consolidatedUsers.find((u) => u.id === userId);
 
       // 4. Return resolved object if we found at least something
       if (!user && !anggota) return null;

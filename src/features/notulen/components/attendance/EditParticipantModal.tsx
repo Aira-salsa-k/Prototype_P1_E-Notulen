@@ -54,39 +54,10 @@ export const EditParticipantModal = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
       <ModalContent>
-        <ModalHeader className="border-b">Edit Peserta</ModalHeader>
+        <ModalHeader className="border-b border-gray-100">Edit Peserta</ModalHeader>
         <ModalBody className="py-4 space-y-4">
-          <Input
-            label="Nama"
-            variant="bordered"
-            value={record.name || ""}
-            onChange={(e) =>
-              setRecord({
-                ...record,
-                name:
-                  record.type === "TENAGA_AHLI"
-                    ? e.target.value
-                    : e.target.value.toUpperCase(),
-              })
-            }
-          />
-          <Input
-            label="Jabatan"
-            variant="bordered"
-            value={record.jabatan || ""}
-            onChange={(e) =>
-              setRecord({
-                ...record,
-                jabatan:
-                  record.type === "TENAGA_AHLI"
-                    ? e.target.value
-                    : e.target.value.toUpperCase(),
-              })
-            }
-          />
-
           {record.type === "MITRA_KERJA" && (
-            <div className="space-y-4 pt-2 border-t border-gray-100">
+            <div className="space-y-4 pb-4">
               <RadioGroup
                 label="Sumber Instansi"
                 orientation="horizontal"
@@ -161,6 +132,37 @@ export const EditParticipantModal = ({
               )}
             </div>
           )}
+
+          <div className="pt-4 mt-2 border-t border-gray-100 space-y-4">
+            <Input
+              label="Nama Lengkap Utusan"
+              variant="bordered"
+              value={record.name || ""}
+              onChange={(e) =>
+                setRecord({
+                  ...record,
+                  name:
+                    record.type === "TENAGA_AHLI"
+                      ? e.target.value
+                      : e.target.value.toUpperCase(),
+                })
+              }
+            />
+            <Input
+              label="Jabatan"
+              variant="bordered"
+              value={record.jabatan || ""}
+              onChange={(e) =>
+                setRecord({
+                  ...record,
+                  jabatan:
+                    record.type === "TENAGA_AHLI"
+                      ? e.target.value
+                      : e.target.value.toUpperCase(),
+                })
+              }
+            />
+          </div>
         </ModalBody>
         <ModalFooter>
           <Button variant="light" onPress={onClose}>

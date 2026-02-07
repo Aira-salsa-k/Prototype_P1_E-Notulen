@@ -4,13 +4,14 @@ import React from "react";
 import { Meeting } from "@/types/meeting";
 import { AttendanceRecord } from "@/types/attendance";
 import { useNotulenStore } from "@/features/notulen/store/useNotulenStore";
-import { formatTanggalID } from "../../utils/dateFormat";
-import { mockUsers } from "@/mocks/user";
-import { generateMockAnggota } from "@/mocks/anggota-dewan";
-import { mockNotulis } from "@/mocks/notulis";
-import { generateMockSekretarisDewan } from "@/mocks/sekretaris-dewan";
-
+import {
+  formatTanggalID,
+  formatTanggalTanpaHari,
+} from "../../utils/dateFormat";
 import { KopSuratHeader } from "@/features/kop-surat/components/KopSuratHeader";
+import { useSekretarisDewanStore } from "@/features/sekretaris-dewan/store/useSekretarisDewanStore";
+import { useNotulisStore } from "@/features/data-notulis/store/useNotulisStore";
+import { useAnggotaStore } from "@/features/anggota-dewan/store/useAnggotaStore";
 
 interface NotulenPreviewProps {
   meeting: Meeting;
@@ -22,6 +23,15 @@ export default function NotulenPreview({
   participants,
 }: NotulenPreviewProps) {
   const { sections, points, minutesData } = useNotulenStore();
+  const { sekretarisDewan: allSekwanProfiles, users: allSekwanUsers } =
+    useSekretarisDewanStore();
+  const { notulisList: allNotulisProfiles, users: allNotulisUsers } =
+    useNotulisStore();
+  const { anggota: allAnggota, users: allAnggotaUsers } = useAnggotaStore();
+
+  // Consolidate users into one map for easier lookup.
+  // Prioritize Sekwan and Notulis stores over Anggota store for more specific 'real data'.
+  const allUsers = [...allSekwanUsers, ...allNotulisUsers, ...allAnggotaUsers];
 
   // Sort sections based on the timestamp of their first point
   const sortedSections = [...sections]
@@ -55,14 +65,22 @@ export default function NotulenPreview({
     );
     if (participant) return participant.name;
 
-    // 2. Try finding in mockUsers
-    const user = mockUsers.find((u) => u.id === id);
+    // 2. Try finding in allUsers
+    const user = allUsers.find((u) => u.id === id);
     if (user) return user.name;
 
-    // 3. Try finding in mockAnggota (for Profile IDs like 'anggota-001')
-    const anggota = generateMockAnggota().find((a) => a.id === id);
+    // 3. Try finding in allAnggota (for Profile IDs like 'anggota-001')
+    const anggota = allAnggota.find((a) => a.id === id);
     if (anggota) {
-      const u = mockUsers.find((user) => user.id === anggota.userId);
+      const u = allUsers.find((user) => user.id === anggota.userId);
+      if (u) return u.name;
+    }
+
+    const notulis = allNotulisProfiles.find(
+      (n) => n.id === id || n.userID === id,
+    );
+    if (notulis) {
+      const u = allUsers.find((user) => user.id === notulis.userID);
       if (u) return u.name;
     }
 
@@ -99,8 +117,11 @@ export default function NotulenPreview({
       };
 
     if (type === "NOTULIS") {
-      const notulis = mockNotulis.find((n) => n.userID === id);
-      const user = mockUsers.find((u) => u.id === id);
+      const notulis = allNotulisProfiles.find(
+        (n) => n.id === id || n.userID === id,
+      );
+      const userId = notulis ? notulis.userID : id;
+      const user = allNotulisUsers.find((u) => u.id === userId);
       return {
         name: user?.name || "..........................",
         nip: notulis?.NIP || "...........................................",
@@ -113,29 +134,30 @@ export default function NotulenPreview({
 
   // Resolve Sekwan Data
   const sekwanData = (() => {
-    const sekwanProfile = generateMockSekretarisDewan().find(
-      (s) => s.id === meeting.sekretarisId,
+    const sekwanProfile = allSekwanProfiles.find(
+      (s) => s.id === meeting.sekretarisId || s.userId === meeting.sekretarisId,
     );
-    const user = mockUsers.find((u) => u.id === sekwanProfile?.userId);
+    const userId = sekwanProfile ? sekwanProfile.userId : meeting.sekretarisId;
+    const user = allSekwanUsers.find((u) => u.id === userId);
     return {
       name: user?.name || "..........................",
       nip: sekwanProfile?.nip || "...........................................",
     };
   })();
 
-  // Resolve Notulis Data
-  const notulis1 = meeting.notulisIds?.[0]
-    ? resolvePersonData(meeting.notulisIds[0], "NOTULIS")
-    : {
-        name: "..........................",
-        nip: "...........................................",
-      };
-  const notulis2 = meeting.notulisIds?.[1]
-    ? resolvePersonData(meeting.notulisIds[1], "NOTULIS")
-    : {
-        name: "..........................",
-        nip: "...........................................",
-      };
+  // Resolve All Notulis Data
+  const resolvedNotulisList = (meeting.notulisIds || []).map((id) =>
+    resolvePersonData(id, "NOTULIS"),
+  );
+
+  const notulis1 = resolvedNotulisList[0] || {
+    name: "..........................",
+    nip: "...........................................",
+  };
+  const notulis2 = resolvedNotulisList[1] || {
+    name: "..........................",
+    nip: "...........................................",
+  };
 
   return (
     <div className="bg-white border rounded-xl shadow-sm pt-8 pb-10 px-16 max-w-[210mm] mx-auto min-h-[297mm] text-black font-arimo">
@@ -153,45 +175,47 @@ export default function NotulenPreview({
       <table className="w-full text-sm mb-8 border-collapse">
         <tbody>
           <tr>
-            <td className="w-32 py-1 align-top">Masa Sidang</td>
-            <td className="w-4 py-1 align-top">:</td>
-            <td className="py-1 align-top">{meeting.masaSidang}</td>
+            <td className="w-32 py-0.5 align-top">Masa Sidang</td>
+            <td className="w-4 py-0.5 align-top">:</td>
+            <td className="py-0.5 align-top">{meeting.masaSidang}</td>
           </tr>
           <tr>
-            <td className="w-32 py-1 align-top">Hari / Tanggal</td>
-            <td className="w-4 py-1 align-top">:</td>
-            <td className="py-1 align-top">{formatTanggalID(meeting.date)}</td>
-          </tr>
-          <tr>
-            <td className="w-32 py-1 align-top">Waktu</td>
-            <td className="w-4 py-1 align-top">:</td>
-            <td className="py-1 align-top">
-              {meeting.startTime} - {meeting.endTime}
+            <td className="w-32 py-0.5 align-top">Hari / Tanggal</td>
+            <td className="w-4 py-0.5 align-top">:</td>
+            <td className="py-0.5 align-top">
+              {formatTanggalID(meeting.date)}
             </td>
           </tr>
           <tr>
-            <td className="w-32 py-1 align-top">Tempat</td>
-            <td className="w-4 py-1 align-top">:</td>
-            <td className="py-1 align-top">{meeting.room}</td>
+            <td className="w-32 py-0.5 align-top">Waktu</td>
+            <td className="w-4 py-0.5 align-top">:</td>
+            <td className="py-0.5 align-top">
+              {meeting.startTime} WIT - {meeting.endTime} WIT
+            </td>
           </tr>
           <tr>
-            <td className="w-32 py-1 align-top">Agenda</td>
-            <td className="w-4 py-1 align-top">:</td>
-            <td className="py-1 align-top">{meeting.agenda}</td>
+            <td className="w-32 py-0.5 align-top">Tempat</td>
+            <td className="w-4 py-0.5 align-top">:</td>
+            <td className="py-0.5 align-top">{meeting.room}</td>
           </tr>
           <tr>
-            <td className="w-32 py-1 align-top">Pimpinan Rapat</td>
-            <td className="w-4 py-1 align-top">:</td>
-            <td className="py-1 align-top">{toTitleCase(pimpinanNames)}</td>
+            <td className="w-32 py-0.5 align-top">Agenda</td>
+            <td className="w-4 py-0.5 align-top">:</td>
+            <td className="py-0.5 align-top">{meeting.agenda}</td>
           </tr>
           <tr>
-            <td className="w-32 py-1 align-top">Notulis</td>
-            <td className="w-4 py-1 align-top">:</td>
-            <td className="py-1 align-top">
-              {notulisNames.length > 0 ? (
+            <td className="w-32 py-0.5 align-top">Pimpinan Rapat</td>
+            <td className="w-4 py-0.5 align-top">:</td>
+            <td className="py-0.5 align-top">{pimpinanNames}</td>
+          </tr>
+          <tr>
+            <td className="w-32 py-0.5 align-top">Notulis</td>
+            <td className="w-4 py-0.5 align-top">:</td>
+            <td className="py-0.5 align-top">
+              {resolvedNotulisList.length > 0 ? (
                 <ol className="list-decimal list-outside pl-4 m-0">
-                  {notulisNames.map((name, idx) => (
-                    <li key={idx}>{name}</li>
+                  {resolvedNotulisList.map((notulis, idx) => (
+                    <li key={idx}>{notulis.name}</li>
                   ))}
                 </ol>
               ) : (
@@ -235,7 +259,7 @@ export default function NotulenPreview({
                       {i + 1}
                     </td>
                     <td className="border border-black px-2 py-1">{p.name}</td>
-                    <td className="border border-black px-2 py-1 text-center uppercase">
+                    <td className="border border-black px-2 py-1 text-center">
                       {p.jabatan}
                     </td>
                   </tr>
@@ -265,8 +289,8 @@ export default function NotulenPreview({
                 <th className="border border-black px-2 py-1 w-12 text-center">
                   NO
                 </th>
-                <th className="border border-black px-2 py-1 w-1/2 text-center">
-                  NAMA
+                <th className="border border-black px-2 py-1 w-1/2 text-center uppercase">
+                  NAMA / INSTANSI
                 </th>
                 <th className="border border-black px-2 py-1 text-center">
                   JABATAN
@@ -281,8 +305,8 @@ export default function NotulenPreview({
                       {i + 1}
                     </td>
                     <td className="border border-black px-2 py-1">{p.name}</td>
-                    <td className="border border-black px-2 py-1 text-center uppercase">
-                      {p.jabatan ? `(${p.jabatan})` : ""}
+                    <td className="border border-black px-2 py-1 text-center">
+                      {p.jabatan ? `${p.jabatan}` : ""}
                     </td>
                   </tr>
                 ))
@@ -325,7 +349,7 @@ export default function NotulenPreview({
                       {i + 1}
                     </td>
                     <td className="border border-black px-2 py-1">{p.name}</td>
-                    <td className="border border-black px-2 py-1 text-center uppercase">
+                    <td className="border border-black px-2 py-1 text-center">
                       {p.jabatan}
                     </td>
                   </tr>
@@ -346,16 +370,9 @@ export default function NotulenPreview({
       </div>
 
       {/* MINUTES CONTENT */}
-      <div className="mb-8">
-        <div className="mb-4 text-justify leading-relaxed text-sm">
-          <p>
-            Rapat dimulai oleh{" "}
-            <span className="font-bold">{(pimpinanNames)}</span>
-          </p>
-        </div>
-
+      <div className="mb-6">
         <div className="space-y-6">
-          {sortedSections.map((section) => {
+          {sortedSections.map((section, index) => {
             const participant = participants.find(
               (p) =>
                 p.id === section.participanID ||
@@ -366,6 +383,14 @@ export default function NotulenPreview({
 
             return (
               <div key={section.id}>
+                {index === 0 && (
+                  <div className="mb-4 text-justify leading-relaxed text-sm">
+                    <p>
+                      Rapat dimulai oleh{" "}
+                      <span className="font-bold">{pimpinanNames}</span>
+                    </p>
+                  </div>
+                )}
                 <div className="font-bold uppercase text-sm mb-2 bg-gray-100 p-1 inline-block border border-gray-300 rounded-sm">
                   {displayFormat}
                 </div>
@@ -438,7 +463,7 @@ export default function NotulenPreview({
             Demikian hasil rapat yang dapat kami tuangkan di dalam Notulen
             Rapat.
           </p>
-          <p>Waktu selesai Rapat : {meeting.endTime}</p>
+          <p>Waktu selesai Rapat : {meeting.endTime} WIT</p>
           <p>Terimakasih.</p>
         </div>
       </div>
@@ -447,14 +472,14 @@ export default function NotulenPreview({
       <div className="mt-12 page-break-inside-avoid font-arimo text-sm">
         {/* Date Line */}
         <div className="text-right mb-8">
-          <p>Arso, {formatTanggalID(meeting.date)}</p>
+          <p>Arso, {formatTanggalTanpaHari(meeting.date)}</p>
         </div>
 
         {/* Pimpinan & Sekwan */}
         <div className="flex justify-between items-start mb-24">
           <div className="text-center w-[250px]">
             <p className="font-bold uppercase mb-20">PIMPINAN RAPAT,</p>
-            <p className="font-bold uppercase underline">
+            <p className="font-bold uppercase">
               {pimpinanNames || ".........................."}
             </p>
           </div>

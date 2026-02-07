@@ -34,8 +34,10 @@ export default function RootLayout({
       <body
         className={`${plusJakarta.variable} ${geistMono.variable} ${arimo.variable} antialiased`}
       >
-        <GlobalNotification />
-        <Providers>{children}</Providers>
+        <Providers>
+          <GlobalNotification />
+          {children}
+        </Providers>
       </body>
     </html>
   );

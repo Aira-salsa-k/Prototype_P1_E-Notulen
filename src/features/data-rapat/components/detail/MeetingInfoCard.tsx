@@ -9,7 +9,7 @@ import {
   IdentificationIcon,
   UserIcon,
   CheckBadgeIcon,
-} from "@heroicons/react/24/outline";
+} from "@heroicons/react/24/solid";
 import { MeetingTypeBadge } from "@/components/ui/badges/meeting-type-badge";
 import { Meeting } from "@/types/meeting";
 import { formatDateIndo, getMemberName } from "@/features/data-rapat/utils";
@@ -92,31 +92,23 @@ export function MeetingInfoCard({
 
           <div className="flex flex-col items-end gap-3 min-w-[200px]">
             <div className="text-right p-3 bg-gray-50 rounded-xl border border-gray-100 w-full">
-              <span className="text-[10px] text-gray-400 uppercase tracking-widest font-black block mb-1">
+              <span className="text-sm text-gray-400 font-medium block mb-1">
                 Masa Sidang
               </span>
               <div className="font-bold text-gray-800">
                 {meeting.masaSidang || "-"}
               </div>
             </div>
-            <div className="text-right p-3 bg-gray-50 rounded-xl border border-gray-100 w-full">
-              <span className="text-[10px] text-gray-400 font-black block mb-1">
-                Dasar Surat
-              </span>
-              <div className="font-mono text-xs font-bold break-all">
-                {meeting.dasarSurat || "-"}
-              </div>
-            </div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8 border-t border-gray-100">
-          <div className="flex items-center gap-4 group">
-            <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-primary/80 flex items-center justify-center text-blue-50">
               <CalendarDaysIcon className="w-6 h-6" />
             </div>
             <div>
-              <div className="text-[10px] text-gray-400 font-black uppercase tracking-widest">
+              <div className="text-sm text-gray-400 font-medium">
                 Hari & Tanggal
               </div>
               <div className="font-bold text-gray-900">
@@ -124,12 +116,12 @@ export function MeetingInfoCard({
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-4 group">
-            <div className="w-12 h-12 rounded-2xl bg-orange-50 flex items-center justify-center text-orange-600 group-hover:bg-orange-600 group-hover:text-white transition-all">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-lime-100 flex items-center justify-center text-lime-600/50">
               <ClockIcon className="w-6 h-6" />
             </div>
             <div>
-              <div className="text-[10px] text-gray-400 font-black uppercase tracking-widest">
+              <div className="text-sm text-gray-400  font-medium">
                 Waktu Pelaksanaan
               </div>
               <div className="font-bold text-gray-900">
@@ -137,12 +129,12 @@ export function MeetingInfoCard({
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-4 group">
-            <div className="w-12 h-12 rounded-2xl bg-red-50 flex items-center justify-center text-red-600 group-hover:bg-red-600 group-hover:text-white transition-all">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-sky-50/50 flex items-center justify-center text-sky-300">
               <MapPinIcon className="w-6 h-6" />
             </div>
             <div>
-              <div className="text-[10px] text-gray-400 font-black uppercase tracking-widest">
+              <div className="text-sm text-gray-400 font-medium">
                 Lokasi Ruangan
               </div>
               <div className="font-bold text-gray-900">{meeting.room}</div>
@@ -153,11 +145,11 @@ export function MeetingInfoCard({
         {/* NEW: PERSONNEL METADATA */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-8 mt-8 border-t border-gray-100">
           <div className="flex gap-4">
-            <div className="w-10 h-10 rounded-full bg-yellow-50 text-yellow-600 flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-full bg-yellow-200 text-yellow-500 flex items-center justify-center shrink-0">
               <StarIcon className="w-5 h-5" />
             </div>
             <div className="flex-1">
-              <div className="text-[10px] text-gray-400 font-black uppercase tracking-widest mb-1">
+              <div className="text-sm text-gray-400 font-medium mb-1">
                 Pimpinan Rapat
               </div>
               {!isReadOnly ? (
@@ -197,17 +189,17 @@ export function MeetingInfoCard({
             </div>
           </div>
           <div className="flex gap-4">
-            <div className="w-10 h-10 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center shrink-0">
               <IdentificationIcon className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-[10px] text-gray-400 font-black uppercase tracking-widest">
+              <div className="text-sm text-gray-400 font-medium">
                 Penanggung Jawab (Sekwan)
               </div>
               <div className="font-bold text-gray-900">
                 {sekwanUser?.name || "Belum ditentukan"}
               </div>
-              <div className="text-xs text-gray-500 italic">
+              <div className="text-xs text-gray-500 ">
                 {sekwanProfile?.jabatan}
               </div>
             </div>
@@ -217,7 +209,7 @@ export function MeetingInfoCard({
               <UserIcon className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-[10px] text-gray-400 font-black uppercase tracking-widest">
+              <div className="text-sm text-gray-400 font-medium">
                 Notulis Bertugas
               </div>
               <div className="flex flex-wrap gap-x-2 gap-y-1 mt-1">

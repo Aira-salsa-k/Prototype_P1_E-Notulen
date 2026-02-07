@@ -1,15 +1,17 @@
 "use client";
 
 import React from "react";
-import { formatTanggalID } from "../../utils/dateFormat";
+import {
+  formatTanggalID,
+  formatTanggalTanpaHari,
+} from "../../utils/dateFormat";
 import { Meeting } from "@/types/meeting";
 import { AttendanceRecord } from "@/types/attendance";
 import { NotulenSection, NotulenPoint, MeetingMinutes } from "@/types/notulen";
-import { mockUsers } from "@/mocks/user";
-import { generateMockAnggota } from "@/mocks/anggota-dewan";
-import { mockNotulis } from "@/mocks/notulis";
-import { generateMockSekretarisDewan } from "@/mocks/sekretaris-dewan";
 import { KopSuratHeader } from "@/features/kop-surat/components/KopSuratHeader";
+import { useSekretarisDewanStore } from "@/features/sekretaris-dewan/store/useSekretarisDewanStore";
+import { useNotulisStore } from "@/features/data-notulis/store/useNotulisStore";
+import { useAnggotaStore } from "@/features/anggota-dewan/store/useAnggotaStore";
 
 interface NotulenPrintDocumentProps {
   meeting: Meeting;
@@ -26,6 +28,15 @@ export const NotulenPrintDocument = ({
   points,
   minutesData,
 }: NotulenPrintDocumentProps) => {
+  const { sekretarisDewan: allSekwanProfiles, users: allSekwanUsers } =
+    useSekretarisDewanStore();
+  const { notulisList: allNotulisProfiles, users: allNotulisUsers } =
+    useNotulisStore();
+  const { anggota: allAnggota, users: allAnggotaUsers } = useAnggotaStore();
+
+  // Consolidate users into one list for robust resolution.
+  // Prioritize Sekwan and Notulis stores over Anggota store for more specific 'real data'.
+  const allUsers = [...allSekwanUsers, ...allNotulisUsers, ...allAnggotaUsers];
   // Sort sections based on the timestamp of their first point
   const sortedSections = [...sections]
     .filter((section) => points[section.id]?.length > 0) // Only show sections with points
@@ -57,12 +68,20 @@ export const NotulenPrintDocument = ({
     );
     if (participant) return participant.name;
 
-    const user = mockUsers.find((u) => u.id === id);
+    const user = allUsers.find((u) => u.id === id);
     if (user) return user.name;
 
-    const anggota = generateMockAnggota().find((a) => a.id === id);
+    const anggota = allAnggota.find((a) => a.id === id);
     if (anggota) {
-      const u = mockUsers.find((user) => user.id === anggota.userId);
+      const u = allUsers.find((user) => user.id === anggota.userId);
+      if (u) return u.name;
+    }
+
+    const notulis = allNotulisProfiles.find(
+      (n) => n.id === id || n.userID === id,
+    );
+    if (notulis) {
+      const u = allUsers.find((user) => user.id === notulis.userID);
       if (u) return u.name;
     }
 
@@ -96,8 +115,11 @@ export const NotulenPrintDocument = ({
       };
 
     if (type === "NOTULIS") {
-      const notulis = mockNotulis.find((n) => n.userID === id);
-      const user = mockUsers.find((u) => u.id === id);
+      const notulis = allNotulisProfiles.find(
+        (n) => n.id === id || n.userID === id,
+      );
+      const userId = notulis ? notulis.userID : id;
+      const user = allNotulisUsers.find((u) => u.id === userId);
       return {
         name: user?.name || "..........................",
         nip: notulis?.NIP || "...........................................",
@@ -110,29 +132,30 @@ export const NotulenPrintDocument = ({
 
   // Resolve Sekwan Data
   const sekwanData = (() => {
-    const sekwanProfile = generateMockSekretarisDewan().find(
-      (s) => s.id === meeting.sekretarisId,
+    const sekwanProfile = allSekwanProfiles.find(
+      (s) => s.id === meeting.sekretarisId || s.userId === meeting.sekretarisId,
     );
-    const user = mockUsers.find((u) => u.id === sekwanProfile?.userId);
+    const userId = sekwanProfile ? sekwanProfile.userId : meeting.sekretarisId;
+    const user = allSekwanUsers.find((u) => u.id === userId);
     return {
       name: user?.name || "..........................",
       nip: sekwanProfile?.nip || "...........................................",
     };
   })();
 
-  // Resolve Notulis Data
-  const notulis1 = meeting.notulisIds?.[0]
-    ? resolvePersonData(meeting.notulisIds[0], "NOTULIS")
-    : {
-        name: "..........................",
-        nip: "...........................................",
-      };
-  const notulis2 = meeting.notulisIds?.[1]
-    ? resolvePersonData(meeting.notulisIds[1], "NOTULIS")
-    : {
-        name: "..........................",
-        nip: "...........................................",
-      };
+  // Resolve All Notulis Data
+  const resolvedNotulisList = (meeting.notulisIds || []).map((id) =>
+    resolvePersonData(id, "NOTULIS"),
+  );
+
+  const notulis1 = resolvedNotulisList[0] || {
+    name: "..........................",
+    nip: "...........................................",
+  };
+  const notulis2 = resolvedNotulisList[1] || {
+    name: "..........................",
+    nip: "...........................................",
+  };
 
   return (
     <div
@@ -158,47 +181,47 @@ export const NotulenPrintDocument = ({
         <table className="w-full text-sm mb-8 border-collapse">
           <tbody>
             <tr>
-              <td className="w-32 py-1 align-top">Masa Sidang</td>
-              <td className="w-4 py-1 align-top">:</td>
-              <td className="py-1 align-top">{meeting.masaSidang}</td>
+              <td className="w-32 py-0.5 align-top">Masa Sidang</td>
+              <td className="w-4 py-0.5 align-top">:</td>
+              <td className="py-0.5 align-top">{meeting.masaSidang}</td>
             </tr>
             <tr>
-              <td className="w-32 py-1 align-top">Hari / Tanggal</td>
-              <td className="w-4 py-1 align-top">:</td>
-              <td className="py-1 align-top">
+              <td className="w-32 py-0.5 align-top">Hari / Tanggal</td>
+              <td className="w-4 py-0.5 align-top">:</td>
+              <td className="py-0.5 align-top">
                 {formatTanggalID(meeting.date)}
               </td>
             </tr>
             <tr>
-              <td className="w-32 py-1 align-top">Waktu</td>
-              <td className="w-4 py-1 align-top">:</td>
-              <td className="py-1 align-top">
-                {meeting.startTime} - {meeting.endTime}
+              <td className="w-32 py-0.5 align-top">Waktu</td>
+              <td className="w-4 py-0.5 align-top">:</td>
+              <td className="py-0.5 align-top">
+                {meeting.startTime} WIT - {meeting.endTime} WIT
               </td>
             </tr>
             <tr>
-              <td className="w-32 py-1 align-top">Tempat</td>
-              <td className="w-4 py-1 align-top">:</td>
-              <td className="py-1 align-top">{meeting.room}</td>
+              <td className="w-32 py-0.5 align-top">Tempat</td>
+              <td className="w-4 py-0.5 align-top">:</td>
+              <td className="py-0.5 align-top">{meeting.room}</td>
             </tr>
             <tr>
-              <td className="w-32 py-1 align-top">Agenda</td>
-              <td className="w-4 py-1 align-top">:</td>
-              <td className="py-1 align-top">{meeting.agenda}</td>
+              <td className="w-32 py-0.5 align-top">Agenda</td>
+              <td className="w-4 py-0.5 align-top">:</td>
+              <td className="py-0.5 align-top">{meeting.agenda}</td>
             </tr>
             <tr>
-              <td className="w-32 py-1 align-top">Pimpinan Rapat</td>
-              <td className="w-4 py-1 align-top">:</td>
-              <td className="py-1 align-top">{pimpinanNames}</td>
+              <td className="w-32 py-0.5 align-top">Pimpinan Rapat</td>
+              <td className="w-4 py-0.5 align-top">:</td>
+              <td className="py-0.5 align-top">{pimpinanNames}</td>
             </tr>
             <tr>
-              <td className="w-32 py-1 align-top">Notulis</td>
-              <td className="w-4 py-1 align-top">:</td>
-              <td className="py-1 align-top">
-                {meeting.notulisIds?.length > 0 ? (
+              <td className="w-32 py-0.5 align-top">Notulis</td>
+              <td className="w-4 py-0.5 align-top">:</td>
+              <td className="py-0.5 align-top">
+                {resolvedNotulisList.length > 0 ? (
                   <ol className="list-decimal list-outside pl-4 m-0">
-                    {meeting.notulisIds.map((id, idx) => (
-                      <li key={idx}>{resolveName(id)}</li>
+                    {resolvedNotulisList.map((notulis, idx) => (
+                      <li key={idx}>{notulis.name}</li>
                     ))}
                   </ol>
                 ) : (
@@ -215,12 +238,12 @@ export const NotulenPrintDocument = ({
             DAFTAR PESERTA RAPAT
           </h3>
           {/* 1. INTERNAL DEWAN */}
-          <div className="mb-6">
+          <div className="mb-6 break-inside-avoid">
             <h4 className="font-bold text-sm mb-2">
-              DAFTAR HADIR ANGGOTA INTERNAL DPRK KEEROM
+              DAFTAR HADIR ANGGOTA DPRK KEEROM
             </h4>
             <table className="w-full text-sm border border-black border-collapse">
-              <thead>
+              <thead className="table-header-group">
                 <tr className="bg-gray-100">
                   <th className="border border-black px-2 py-1 w-12 text-center">
                     NO
@@ -243,7 +266,7 @@ export const NotulenPrintDocument = ({
                       <td className="border border-black px-2 py-1">
                         {p.name}
                       </td>
-                      <td className="border border-black px-2 py-1 text-center uppercase">
+                      <td className="border border-black px-2 py-1 text-center">
                         {p.jabatan}
                       </td>
                     </tr>
@@ -263,18 +286,18 @@ export const NotulenPrintDocument = ({
           </div>
 
           {/* 2. MITRA KERJA */}
-          <div className="mb-6">
+          <div className="mb-6 break-inside-avoid">
             <h4 className="font-bold text-sm mb-2">
               DAFTAR HADIR PEMERINTAH DAERAH KABUPATEN KEEROM/MITRA KERJA
             </h4>
             <table className="w-full text-sm border border-black border-collapse">
-              <thead>
+              <thead className="table-header-group">
                 <tr className="bg-gray-100">
                   <th className="border border-black px-2 py-1 w-12 text-center">
                     NO
                   </th>
                   <th className="border border-black px-2 py-1 w-1/2 text-center">
-                    NAMA
+                    NAMA / INSTANSI
                   </th>
                   <th className="border border-black px-2 py-1 text-center">
                     JABATAN
@@ -291,7 +314,7 @@ export const NotulenPrintDocument = ({
                       <td className="border border-black px-2 py-1">
                         {p.name}
                       </td>
-                      <td className="border border-black px-2 py-1 text-center uppercase">
+                      <td className="border border-black px-2 py-1 text-center">
                         {p.jabatan ? `(${p.jabatan})` : ""}
                       </td>
                     </tr>
@@ -311,11 +334,11 @@ export const NotulenPrintDocument = ({
           </div>
 
           {/* 3. TENAGA AHLI */}
-          <div className="mb-6">
+          <div className="mb-6 break-inside-avoid">
             <h4 className="font-bold text-sm mb-2">DAFTAR HADIR TENAGA AHLI</h4>
             <table className="w-full text-sm border border-black border-collapse">
-              <thead>
-                <tr className="bg-gray-100 italic">
+              <thead className="table-header-group">
+                <tr className="bg-gray-100">
                   <th className="border border-black px-2 py-1 w-12 text-center">
                     NO
                   </th>
@@ -337,7 +360,7 @@ export const NotulenPrintDocument = ({
                       <td className="border border-black px-2 py-1">
                         {p.name}
                       </td>
-                      <td className="border border-black px-2 py-1 text-center uppercase">
+                      <td className="border border-black px-2 py-1 text-center">
                         {p.jabatan}
                       </td>
                     </tr>
@@ -357,17 +380,9 @@ export const NotulenPrintDocument = ({
           </div>
         </div>
 
-        {/* OPENING SECTION */}
-        <div className="mb-8 font-arimo text-justify text-sm">
-          <p className="mb-4">
-            Rapat dimulai oleh{" "}
-            <span className="font-bold">{toTitleCase(pimpinanNames)}</span>
-          </p>
-        </div>
-
         {/* DISCUSSION FLOW SECTION */}
-        <div className="space-y-6 font-arimo text-sm">
-          {sortedSections.map((section) => {
+        <div className="font-arimo text-sm">
+          {sortedSections.map((section, index) => {
             const participant = participants.find(
               (p) =>
                 p.entityId === section.participanID ||
@@ -377,7 +392,18 @@ export const NotulenPrintDocument = ({
               participant?.displayFormat || section.displayFormat;
 
             return (
-              <div key={section.id} className="page-break-inside-avoid mb-6">
+              <div
+                key={section.id}
+                className="page-break-inside-avoid break-inside-avoid-page mb-6 block w-full"
+              >
+                {index === 0 && (
+                  <div className="mb-4">
+                    <p className="mb-2">
+                      Rapat dimulai oleh{" "}
+                      <span className="font-bold">{pimpinanNames}</span>
+                    </p>
+                  </div>
+                )}
                 {/* SPEAKER HEADER */}
                 <div className="font-bold uppercase mb-2 bg-gray-100 p-1 inline-block border border-gray-300 rounded-sm">
                   {displayFormat}
@@ -402,9 +428,9 @@ export const NotulenPrintDocument = ({
             HASIL KEPUTUSAN RAPAT
           </h3>
 
-          <table className="w-full text-sm border border-black border-collapse mb-8">
-            <thead>
-              <tr className="bg-gray-100 italic">
+          <table className="w-full text-sm border border-black border-collapse mb-8 break-inside-avoid">
+            <thead className="table-header-group">
+              <tr className="bg-gray-100">
                 <th className="border border-black px-2 py-1 w-10 text-center">
                   NO
                 </th>
@@ -429,7 +455,7 @@ export const NotulenPrintDocument = ({
                 <tr>
                   <td
                     colSpan={2}
-                    className="border border-black px-2 py-4 text-center italic"
+                    className="border border-black px-2 py-4 text-center"
                   >
                     Belum ada keputusan rapat
                   </td>
@@ -447,12 +473,12 @@ export const NotulenPrintDocument = ({
             </div>
           )}
 
-          <div className="space-y-4 text-sm mt-8 border-t border-gray-200 pt-6 italic">
+          <div className="space-y-4 text-sm mt-8 border-t border-gray-200 pt-6">
             <p>
               Demikian hasil rapat yang dapat kami tuangkan di dalam Notulen
               Rapat.
             </p>
-            <p>Waktu selesai Rapat : {meeting.endTime}</p>
+            <p>Waktu selesai Rapat : {meeting.endTime} WIT</p>
             <p>Terimakasih.</p>
           </div>
         </div>
@@ -461,14 +487,14 @@ export const NotulenPrintDocument = ({
         <div className="mt-16 page-break-inside-avoid font-arimo text-sm">
           {/* Date Line */}
           <div className="text-right mb-12">
-            <p>Arso, {formatTanggalID(meeting.date)}</p>
+            <p>Arso, {formatTanggalTanpaHari(meeting.date)}</p>
           </div>
 
           {/* Pimpinan & Sekwan */}
           <div className="flex justify-between items-start mb-24">
             <div className="text-center w-[250px]">
               <p className="font-bold uppercase mb-20">PIMPINAN RAPAT,</p>
-              <p className="font-bold uppercase underline">
+              <p className="font-bold uppercase">
                 {pimpinanNames || ".........................."}
               </p>
             </div>
@@ -488,16 +514,14 @@ export const NotulenPrintDocument = ({
               className={`flex ${meeting.notulisIds.length === 1 ? "justify-center" : "justify-between"} items-start`}
             >
               <div className="text-center w-[250px]">
-                <p className="font-bold uppercase mb-20 italic">NOTULISI,</p>
+                <p className="font-bold uppercase mb-20">NOTULIS,</p>
                 <p className="font-bold uppercase underline">{notulis1.name}</p>
                 <p>NIP. {notulis1.nip}</p>
               </div>
 
               {meeting.notulisIds.length > 1 && (
                 <div className="text-center w-[250px]">
-                  <p className="font-bold uppercase mb-20 italic">
-                    NOTULIS II,
-                  </p>
+                  <p className="font-bold uppercase mb-20">NOTULIS II,</p>
                   <p className="font-bold uppercase underline">
                     {notulis2.name}
                   </p>

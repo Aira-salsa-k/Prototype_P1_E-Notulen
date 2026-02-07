@@ -53,7 +53,7 @@ export const AddMitraModal = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
       <ModalContent>
-        <ModalHeader className="border-b">
+        <ModalHeader className="border-b border-gray-200">
           Tambah Peserta Mitra Kerja
         </ModalHeader>
         <ModalBody className="py-4 space-y-4">
@@ -84,75 +84,50 @@ export const AddMitraModal = ({
           </RadioGroup>
 
           {mitraSource === "institution" && (
-            <div className="space-y-4">
-              <Select
-                label="Pilih Instansi"
-                variant="bordered"
-                placeholder="Cari Instansi..."
-                selectedKeys={
-                  selectedInstitutionId ? [selectedInstitutionId] : []
-                }
-                onChange={(e) => setSelectedInstitutionId(e.target.value)}
-              >
-                {filteredInstitutions.map((inst) => (
-                  <SelectItem key={inst.id} textValue={inst.name}>
-                    {inst.name}
-                  </SelectItem>
-                ))}
-              </Select>
-              <div className="grid grid-cols-2 gap-4">
-                <Input
-                  label="Nama Utusan"
-                  placeholder="Opsional"
-                  variant="bordered"
-                  value={mitraPersonName}
-                  onChange={(e) =>
-                    setMitraPersonName(e.target.value)
-                  }
-                />
-                <Input
-                  label="Jabatan Utusan"
-                  placeholder="Opsional"
-                  variant="bordered"
-                  value={mitraPosition}
-                  onChange={(e) =>
-                    setMitraPosition(e.target.value)
-                  }
-                />
-              </div>
-            </div>
+            <Select
+              label="Pilih Instansi"
+              variant="bordered"
+              placeholder="Cari Instansi..."
+              selectedKeys={
+                selectedInstitutionId ? [selectedInstitutionId] : []
+              }
+              onChange={(e) => setSelectedInstitutionId(e.target.value)}
+            >
+              {filteredInstitutions.map((inst) => (
+                <SelectItem key={inst.id} textValue={inst.name}>
+                  {inst.name}
+                </SelectItem>
+              ))}
+            </Select>
           )}
 
           {mitraSource === "manual" && (
-            <div className="space-y-4">
-              <Input
-                label="Nama Instansi Baru"
-                variant="bordered"
-                value={manualInstitutionName}
-                onChange={(e) =>
-                  setManualInstitutionName(e.target.value)
-                }
-              />
-              <div className="grid grid-cols-2 gap-4">
-                <Input
-                  label="Nama Utusan"
-                  variant="bordered"
-                  value={mitraPersonName}
-                  onChange={(e) =>
-                    setMitraPersonName(e.target.value)
-                  }
-                />
-                <Input
-                  label="Jabatan Utusan"
-                  variant="bordered"
-                  value={mitraPosition}
-                  onChange={(e) =>
-                    setMitraPosition(e.target.value)
-                  }
-                />
-              </div>
-            </div>
+            <Input
+              label="Nama Instansi Baru (Opsional)"
+              variant="bordered"
+              value={manualInstitutionName}
+              onChange={(e) => setManualInstitutionName(e.target.value)}
+            />
           )}
+
+          <div className="pt-4 mt-2 border-t border-gray-100">
+            <div className="grid grid-cols-2 gap-4">
+              <Input
+                label="Nama Lengkap Utusan (Opsional)"
+                placeholder="Contoh: Bpk. Ahmad"
+                variant="bordered"
+                value={mitraPersonName}
+                onChange={(e) => setMitraPersonName(e.target.value)}
+              />
+              <Input
+                label="Jabatan Utusan (Opsional)"
+                placeholder="Contoh: Direktur"
+                variant="bordered"
+                value={mitraPosition}
+                onChange={(e) => setMitraPosition(e.target.value)}
+              />
+            </div>
+          </div>
         </ModalBody>
         <ModalFooter>
           <Button variant="light" onPress={onClose}>

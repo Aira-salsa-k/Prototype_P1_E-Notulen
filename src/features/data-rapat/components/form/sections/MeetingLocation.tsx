@@ -48,11 +48,10 @@ export function MeetingLocation() {
         <Controller
           name="dasarSurat"
           control={control}
-          rules={{ required: "Dasar surat wajib diisi" }}
           render={({ field, fieldState }) => (
             <Textarea
               {...field}
-              label="Dasar Surat"
+              label="Dasar Surat (Opsional)"
               placeholder="No. Surat Undangan..."
               variant="bordered"
               labelPlacement="outside"

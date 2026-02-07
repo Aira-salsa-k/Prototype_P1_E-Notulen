@@ -1,29 +1,38 @@
 import { useDataRapatStore } from "@/features/data-rapat/store/useDataRapatStore";
+import { useUIStore } from "@/store/useUIStore";
 import { User } from "@/types/user";
 import { Meeting } from "@/types/meeting";
 
 export function useMeetingActions() {
   const { actions } = useDataRapatStore();
+  const { showNotification } = useUIStore();
 
-  const startMeeting = (meeting: Meeting, currentUser: User | null) => {
+  const startMeeting = async (meeting: Meeting, currentUser: User | null) => {
     if (!meeting || !currentUser) return;
-    if (
-      confirm(
-        "Mulai rapat sekarang? Setelah dimulai, daftar hadir akan dikunci dan perubahan jenis rapat tidak akan disinkronisasi lagi.",
-      )
-    ) {
+    try {
       actions.startMeeting(meeting.id, currentUser.id, currentUser.name);
+      showNotification(
+        "success",
+        "Rapat berhasil dimulai! Daftar hadir dikunci.",
+      );
+    } catch (error) {
+      showNotification("danger", "Gagal memulai rapat. Silakan coba lagi.");
     }
   };
 
-  const finishMeeting = (meeting: Meeting, currentUser: User | null) => {
+  const finishMeeting = async (meeting: Meeting, currentUser: User | null) => {
     if (!meeting || !currentUser) return;
-    if (
-      confirm(
-        "Selesaikan rapat? Rapat akan masuk mode hitung mundur 5 jam sebelum dikunci permanen.",
-      )
-    ) {
+    try {
       actions.finishMeeting(meeting.id, currentUser.id, currentUser.name);
+      showNotification(
+        "success",
+        "Rapat telah diselesaikan. Mode hitung mundur aktif.",
+      );
+    } catch (error) {
+      showNotification(
+        "danger",
+        "Gagal menyelesaikan rapat. Silakan coba lagi.",
+      );
     }
   };
 

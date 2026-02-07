@@ -8,6 +8,7 @@ import {
 import { canManageLifecycle } from "@/lib/auth/permissions";
 import { User } from "@/types/user";
 import { Meeting } from "@/types/meeting";
+import { LifecycleConfirmationModal } from "./LifecycleConfirmationModal";
 
 interface MeetingHeaderProps {
   meeting: Meeting;
@@ -24,6 +25,16 @@ export function MeetingHeader({
   onStart,
   onFinish,
 }: MeetingHeaderProps) {
+  const [modalType, setModalType] = useState<"start" | "finish" | null>(null);
+
+  const handleConfirm = () => {
+    if (modalType === "start") {
+      onStart();
+    } else if (modalType === "finish") {
+      onFinish();
+    }
+    setModalType(null);
+  };
   return (
     <div className="flex justify-between items-center bg-transparent px-2">
       <div className="flex gap-2">
@@ -44,7 +55,7 @@ export function MeetingHeader({
             variant="solid"
             startContent={<PlayIcon className="w-4 h-4" />}
             className="font-black text-white shadow-lg shadow-green-500/30 px-6"
-            onPress={onStart}
+            onPress={() => setModalType("start")}
           >
             AKTIFKAN RAPAT (LIVE)
           </Button>
@@ -58,7 +69,7 @@ export function MeetingHeader({
                 variant="solid"
                 startContent={<CheckBadgeIcon className="w-4 h-4" />}
                 className="font-black text-white shadow-sm shadow-red-500/30 px-6"
-                onPress={onFinish}
+                onPress={() => setModalType("finish")}
               >
                 SELESAIKAN & KUNCI RAPAT
               </Button>
@@ -68,6 +79,13 @@ export function MeetingHeader({
           </>
         )}
       </div>
+
+      <LifecycleConfirmationModal
+        isOpen={modalType !== null}
+        onClose={() => setModalType(null)}
+        onConfirm={handleConfirm}
+        type={modalType || "start"}
+      />
     </div>
   );
 }

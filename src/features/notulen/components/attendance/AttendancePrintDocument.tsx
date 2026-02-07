@@ -1,8 +1,13 @@
+"use client";
+
 import React from "react";
 import { Meeting } from "@/types/meeting";
 import { AttendanceRecord } from "@/types/attendance";
 import { formatTanggalID } from "../../utils/dateFormat";
 import { KopSuratHeader } from "@/features/kop-surat/components/KopSuratHeader";
+import { useNotulisStore } from "@/features/data-notulis/store/useNotulisStore";
+import { useAnggotaStore } from "@/features/anggota-dewan/store/useAnggotaStore";
+import { useSekretarisDewanStore } from "@/features/sekretaris-dewan/store/useSekretarisDewanStore";
 
 export interface PrintSettings {
   customDate: string;
@@ -25,7 +30,35 @@ export const AttendancePrintDocument = ({
   data,
   settings,
 }: AttendancePrintDocumentProps) => {
+  const { notulisList: allNotulisProfiles, users: allNotulisUsers } =
+    useNotulisStore();
+  const { anggota: allAnggota, users: allAnggotaUsers } = useAnggotaStore();
+  const { users: allSekwanUsers } = useSekretarisDewanStore();
+
+  const allUsers = [...allSekwanUsers, ...allNotulisUsers, ...allAnggotaUsers];
+
   if (!settings) return null;
+
+  const resolveName = (id: string) => {
+    const user = allUsers.find((u) => u.id === id);
+    if (user) return user.name;
+
+    const anggota = allAnggota.find((a) => a.id === id || a.userId === id);
+    if (anggota) {
+      const u = allUsers.find((user) => user.id === anggota.userId);
+      if (u) return u.name;
+    }
+
+    const notulis = allNotulisProfiles.find(
+      (n) => n.id === id || n.userID === id,
+    );
+    if (notulis) {
+      const u = allUsers.find((user) => user.id === notulis.userID);
+      if (u) return u.name;
+    }
+
+    return id || "Belum ditentukan";
+  };
 
   const isMetadataHidden = settings.mode === "NO_METADATA";
   const isEverythingElseHidden = settings.mode === "METADATA_ONLY";
@@ -79,7 +112,7 @@ export const AttendancePrintDocument = ({
               className={`mb-3 ${isEverythingElseHidden ? "invisible" : "visible"}`}
             >
               <div className="border-b-[1px] border-black"></div>
-              <div className="border-b-[3px] border-[#5D7387] mt-[1px]"></div>
+              <div className="border-b-[3px] border-[#C5FCFF] mt-[1px]"></div>
               <div className="border-b-[1px] border-black mt-[1px]"></div>
             </div>
 
@@ -201,7 +234,7 @@ export const AttendancePrintDocument = ({
                       className="align-top"
                       style={{ padding: "1px 0", lineHeight: "1" }}
                     >
-                      {meeting.startTime} - {meeting.endTime} WIT
+                      {meeting.startTime} WIT - {meeting.endTime} WIT
                     </td>
                   </tr>
                   <tr>
@@ -260,6 +293,38 @@ export const AttendancePrintDocument = ({
                       {meeting.agenda}
                     </td>
                   </tr>
+                  <tr>
+                    <td
+                      className="font-bold align-top"
+                      style={{
+                        width: "100px",
+                        padding: "1px 0",
+                        lineHeight: "1",
+                      }}
+                    >
+                      Notulis
+                    </td>
+                    <td
+                      className="align-top"
+                      style={{
+                        width: "12px",
+                        padding: "1px 0",
+                        lineHeight: "1",
+                      }}
+                    >
+                      :
+                    </td>
+                    <td
+                      className="align-top"
+                      style={{ padding: "1px 0", lineHeight: "1" }}
+                    >
+                      {meeting.notulisIds && meeting.notulisIds.length > 0
+                        ? meeting.notulisIds
+                            .map((id) => resolveName(id))
+                            .join(", ")
+                        : "-"}
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -269,14 +334,16 @@ export const AttendancePrintDocument = ({
               className={`border border-black ${isEverythingElseHidden ? "invisible" : "visible"}`}
             >
               <table className="w-full text-left border-collapse">
-                <thead className="bg-[#ECECEC] text-black border-b border-black text-center">
+                <thead className="bg-[#BBEFFD] text-black border-b border-black text-center">
                   <tr
                     style={{ fontFamily: "Cambria, serif", fontSize: "11pt" }}
                     className="uppercase font-bold"
                   >
                     <th className="px-2 py-1 w-12 border-r border-black">No</th>
-                    <th className="px-3 py-1 border-r border-black">
-                      Nama Lengkap
+                    <th className="px-3 py-1 border-r border-black text-center">
+                      {data.some((p) => p.type === "MITRA_KERJA")
+                        ? "Nama Lengkap / Instansi"
+                        : "Nama Lengkap"}
                     </th>
                     <th className="px-3 py-1 border-r border-black">Jabatan</th>
                     <th className="px-3 py-1 w-48 border-r border-black">
@@ -311,12 +378,7 @@ export const AttendancePrintDocument = ({
                           <td className="px-3 py-[3px] border-r border-black align-middle">
                             <div>{item.name}</div>
                             {item.type === "MITRA_KERJA" &&
-                              item.institution &&
-                              item.institution !== item.name && (
-                                <div className="text-xs mt-1 italic">
-                                  {item.institution}
-                                </div>
-                              )}
+                              item.institution !== item.name}
                           </td>
                           <td className="px-3 py-[3px] border-r border-black align-middle text-center">
                             {item.jabatan}

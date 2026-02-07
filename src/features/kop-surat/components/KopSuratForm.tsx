@@ -61,7 +61,7 @@ export const KopSuratForm = () => {
 
             <Input
               label="Nama Instansi"
-              placeholder="DEWAN PERWAKILAN RAKYAT DAERAH"
+              placeholder="DEWAN PERWAKILAN RAKYAT"
               {...register("institutionName")}
             />
             <Input

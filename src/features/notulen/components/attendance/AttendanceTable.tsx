@@ -68,7 +68,7 @@ export const AttendanceTable = ({
 
   return (
     <div className="space-y-4 mb-8">
-      <div className="flex justify-between items-center bg-gray-50 p-4 rounded-xl border border-gray-100">
+      <div className="flex justify-between items-center bg-indigo-50/50 p-4 rounded-xl border border-gray-100">
         <div>
           <h3 className="text-lg font-bold text-gray-800">{title}</h3>
           <p className="text-xs text-gray-500">Total: {data.length} Peserta</p>

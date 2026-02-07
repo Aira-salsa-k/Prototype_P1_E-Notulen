@@ -1,11 +1,13 @@
-import React, { useMemo } from "react";
-import { Accordion, AccordionItem } from "@heroui/accordion";
+import React, { useMemo, useState } from "react";
 import { ScrollShadow } from "@heroui/scroll-shadow";
 import { useNotulenStore } from "@/features/notulen/store/useNotulenStore";
 import { AttendanceRecord } from "@/types/attendance";
 import {
   UserCircleIcon,
   BuildingOfficeIcon,
+  LockClosedIcon,
+  ChevronDownIcon,
+  ChevronRightIcon,
 } from "@heroicons/react/24/outline";
 
 interface NotulenSidebarProps {
@@ -18,6 +20,56 @@ interface NotulenSidebarProps {
   currentUserId: string;
 }
 
+// Custom Accordion Group Component
+const ParticipantGroup = ({
+  title,
+  count,
+  isOpen,
+  onToggle,
+  icon: Icon,
+  colorClass, // This will now be the header background color
+  children,
+}: {
+  title: string;
+  count: number;
+  isOpen: boolean;
+  onToggle: () => void;
+  icon: React.ElementType;
+  colorClass: string;
+  children: React.ReactNode;
+}) => {
+  return (
+    <div className="border-b border-gray-100 last:border-0 overflow-hidden">
+      <button
+        onClick={onToggle}
+        className={`w-full flex items-center justify-between p-3 transition-all ${
+          colorClass // Use the passed color class for the header background
+        }`}
+      >
+        <div className="flex items-center gap-3">
+          <div className="p-1 rounded-md bg-white/20">
+            <Icon className="w-4 h-4" />
+          </div>
+          <span className="text-xs font-bold uppercase tracking-wide">
+            {title} <span className="opacity-70 ml-1">({count})</span>
+          </span>
+        </div>
+        {isOpen ? (
+          <ChevronDownIcon className="w-3.5 h-3.5 opacity-70" />
+        ) : (
+          <ChevronRightIcon className="w-3.5 h-3.5 opacity-70" />
+        )}
+      </button>
+
+      {isOpen && (
+        <div className="flex flex-col animate-in slide-in-from-top-1 duration-200 bg-white">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+};
+
 export default function NotulenSidebar({
   meetingId,
   isReadOnly = false,
@@ -28,6 +80,17 @@ export default function NotulenSidebar({
   currentUserId,
 }: NotulenSidebarProps) {
   const { sections, actions } = useNotulenStore();
+
+  // Local state for custom accordion
+  const [expanded, setExpanded] = useState({
+    dewan: true,
+    mitra: true,
+    ta: true,
+  });
+
+  const toggleGroup = (key: keyof typeof expanded) => {
+    setExpanded((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
 
   // Group participants
   const groupedParticipants = useMemo(() => {
@@ -46,10 +109,8 @@ export default function NotulenSidebar({
     let sectionId = sections.find((s) => s.participanID === p.entityId)?.id;
 
     if (!sectionId) {
-      // Create logic moved here from main editor
       sectionId = `sec-${Date.now()}`;
 
-      // Fallback Display Logic
       let displayFormat = "";
       if (p.displayFormat) {
         displayFormat = p.displayFormat.toUpperCase();
@@ -74,7 +135,7 @@ export default function NotulenSidebar({
         displayFormat: displayFormat,
         points: [],
         order: sections.length + 1,
-        isLocked: false, // Locking handled by tab switch hook
+        isLocked: false,
         lockedBy: undefined,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -84,165 +145,128 @@ export default function NotulenSidebar({
     onOpenTab(sectionId);
   };
 
+  const renderParticipantButton = (
+    p: (typeof groupedParticipants.dewan)[0],
+    activeBg: string,
+    activeText: string,
+    activeIcon: string,
+  ) => {
+    const existingSection = sections.find((s) => s.participanID === p.entityId);
+    const isActive = existingSection && activeTabId === existingSection.id;
+
+    return (
+      <button
+        key={p.id}
+        onClick={() => handleSpeakerSelect(p)}
+        className={`w-full text-left py-3 px-4 border-b border-gray-50 last:border-0 transition-all flex items-center justify-between group
+          ${isActive ? activeBg : "bg-white hover:bg-gray-50"}
+        `}
+      >
+        <div className="flex flex-col min-w-0 pr-2">
+          <span
+            className={`text-xs font-bold truncate transition-colors ${
+              isActive ? activeText : "text-gray-600 group-hover:text-gray-900"
+            }`}
+          >
+            {p.name}
+          </span>
+          <span
+            className={`text-[10px] truncate uppercase mt-0.5 leading-none ${isActive ? activeText : "text-gray-400"}`}
+          >
+            {p.type === "MITRA_KERJA"
+              ? p.institution || p.jabatan
+              : p.jabatan || "—"}
+          </span>
+        </div>
+        {isActive && (
+          <LockClosedIcon
+            className={`w-3.5 h-3.5 ${activeIcon} flex-shrink-0 animate-pulse`}
+          />
+        )}
+      </button>
+    );
+  };
+
   return (
-    <div className="relative h-full flex flex-col bg-white border border-gray-200 rounded-2xl shadow-sm w-64 flex-shrink-0 select-none">
-      <div className="p-3 border-b bg-gray-50/50">
-        <h3 className="text-sm font-bold text-gray-700">Panel Pembicara</h3>
-        <p className="text-[10px] text-gray-500 mt-0.5 uppercase tracking-wider">
-          Klik nama untuk input notulensi
+    <div className="relative h-full flex flex-col bg-slate-50 border-r border-gray-200 rounded-l-2xl shadow-sm w-80 flex-shrink-0 select-none overflow-hidden">
+      <div className="p-4 border-b bg-white">
+        <h3 className="text-base font-bold text-gray-800">Panel Pembicara</h3>
+        <p className="text-[11px] text-gray-500 mt-1">
+          Pilih nama pembicara di bawah untuk mulai mencatat poin notulensi.
         </p>
       </div>
 
       <ScrollShadow className="flex-1 overflow-y-auto">
         {participants.length > 0 ? (
-          <Accordion
-            selectionMode="multiple"
-            variant="light"
-            className="px-2"
-            defaultExpandedKeys={["dewan", "mitra", "ta"]}
-            itemClasses={{
-              title: "text-xs font-bold text-gray-600 truncate",
-              trigger:
-                "py-2 px-1 hover:bg-gray-50 rounded-lg transition-colors",
-              content: "pb-2 px-1",
-              indicator: "text-gray-400 scale-75",
-            }}
-          >
-            <AccordionItem
-              key="dewan"
-              aria-label="Anggota Dewan"
-              startContent={
-                <UserCircleIcon className="w-4 h-4 text-blue-500" />
-              }
-              title={`DEWAN (${groupedParticipants.dewan.length})`}
+          <div className="flex flex-col">
+            {/* ANGGOTA DEWAN - BLUE/LIMEish */}
+            <ParticipantGroup
+              title="Anggota Dewan"
+              count={groupedParticipants.dewan.length}
+              isOpen={expanded.dewan}
+              onToggle={() => toggleGroup("dewan")}
+              icon={UserCircleIcon}
+              colorClass="bg-primary hover:bg-primary/90 text-white"
             >
-              <div className="flex flex-col gap-0.5">
-                {groupedParticipants.dewan.map((p) => {
-                  const existingSection = sections.find(
-                    (s) => s.participanID === p.entityId,
-                  );
-                  const isActive =
-                    existingSection && activeTabId === existingSection.id;
-                  return (
-                    <button
-                      key={p.id}
-                      onClick={() => handleSpeakerSelect(p)}
-                      className={`w-full text-left p-1.5 rounded-lg transition-all flex items-center justify-between border ${
-                        isActive
-                          ? "bg-blue-50 border-blue-200"
-                          : "bg-white border-transparent hover:bg-gray-50 hover:border-gray-100"
-                      }`}
-                    >
-                      <div className="flex flex-col min-w-0 pr-2">
-                        <span
-                          className={`text-xs font-bold truncate ${isActive ? "text-blue-700" : "text-gray-700"}`}
-                        >
-                          {p.name}
-                        </span>
-                        <span className="text-[9px] text-gray-400 truncate uppercase mt-0.5">
-                          {p.jabatan}
-                        </span>
-                      </div>
-                      {isActive && (
-                        <div className="h-1.5 w-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)] flex-shrink-0" />
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </AccordionItem>
+              {groupedParticipants.dewan.map((p) =>
+                renderParticipantButton(
+                  p,
+                  "bg-primary/10", // Active BG
+                  "text-primary", // Active Text
+                  "text-primary/70", // Active Icon
+                ),
+              )}
+            </ParticipantGroup>
 
-            <AccordionItem
-              key="mitra"
-              aria-label="Mitra Kerja"
-              startContent={
-                <BuildingOfficeIcon className="w-4 h-4 text-orange-500" />
-              }
-              title={`MITRA (${groupedParticipants.mitra.length})`}
+            {/* MITRA KERJA - INDIGO */}
+            <ParticipantGroup
+              title="Mitra Kerja"
+              count={groupedParticipants.mitra.length}
+              isOpen={expanded.mitra}
+              onToggle={() => toggleGroup("mitra")}
+              icon={BuildingOfficeIcon}
+              colorClass="bg-indigo-100 hover:bg-indigo-200 text-indigo-700"
             >
-              <div className="flex flex-col gap-0.5">
-                {groupedParticipants.mitra.map((p) => {
-                  const existingSection = sections.find(
-                    (s) => s.participanID === p.entityId,
-                  );
-                  const isActive =
-                    existingSection && activeTabId === existingSection.id;
-                  return (
-                    <button
-                      key={p.id}
-                      onClick={() => handleSpeakerSelect(p)}
-                      className={`w-full text-left p-1.5 rounded-lg transition-all flex items-center justify-between border ${
-                        isActive
-                          ? "bg-orange-50 border-orange-200"
-                          : "bg-white border-transparent hover:bg-gray-50 hover:border-gray-100"
-                      }`}
-                    >
-                      <div className="flex flex-col min-w-0 pr-2">
-                        <span
-                          className={`text-xs font-bold truncate ${isActive ? "text-orange-700" : "text-gray-700"}`}
-                        >
-                          {p.name}
-                        </span>
-                        <span className="text-[9px] text-gray-400 truncate uppercase mt-0.5">
-                          {p.institution || p.jabatan}
-                        </span>
-                      </div>
-                      {isActive && (
-                        <div className="h-1.5 w-1.5 rounded-full bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.5)] flex-shrink-0" />
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </AccordionItem>
+              {groupedParticipants.mitra.map((p) =>
+                renderParticipantButton(
+                  p,
+                  "bg-indigo-50",
+                  "text-indigo-700",
+                  "text-indigo-500",
+                ),
+              )}
+            </ParticipantGroup>
 
-            <AccordionItem
-              key="ta"
-              aria-label="Tenaga Ahli"
-              startContent={
-                <UserCircleIcon className="w-4 h-4 text-purple-500" />
-              }
-              title={`TENAGA AHLI (${groupedParticipants.ta.length})`}
+            {/* TENAGA AHLI - SKY */}
+            <ParticipantGroup
+              title="Tenaga Ahli"
+              count={groupedParticipants.ta.length}
+              isOpen={expanded.ta}
+              onToggle={() => toggleGroup("ta")}
+              icon={UserCircleIcon}
+              colorClass="bg-sky-100 hover:bg-sky-200 text-sky-700"
             >
-              <div className="flex flex-col gap-0.5">
-                {groupedParticipants.ta.map((p) => {
-                  const existingSection = sections.find(
-                    (s) => s.participanID === p.entityId,
-                  );
-                  const isActive =
-                    existingSection && activeTabId === existingSection.id;
-                  return (
-                    <button
-                      key={p.id}
-                      onClick={() => handleSpeakerSelect(p)}
-                      className={`w-full text-left p-1.5 rounded-lg transition-all flex items-center justify-between border ${
-                        isActive
-                          ? "bg-purple-50 border-purple-200"
-                          : "bg-white border-transparent hover:bg-gray-50 hover:border-gray-100"
-                      }`}
-                    >
-                      <div className="flex flex-col min-w-0 pr-2">
-                        <span
-                          className={`text-xs font-bold truncate ${isActive ? "text-purple-700" : "text-gray-700"}`}
-                        >
-                          {p.name}
-                        </span>
-                        <span className="text-[9px] text-gray-400 truncate uppercase mt-0.5">
-                          {p.jabatan || "TENAGA AHLI"}
-                        </span>
-                      </div>
-                      {isActive && (
-                        <div className="h-1.5 w-1.5 rounded-full bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.5)] flex-shrink-0" />
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </AccordionItem>
-          </Accordion>
+              {groupedParticipants.ta.map((p) =>
+                renderParticipantButton(
+                  p,
+                  "bg-sky-50",
+                  "text-sky-700",
+                  "text-sky-500",
+                ),
+              )}
+            </ParticipantGroup>
+          </div>
         ) : (
-          <div className="text-center py-12 text-gray-400 text-xs italic">
-            Tidak ada peserta terdaftar.
+          <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+            <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center mb-4">
+              <UserCircleIcon className="w-8 h-8 text-gray-300" />
+            </div>
+            <p className="text-sm font-semibold text-gray-600 mb-1">
+              Data Peserta Kosong
+            </p>
+            <p className="text-[11px] text-gray-400">
+              Belum ada peserta yang ditambahkan ke rapat ini.
+            </p>
           </div>
         )}
       </ScrollShadow>
