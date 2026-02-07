@@ -45,7 +45,6 @@ const COMMON_ROLES = [
   "Wakil Ketua III",
   "Anggota",
   "Sekretaris",
-  "Koordinator",
 ];
 
 const MAPPED_ROLES = COMMON_ROLES.map((r) => ({

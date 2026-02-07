@@ -124,7 +124,7 @@ export default function MeetingCard({
                   <div className="flex items-center text-gray-600">
                     <ClockIcon className="h-5 w-5 mr-2" />
                     <span>
-                      {meeting.startTime} - {meeting.endTime}
+                      {meeting.startTime} - {meeting.endTime} WIT
                     </span>
                   </div>
                 </div>

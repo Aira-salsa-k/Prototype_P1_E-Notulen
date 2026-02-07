@@ -101,7 +101,18 @@ export function useAttendanceInitialization({
         memberConfig?.name || user?.name || "Anggota (Nama Tidak Ditemukan)";
 
       let resolvedJabatan =
-        memberConfig?.meetingRole || anggota?.jabatan || "Anggota";
+        memberConfig?.meetingRole ||
+        memberConfig?.jabatan ||
+        anggota?.jabatan ||
+        "Anggota";
+
+      // If it still contains structural title like "DPR KABUPATEN KEEROM", simplify it
+      if (resolvedJabatan.includes("DPR KABUPATEN KEEROM")) {
+        if (resolvedJabatan.startsWith("KETUA")) resolvedJabatan = "Ketua";
+        else if (resolvedJabatan.startsWith("WAKIL KETUA"))
+          resolvedJabatan = "Wakil Ketua";
+        else resolvedJabatan = "Anggota";
+      }
 
       initRecords.push({
         id: `att-${meeting.id}-${userId}-${index}`, // Use userId for stability

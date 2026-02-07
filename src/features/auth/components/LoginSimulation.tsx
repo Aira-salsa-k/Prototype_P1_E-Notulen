@@ -41,9 +41,9 @@ export default function LoginSimulation() {
     },
     {
       id: "user-notulis-001",
-      label: "Notulis (Budi)",
+      label: "Notulis (Saleha)",
       role: "NOTULIS",
-      name: "Budi Santoso",
+      name: "Saleha",
       color: "bg-green-600",
     },
     {
