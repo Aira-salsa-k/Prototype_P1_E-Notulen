@@ -84,9 +84,9 @@ export const AttendancePrintDocument = ({
           key={pageIdx}
           className={`w-full min-h-screen relative p-0 ${pageIdx < chunks.length - 1 ? "page-break-after-always" : ""}`}
         >
-          {/* Kop Surat (Repeated on every page) */}
+          {/* Kop Surat (Only on first page) */}
           <div
-            className={`${isEverythingElseHidden ? "invisible" : "visible"}`}
+            className={`${isEverythingElseHidden || pageIdx > 0 ? "hidden" : "visible"}`}
           >
             <KopSuratHeader
               contentClassName="px-2 "
@@ -96,9 +96,9 @@ export const AttendancePrintDocument = ({
           </div>
 
           <div className="px-10 pb-10">
-            {/* Title (Repeated on every page) */}
+            {/* Title (Only on first page) */}
             <div
-              className={`text-center mb-2 mt-2 ${isEverythingElseHidden ? "invisible" : "visible"}`}
+              className={`text-center mb-2 mt-2 ${isEverythingElseHidden || pageIdx > 0 ? "hidden" : "visible"}`}
             >
               <h2
                 style={{ fontFamily: "Cambria, serif", fontSize: "10pt" }}
@@ -109,16 +109,16 @@ export const AttendancePrintDocument = ({
             </div>
 
             <div
-              className={`mb-3 ${isEverythingElseHidden ? "invisible" : "visible"}`}
+              className={`mb-3 ${isEverythingElseHidden || pageIdx > 0 ? "hidden" : "visible"}`}
             >
               <div className="border-b-[1px] border-black"></div>
               <div className="border-b-[3px] border-[#C5FCFF] mt-[1px]"></div>
               <div className="border-b-[1px] border-black mt-[1px]"></div>
             </div>
 
-            {/* Metadata Section (Repeated on every page if visible) */}
+            {/* Metadata Section (Only on first page) */}
             <div
-              className={`mb-3 ${isMetadataHidden ? "invisible" : "visible"} `}
+              className={`mb-3 ${isMetadataHidden || pageIdx > 0 ? "hidden" : "visible"} `}
             >
               <table
                 className="w-full text-black"
