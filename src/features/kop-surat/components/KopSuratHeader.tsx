@@ -36,7 +36,7 @@ export const KopSuratHeader = ({
       {/* Header Container */}
       {/* Header Container */}
       <div
-        className={`grid grid-cols-[110px_1fr_110px] items-center border-black pb-2 mb-1 min-h-[110px] ${contentClassName}`}
+        className={`grid grid-cols-[110px_1fr_110px] items-center border-black pb-1 mb-0 min-h-[50px] ${contentClassName}`}
       >
         {/* LOGO */}
         <div className={`flex items-center justify-center ${logoClassName}`}>
@@ -62,7 +62,7 @@ export const KopSuratHeader = ({
           </h1>
           <p
             style={{ fontFamily: '"Book Antiqua", serif', fontSize: "10.5pt" }}
-            className="mt-1 text-black leading-tight"
+            className="mt-1 print:mt-0 print:-mt-1 text-black leading-tight"
           >
             {fullAddress}
           </p>
@@ -73,7 +73,7 @@ export const KopSuratHeader = ({
       </div>
 
       {/* DOUBLE LINE Separator */}
-      <div className={`mb-6 ${lineClassName}`}>
+      <div className={`mb-4 print:mb-2 print:-mt-3 ${lineClassName}`}>
         <div className="border-b-[3px] border-black"></div>
         <div className="border-b-[1px] border-black mt-[2px]"></div>
       </div>

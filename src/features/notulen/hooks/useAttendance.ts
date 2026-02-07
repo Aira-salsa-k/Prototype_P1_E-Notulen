@@ -4,7 +4,7 @@ import { useAttendanceInitialization } from "./useAttendanceInitialization";
 import { useAttendanceForms } from "./useAttendanceForms";
 import { useAttendancePrint } from "./useAttendancePrint";
 
-export function useAttendance(meeting: Meeting) {
+export function useAttendance(meeting: Meeting, initialRecords?: any[]) {
   // 1. Records Management
   const {
     records,
@@ -13,7 +13,7 @@ export function useAttendance(meeting: Meeting) {
     handleStatusChange,
     handleDelete,
     allMembers,
-  } = useAttendanceRecords(meeting);
+  } = useAttendanceRecords(meeting, initialRecords);
 
   // 2. Initialization Logic
   useAttendanceInitialization({

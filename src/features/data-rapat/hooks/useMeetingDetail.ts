@@ -4,20 +4,112 @@ import { useJenisRapatStore } from "@/features/jenis-rapat/store/useJenisRapatSt
 import { useNotulisStore } from "@/features/data-notulis/store/useNotulisStore";
 import { useNotulenStore } from "@/features/notulen/store/useNotulenStore";
 import { useAttendance } from "@/features/notulen/hooks/useAttendance";
-import { mockUsers } from "@/mocks/user";
-import { generateMockSekretarisDewan } from "@/mocks/sekretaris-dewan";
-import { generateMockAnggota } from "@/mocks/anggota-dewan";
+import { useAnggotaStore } from "@/features/anggota-dewan/store/useAnggotaStore";
+import { useSekretarisDewanStore } from "@/features/sekretaris-dewan/store/useSekretarisDewanStore";
 import { Meeting } from "@/types/meeting";
 
 export function useMeetingDetail(meetingId: string, role: string) {
-  const { meetings, actions: meetingActions } = useDataRapatStore();
-  const { categories, variants } = useJenisRapatStore();
-  const { users: allNotulisUsers } = useNotulisStore();
+  const {
+    meetings,
+    isInitialized: rapatInit,
+    _hasHydrated: rapatHydrated,
+    actions: meetingActions,
+  } = useDataRapatStore();
+  const {
+    categories,
+    variants,
+    isInitialized: jenisInit,
+    _hasHydrated: jenisHydrated,
+    actions: jenisActions,
+  } = useJenisRapatStore();
+  const {
+    users: allNotulisUsers,
+    isInitialized: notulisInit,
+    _hasHydrated: notulisHydrated,
+    ...notulisActions
+  } = useNotulisStore();
   const { actions: notulenActions } = useNotulenStore();
+  const {
+    anggota: allAnggota,
+    users: allUsers,
+    isInitialized: anggotaInit,
+    _hasHydrated: anggotaHydrated,
+    ...anggotaActions
+  } = useAnggotaStore();
+  const {
+    sekretarisDewan: allSekwanProfiles,
+    users: allSekwanUsers,
+    isInitialized: sekwanInit,
+    _hasHydrated: sekwanHydrated,
+    ...sekwanActions
+  } = useSekretarisDewanStore();
 
-  const [meeting, setMeeting] = useState<Meeting | null>(null);
+  // 1. Data Loading / Hydration Guard
+  // Enhanced check: Wait for actual DATA, not just hydration flag
+  const isHydrating =
+    !rapatHydrated ||
+    !anggotaHydrated ||
+    !notulisHydrated ||
+    (anggotaHydrated && allAnggota.length === 0);
 
-  // Also incude useAttendance here as it depends on meeting
+  // Safety Net: If hydration finishes but data is empty, force populate locally
+  useEffect(() => {
+    if (anggotaHydrated && allAnggota.length === 0) {
+      import("@/mocks/anggota-dewan").then((m) => {
+        anggotaActions.setAnggota(m.generateMockAnggota());
+      });
+      import("@/mocks/user").then((m) => {
+        anggotaActions.setUsers(m.mockUsers);
+      });
+      anggotaActions.markAsInitialized();
+    }
+  }, [anggotaHydrated, allAnggota.length, anggotaActions]);
+
+  // Source meeting directly from store to avoid local state hydration delays
+  const meeting = meetings.find((m) => m.id === meetingId) || null;
+
+  // Derive all data from stores instead of mocks
+  const variant = variants.find((v) => v.id === meeting?.subMeetingCategoryID);
+  const category = categories.find((c) => c.id === meeting?.meetingCategoryID);
+
+  const sekwanProfile = allSekwanProfiles.find(
+    (s) => s.id === meeting?.sekretarisId,
+  );
+  const sekwanUser = allSekwanUsers.find((u) => u.id === sekwanProfile?.userId);
+
+  const notulisUsers =
+    meeting?.notulisIds
+      ?.map((id) => allNotulisUsers.find((u) => u.id === id))
+      .filter(Boolean) || [];
+
+  // Robust Signatories Resolution
+  // Iterate over the invited IDs directly to guarantee we try to resolve every invitation
+  const signatories = (meeting?.invitedAnggotaDewanIds || [])
+    .map((invitedId) => {
+      // 1. Try to find the Anggota entity (checking both ID types)
+      const anggota = allAnggota.find(
+        (a) => a.id === invitedId || a.userId === invitedId,
+      );
+
+      // 2. Identify the User ID (preferred key)
+      const userId = anggota ? anggota.userId : invitedId;
+
+      // 3. Find the User entity (source of Name)
+      const user = allUsers.find((u) => u.id === userId);
+
+      // 4. Return resolved object if we found at least something
+      if (!user && !anggota) return null;
+
+      return {
+        id: userId, // Match pimpinanRapatId format (User ID)
+        anggotaId: anggota?.id,
+        name: user?.name || "Anggota (Nama Tidak Ditemukan)",
+        jabatan: anggota?.jabatan,
+      };
+    })
+    .filter((item): item is NonNullable<typeof item> => item !== null);
+
+  // Also include useAttendance here as it depends on meeting
   const { records: participants } = useAttendance(meeting || ({} as Meeting));
 
   // Initialize Notulen
@@ -27,48 +119,32 @@ export function useMeetingDetail(meetingId: string, role: string) {
     }
   }, [meetingId, notulenActions]);
 
-  // Find Meeting & Auto-set Pimpinan
+  // Auto-set Pimpinan if missing
   useEffect(() => {
-    const found = meetings.find((m) => m.id === meetingId);
-    if (found) {
-      setMeeting(found);
-
-      if (
-        role !== "anggota_dewan" &&
-        !found.pimpinanRapatId &&
-        found.invitedAnggotaDewanIds &&
-        found.invitedAnggotaDewanIds.length > 0
-      ) {
-        meetingActions.updateMeeting(found.id, {
-          pimpinanRapatId: found.invitedAnggotaDewanIds[0],
-        });
-      }
+    if (
+      meeting &&
+      role !== "anggota_dewan" &&
+      !meeting.pimpinanRapatId &&
+      meeting.invitedAnggotaDewanIds &&
+      meeting.invitedAnggotaDewanIds.length > 0
+    ) {
+      meetingActions.updateMeeting(meeting.id, {
+        pimpinanRapatId: meeting.invitedAnggotaDewanIds[0],
+      });
     }
-  }, [meetingId, meetings, role, meetingActions]);
-
-  // Derived Data
-  const variant = variants.find((v) => v.id === meeting?.subMeetingCategoryID);
-  const category = categories.find((c) => c.id === meeting?.meetingCategoryID);
-
-  const sekwanProfile = generateMockSekretarisDewan().find(
-    (s) => s.id === meeting?.sekretarisId,
-  );
-  const sekwanUser = mockUsers.find((u) => u.id === sekwanProfile?.userId);
-
-  const notulisUsers =
-    meeting?.notulisIds
-      ?.map((id) => allNotulisUsers.find((u) => u.id === id))
-      .filter(Boolean) || [];
+  }, [meetingId, meeting?.pimpinanRapatId, role, meetingActions]); // Careful with dependencies
 
   return {
     meeting,
     participants,
+    isHydrating,
     relations: {
       category,
       variant,
       sekwanUser,
       sekwanProfile,
       notulisUsers,
+      signatories,
     },
   };
 }

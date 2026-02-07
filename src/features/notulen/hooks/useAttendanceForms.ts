@@ -5,7 +5,7 @@ import {
   AttendanceStatus,
   ParticipantType,
 } from "@/types/attendance";
-import { mockMitraKerja, mockMitraInstitutions } from "@/mocks/mitra-kerja";
+import { useMitraStore } from "@/features/mitra-kerja/store/useMitraKerjaStore";
 
 interface UseAttendanceFormsProps {
   meetingId: string;
@@ -25,11 +25,14 @@ export function useAttendanceForms({
   const disclosureAddTa = useDisclosure();
   const disclosureEdit = useDisclosure();
 
+  // Store Data
+  const { institutions: allInstitutions } = useMitraStore();
+
   // Temporary State for Add Forms
   const [filterAKD, setFilterAKD] = useState<string>("ALL");
   const [mitraSource, setMitraSource] = useState<
     "person" | "institution" | "manual"
-  >("person");
+  >("institution");
 
   const [selectedMitraId, setSelectedMitraId] = useState("");
   const [selectedInstitutionId, setSelectedInstitutionId] = useState("");
@@ -47,15 +50,14 @@ export function useAttendanceForms({
 
   // Derived Form Data
   const filteredInstitutions = useMemo(() => {
-    if (filterAKD === "ALL") return mockMitraInstitutions;
-    return mockMitraInstitutions.filter((i) => i.akdID === filterAKD);
-  }, [filterAKD]);
+    if (filterAKD === "ALL") return allInstitutions;
+    return allInstitutions.filter((i) => i.akdID === filterAKD);
+  }, [filterAKD, allInstitutions]);
 
   const filteredMitraPersons = useMemo(() => {
-    if (filterAKD === "ALL") return mockMitraKerja;
-    return mockMitraKerja.filter((m) =>
-      m.akdAssociations.includes(filterAKD as any),
-    );
+    // Note: We currently don't have a person store for mitra,
+    // so we fallback to institutions or manual
+    return [];
   }, [filterAKD]);
 
   // Handlers
@@ -69,38 +71,20 @@ export function useAttendanceForms({
       updatedAt: new Date(),
     };
 
-    if (mitraSource === "person") {
-      const mitra = mockMitraKerja.find((m) => m.id === selectedMitraId);
-      if (!mitra) return;
-      const inst = mockMitraInstitutions.find(
-        (i) => i.id === mitra.institutionId,
-      );
-      newRecord = {
-        ...base,
-        id: `att-mitra-${Date.now()}`,
-        entityId: mitra.id,
-        name: mitra.name,
-        jabatan: mitra.position || "Utusan",
-        institution: inst?.name || "Instansi Terkait",
-        displayFormat:
-          `${mitra.name} ® ${inst?.name || "INSTANSI TERKAIT"}`.toUpperCase(),
-      };
-    } else if (mitraSource === "institution") {
-      const inst = mockMitraInstitutions.find(
-        (i) => i.id === selectedInstitutionId,
-      );
+    if (mitraSource === "institution") {
+      const inst = allInstitutions.find((i) => i.id === selectedInstitutionId);
       if (!inst) return;
       newRecord = {
         ...base,
         id: `att-mitra-${Date.now()}`,
         entityId: inst.id,
-        name: mitraPersonName || inst.name,
-        jabatan: mitraPosition || "Utusan",
-        institution: inst.name,
+        name: (mitraPersonName || inst.name).toUpperCase(),
+        jabatan: (mitraPosition || "Utusan").toUpperCase(),
+        institution: inst.name.toUpperCase(),
         displayFormat:
           `${mitraPersonName || inst.name} ® ${inst.name}`.toUpperCase(),
       };
-    } else {
+    } else if (mitraSource === "manual") {
       if (!manualInstitutionName) return;
       newRecord = {
         ...base,
@@ -137,8 +121,8 @@ export function useAttendanceForms({
       entityId: `manual-ta-${Date.now()}`,
       type: "TENAGA_AHLI",
       status: "HADIR",
-      name: newTaName,
-      jabatan: newTaJabatan || "Tenaga Ahli",
+      name: newTaName.toUpperCase(),
+      jabatan: (newTaJabatan || "Tenaga Ahli").toUpperCase(),
       displayFormat:
         `${newTaName} ® ${newTaJabatan || "TENAGA AHLI"}`.toUpperCase(),
       createdAt: new Date(),

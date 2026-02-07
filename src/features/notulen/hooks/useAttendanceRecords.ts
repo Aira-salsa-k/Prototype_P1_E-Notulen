@@ -4,20 +4,31 @@ import { AttendanceRecord, AttendanceStatus } from "@/types/attendance";
 import { useMeetingStore } from "@/features/data-rapat/store/useMeetingStore";
 import { useNotulenStore } from "@/features/notulen/store/useNotulenStore";
 
-export function useAttendanceRecords(meeting: Meeting) {
+export function useAttendanceRecords(
+  meeting: Meeting,
+  initialRecords?: AttendanceRecord[],
+) {
   const meetingActions = useMeetingStore((s) => s.actions);
 
   // State for attendance records
+  // Prioritize initialRecords from parent (which are robustly resolved) over potentially stale meeting prop
   const [records, setRecords] = useState<AttendanceRecord[]>(
-    meeting?.attendanceRecords ?? [],
+    initialRecords ?? meeting?.attendanceRecords ?? [],
   );
 
   // Sync internal records with meeting prop if it changes from outside
   useEffect(() => {
+    // If initialRecords changes (parent updated them), sync them
+    if (initialRecords && initialRecords.length > 0) {
+      setRecords(initialRecords);
+      return;
+    }
+
+    // Fallback to meeting records if store updates
     if (meeting?.attendanceRecords) {
       setRecords(meeting.attendanceRecords);
     }
-  }, [meeting?.attendanceRecords]);
+  }, [meeting?.attendanceRecords, initialRecords]);
 
   // Actions wrapper to update both local state and store
   const updateMeetingStore = (newRecords: AttendanceRecord[]) => {

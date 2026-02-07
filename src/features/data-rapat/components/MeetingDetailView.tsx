@@ -24,15 +24,16 @@ export function MeetingDetailView({ meetingId, role }: MeetingDetailViewProps) {
   const { currentUser } = useAuthStore();
   const { actions: storeActions } = useDataRapatStore();
 
-  const { meeting, participants, relations } = useMeetingDetail(
+  const { meeting, participants, relations, isHydrating } = useMeetingDetail(
     meetingId,
     role,
   );
   const { startMeeting, finishMeeting } = useMeetingActions();
 
-  if (!meeting) {
+  if (isHydrating || !meeting) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] text-gray-500">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4"></div>
         <p>Memuat data rapat...</p>
       </div>
     );
@@ -72,7 +73,11 @@ export function MeetingDetailView({ meetingId, role }: MeetingDetailViewProps) {
       {showPreview ? (
         <MeetingPreview meeting={meeting} participants={participants} />
       ) : (
-        <MeetingTabs meeting={meeting} isReadOnly={isReadOnly} />
+        <MeetingTabs
+          meeting={meeting}
+          isReadOnly={isReadOnly}
+          participants={participants}
+        />
       )}
     </div>
   );

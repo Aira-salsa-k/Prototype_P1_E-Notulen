@@ -60,7 +60,7 @@ export function useAttendancePrint({
     }
 
     if (type === "ANGGOTA_DEWAN") {
-      setPrintHeaderTitle("DAFTAR HADIR\nDEWAN PERWAKILAN RAKYAT KEEROM");
+      setPrintHeaderTitle("DAFTAR HADIR\nDEWAN PERWAKILAN RAKYAT KABUPATEN KEEROM");
     } else if (type === "MITRA_KERJA") {
       setPrintHeaderTitle("DAFTAR HADIR\nPEMERINTAH DAERAH KABUPATEN KEEROM");
     } else {

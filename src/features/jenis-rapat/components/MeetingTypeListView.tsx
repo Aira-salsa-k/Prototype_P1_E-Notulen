@@ -34,6 +34,11 @@ export function MeetingTypeListView({
             variant="splitted"
             selectionMode="multiple"
             className="px-0"
+            defaultSelectedKeys={
+              filteredCategories.length === 1
+                ? [filteredCategories[0].id]
+                : undefined
+            }
           >
             {filteredCategories.map((category) => (
               <AccordionItem

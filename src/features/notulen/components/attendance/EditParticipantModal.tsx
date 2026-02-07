@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@heroui/modal";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from "@heroui/modal";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import { Select, SelectItem } from "@heroui/select";
 import { RadioGroup, Radio } from "@heroui/radio";
 import { AttendanceRecord } from "@/types/attendance";
 import { AKD_LIST } from "../../constants/attendance";
-import { mockMitraInstitutions } from "@/mocks/mitra-kerja";
+import { useMitraStore } from "@/features/mitra-kerja/store/useMitraKerjaStore";
 
 interface EditParticipantModalProps {
   isOpen: boolean;
@@ -16,7 +22,7 @@ interface EditParticipantModalProps {
   onSave: () => void;
   filterAKD: string;
   setFilterAKD: (val: string) => void;
-  filteredInstitutions: typeof mockMitraInstitutions;
+  filteredInstitutions: any[];
 }
 
 export const EditParticipantModal = ({
@@ -29,16 +35,19 @@ export const EditParticipantModal = ({
   setFilterAKD,
   filteredInstitutions,
 }: EditParticipantModalProps) => {
+  const { institutions: allInstitutions } = useMitraStore();
   const [instMode, setInstMode] = useState<"list" | "manual">("list");
 
   // Reset instMode when modal opens or record changes
   useEffect(() => {
     if (isOpen && record?.type === "MITRA_KERJA") {
-      // Check if current institution is in the mock list
-      const isKnown = mockMitraInstitutions.some(i => i.name === record.institution);
+      // Check if current institution is in the store list
+      const isKnown = allInstitutions.some(
+        (i) => i.name === record.institution,
+      );
       setInstMode(isKnown ? "list" : "manual");
     }
-  }, [isOpen, record?.id]);
+  }, [isOpen, record?.id, allInstitutions]);
 
   if (!record) return null;
 
@@ -52,7 +61,7 @@ export const EditParticipantModal = ({
             variant="bordered"
             value={record.name || ""}
             onChange={(e) =>
-              setRecord({ ...record, name: e.target.value })
+              setRecord({ ...record, name: e.target.value.toUpperCase() })
             }
           />
           <Input
@@ -60,7 +69,7 @@ export const EditParticipantModal = ({
             variant="bordered"
             value={record.jabatan || ""}
             onChange={(e) =>
-              setRecord({ ...record, jabatan: e.target.value })
+              setRecord({ ...record, jabatan: e.target.value.toUpperCase() })
             }
           />
 
@@ -86,7 +95,9 @@ export const EditParticipantModal = ({
                     onChange={(e) => setFilterAKD(e.target.value)}
                   >
                     {AKD_LIST.map((akd) => (
-                      <SelectItem key={akd.id} textValue={akd.name}>{akd.name}</SelectItem>
+                      <SelectItem key={akd.id} textValue={akd.name}>
+                        {akd.name}
+                      </SelectItem>
                     ))}
                   </Select>
 
@@ -95,19 +106,28 @@ export const EditParticipantModal = ({
                     variant="bordered"
                     placeholder="Cari Instansi..."
                     selectedKeys={
-                      mockMitraInstitutions.find(i => i.name === record.institution)?.id 
-                      ? [mockMitraInstitutions.find(i => i.name === record.institution)!.id] 
-                      : []
+                      allInstitutions.find((i) => i.name === record.institution)
+                        ?.id
+                        ? [
+                            allInstitutions.find(
+                              (i) => i.name === record.institution,
+                            )!.id,
+                          ]
+                        : []
                     }
                     onChange={(e) => {
-                      const inst = mockMitraInstitutions.find(i => i.id === e.target.value);
+                      const inst = allInstitutions.find(
+                        (i) => i.id === e.target.value,
+                      );
                       if (inst) {
                         setRecord({ ...record, institution: inst.name });
                       }
                     }}
                   >
                     {filteredInstitutions.map((inst) => (
-                      <SelectItem key={inst.id} textValue={inst.name}>{inst.name}</SelectItem>
+                      <SelectItem key={inst.id} textValue={inst.name}>
+                        {inst.name}
+                      </SelectItem>
                     ))}
                   </Select>
                 </div>
@@ -120,7 +140,10 @@ export const EditParticipantModal = ({
                   value={record.institution || ""}
                   placeholder="Masukkan nama instansi baru..."
                   onChange={(e) =>
-                    setRecord({ ...record, institution: e.target.value })
+                    setRecord({
+                      ...record,
+                      institution: e.target.value.toUpperCase(),
+                    })
                   }
                 />
               )}

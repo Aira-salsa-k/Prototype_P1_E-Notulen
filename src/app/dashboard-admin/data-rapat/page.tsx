@@ -19,6 +19,10 @@ import { ClientOnly } from "@/components/utils/ClientOnly";
 import { MeetingFormModal } from "@/features/data-rapat/components/MeetingFormModal";
 import { useNotulisStore } from "@/features/data-notulis/store/useNotulisStore";
 import { useSekretarisDewanStore } from "@/features/sekretaris-dewan/store/useSekretarisDewanStore";
+import { useAnggotaStore } from "@/features/anggota-dewan/store/useAnggotaStore";
+import { useMitraStore } from "@/features/mitra-kerja/store/useMitraKerjaStore";
+import { generateMockAnggota } from "@/mocks/anggota-dewan";
+import { mockMitraInstitutions } from "@/mocks/mitra-kerja";
 
 export default function DataRapatPage() {
   const router = useRouter();
@@ -55,86 +59,28 @@ export default function DataRapatPage() {
     markAsInitialized: markSekwanInit,
   } = useSekretarisDewanStore();
 
-  // Initialize Jenis Rapat Data
-  useEffect(() => {
-    if (jenisRapatHydrated && !jenisRapatInitialized) {
-      jenisRapatActions.setCategories(mockMeetingCategories);
-      jenisRapatActions.setVariants(mockMeetingTypeVariants);
-      jenisRapatActions.markAsInitialized();
-    }
-  }, [jenisRapatHydrated, jenisRapatInitialized, jenisRapatActions]);
+  const {
+    isInitialized: anggotaInitialized,
+    _hasHydrated: anggotaHydrated,
+    setAnggota,
+    setUsers: setAnggotaUsers,
+    markAsInitialized: markAnggotaInit,
+  } = useAnggotaStore();
 
-  // Initialize Notulis Data
-  useEffect(() => {
-    if (notulisHydrated && !notulisInitialized) {
-      setNotulisList(mockNotulis);
-      setNotulisUsers(mockUsers);
-      markNotulisInit();
-    }
-  }, [
-    notulisHydrated,
-    notulisInitialized,
-    setNotulisList,
-    setNotulisUsers,
-    markNotulisInit,
-  ]);
-
-  // Initialize Sekwan Data
-  useEffect(() => {
-    if (sekwanHydrated && !sekwanInitialized) {
-      setSekretarisDewan(generateMockSekretarisDewan());
-      setSekwanUsers(mockUsers);
-      markSekwanInit();
-    }
-  }, [
-    sekwanHydrated,
-    sekwanInitialized,
-    setSekretarisDewan,
-    setSekwanUsers,
-    markSekwanInit,
-  ]);
+  const {
+    isInitialized: mitraInitialized,
+    _hasHydrated: mitraHydrated,
+    setInstitutions,
+    markAsInitialized: markMitraInit,
+  } = useMitraStore();
 
   // Initialize Data
   useEffect(() => {
-    if (_hasHydrated) {
-      if (!isInitialized) {
-        actions.setMeetings(mockMeetings);
-        actions.markAsInitialized();
-      }
+    if (_hasHydrated && !isInitialized) {
+      actions.setMeetings(mockMeetings);
+      actions.markAsInitialized();
     }
-  }, [_hasHydrated, isInitialized, actions, meetings]);
-
-  // Auto-Sync scheduled meetings with latest variants
-  useEffect(() => {
-    if (!isInitialized || variants.length === 0) return;
-
-    meetings.forEach((meeting) => {
-      if (meeting.status === "scheduled") {
-        const variant = variants.find(
-          (v: any) => v.id === meeting.subMeetingCategoryID,
-        );
-        if (variant) {
-          const currentIds = meeting.invitedAnggotaDewanIds || [];
-          const templateIds = variant.members.map((m: any) => m.memberId);
-
-          const isDifferent =
-            currentIds.length !== templateIds.length ||
-            currentIds.some((id, idx) => id !== templateIds[idx]);
-
-          if (isDifferent) {
-            // Update in a way that doesn't trigger immediate loop if possible,
-            // though Zustand/React will handle it.
-            actions.updateMeeting(meeting.id, {
-              invitedAnggotaDewanIds: templateIds,
-              updatedAt: new Date(),
-            });
-          }
-        }
-      }
-    });
-    // We intentionally only depend on variants and isInitialized for the auto-sync trigger
-    // to avoid excessive re-runs when meetings update their fields normally.
-  }, [isInitialized, variants, actions]);
+  }, [_hasHydrated, isInitialized, actions]);
 
   // Derived State
   const filteredMeetings = useMemo(() => {

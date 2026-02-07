@@ -8,9 +8,14 @@ import TabDokumentasi from "@/features/notulen/TabDokumentasi";
 interface MeetingTabsProps {
   meeting: Meeting;
   isReadOnly: boolean;
+  participants: any[]; // Receive fixed participants
 }
 
-export function MeetingTabs({ meeting, isReadOnly }: MeetingTabsProps) {
+export function MeetingTabs({
+  meeting,
+  isReadOnly,
+  participants,
+}: MeetingTabsProps) {
   return (
     <div className="bg-white rounded-2xl border border-gray-200 shadow-sm min-h-[600px] overflow-hidden">
       <Tabs
@@ -28,7 +33,11 @@ export function MeetingTabs({ meeting, isReadOnly }: MeetingTabsProps) {
       >
         <Tab key="absensi" title="Daftar Hadir">
           <div className="p-8">
-            <TabAbsensi meeting={meeting} isReadOnly={isReadOnly} />
+            <TabAbsensi
+              meeting={meeting}
+              isReadOnly={isReadOnly}
+              initialRecords={participants}
+            />
           </div>
         </Tab>
         <Tab key="notulensi" title="Notulensi Rapat">

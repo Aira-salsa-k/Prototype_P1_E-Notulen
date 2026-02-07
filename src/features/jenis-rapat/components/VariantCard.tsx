@@ -167,7 +167,7 @@ export function VariantCard({
       {!isReadOnly && (
         <div className="flex justify-end items-center px-2">
           <div className="text-xs mt-4 text-gray-500 italic">
-            * Edit varian untuk menambah atau menghapus anggota
+            * Edit Jenis Rapat untuk menambah atau menghapus anggota
           </div>
         </div>
       )}

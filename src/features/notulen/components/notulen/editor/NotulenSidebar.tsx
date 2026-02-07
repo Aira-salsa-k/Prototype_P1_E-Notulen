@@ -195,6 +195,50 @@ export default function NotulenSidebar({
                 })}
               </div>
             </AccordionItem>
+
+            <AccordionItem
+              key="ta"
+              aria-label="Tenaga Ahli"
+              startContent={
+                <UserCircleIcon className="w-4 h-4 text-purple-500" />
+              }
+              title={`TENAGA AHLI (${groupedParticipants.ta.length})`}
+            >
+              <div className="flex flex-col gap-0.5">
+                {groupedParticipants.ta.map((p) => {
+                  const existingSection = sections.find(
+                    (s) => s.participanID === p.entityId,
+                  );
+                  const isActive =
+                    existingSection && activeTabId === existingSection.id;
+                  return (
+                    <button
+                      key={p.id}
+                      onClick={() => handleSpeakerSelect(p)}
+                      className={`w-full text-left p-1.5 rounded-lg transition-all flex items-center justify-between border ${
+                        isActive
+                          ? "bg-purple-50 border-purple-200"
+                          : "bg-white border-transparent hover:bg-gray-50 hover:border-gray-100"
+                      }`}
+                    >
+                      <div className="flex flex-col min-w-0 pr-2">
+                        <span
+                          className={`text-xs font-bold truncate ${isActive ? "text-purple-700" : "text-gray-700"}`}
+                        >
+                          {p.name}
+                        </span>
+                        <span className="text-[9px] text-gray-400 truncate uppercase mt-0.5">
+                          {p.jabatan || "TENAGA AHLI"}
+                        </span>
+                      </div>
+                      {isActive && (
+                        <div className="h-1.5 w-1.5 rounded-full bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.5)] flex-shrink-0" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </AccordionItem>
           </Accordion>
         ) : (
           <div className="text-center py-12 text-gray-400 text-xs italic">

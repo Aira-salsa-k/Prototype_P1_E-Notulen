@@ -168,9 +168,14 @@ export function MeetingFormModal({
     }
 
     const pad = (n: number) => n.toString().padStart(2, "0");
+    const selectedVariant = variants.find(
+      (v) => v.id === data.meetingVariantID,
+    );
 
     const payload = {
       ...data,
+      meetingCategoryID:
+        selectedVariant?.categoryId || data.meetingCategoryID || "",
       subMeetingCategoryID: data.meetingVariantID,
       status: initialData?.status || "scheduled",
       date: data.date.toString(),
@@ -183,6 +188,12 @@ export function MeetingFormModal({
       notulisIds: Array.isArray(data.notulisIds)
         ? data.notulisIds
         : (data.notulisIds as string).split(",").filter(Boolean),
+      // Always sync participants with the selected variant on save/edit
+      // This ensures that if the variant members changed (e.g. added new member), the meeting reflects it.
+      invitedAnggotaDewanIds:
+        selectedVariant?.members && selectedVariant.members.length > 0
+          ? selectedVariant.members.map((m) => m.memberId)
+          : data.invitedAnggotaDewanIds || [],
     };
     onSubmit(payload);
   };

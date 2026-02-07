@@ -91,7 +91,9 @@ export function DataRapatList({
                   <div className="max-w-md">
                     <div className="flex items-center gap-2 mb-2">
                       <MeetingTypeBadge
-                        categoryName={category?.name || "Rapat"}
+                        categoryName={
+                          category?.name || meeting.meetingCategoryID || "RAPAT"
+                        }
                         subCategoryName={variant?.subName}
                         color={(category?.color || "default") as any}
                         size="sm"

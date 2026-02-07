@@ -4,9 +4,8 @@ import { AttendanceRecord } from "@/types/attendance";
 import { useMeetingStore } from "@/features/data-rapat/store/useMeetingStore";
 import { useJenisRapatStore } from "@/features/jenis-rapat/store/useJenisRapatStore";
 import { mockUsers } from "@/mocks/user";
-import { mockMitraKerja, mockMitraInstitutions } from "@/mocks/mitra-kerja";
-import { mockTenagaAhli } from "@/mocks/tenaga-ahli";
-import { generateMockAnggota } from "@/mocks/anggota-dewan";
+import { useAnggotaStore } from "@/features/anggota-dewan/store/useAnggotaStore";
+import { useMitraStore } from "@/features/mitra-kerja/store/useMitraKerjaStore";
 
 interface UseAttendanceInitializationProps {
   meeting: Meeting;
@@ -21,6 +20,8 @@ export function useAttendanceInitialization({
 }: UseAttendanceInitializationProps) {
   const meetingActions = useMeetingStore((s) => s.actions);
   const variants = useJenisRapatStore((state) => state.variants);
+  const { anggota: allAnggota, users: allUsers } = useAnggotaStore();
+  const { institutions: allInstitutions } = useMitraStore();
 
   useEffect(() => {
     if (!meeting) return;
@@ -44,42 +45,68 @@ export function useAttendanceInitialization({
       ];
 
       const isMatch =
-        invitedIds.length === currentRecordIds.length &&
+        invitedIds.length <= currentRecordIds.length &&
         invitedIds.every((id) => currentRecordIds.includes(id));
 
-      if (isMatch) return; // Everything is in sync, no need to re-init
+      // Check if any records have placeholder names that can now be resolved
+      const hasPlaceholders = meeting.attendanceRecords?.some(
+        (r) => r.name === "Unknown Member" || !r.name,
+      );
+
+      // Only return if IDs match AND we don't have unresolved names
+      if (isMatch && !hasPlaceholders) return;
     }
 
-    // --- RE-INIT LOGIC ---
-    const initRecords: AttendanceRecord[] = [];
+    // --- RE-INIT / SYNC LOGIC ---
+    const currentRecords = meeting.attendanceRecords || [];
+
+    // Normalize invited IDs to guaranteed User IDs for comparison
+    // This handles the case where invited ID is "anggota-XXX" but record stores "user-anggota-XXX"
+    const normalizedInvitedIds = (meeting.invitedAnggotaDewanIds || []).map(
+      (invitedId) => {
+        const anggota = allAnggota.find(
+          (a) => a.id === invitedId || a.userId === invitedId,
+        );
+        return anggota ? anggota.userId : invitedId;
+      },
+    );
+
+    // Keep records that are NOT from the template (manual ones).
+    // We filter out any record that matches an invited User ID.
+    const manualRecords = currentRecords.filter(
+      (r) =>
+        !normalizedInvitedIds.includes(r.entityId) &&
+        !(meeting.invitedMitraKerjaIds || []).includes(r.entityId) &&
+        !(meeting.invitedTenagaAhliIds || []).includes(r.entityId),
+    );
+
+    const initRecords: AttendanceRecord[] = [...manualRecords];
     const variant = variants.find((v) => v.id === meeting.subMeetingCategoryID);
 
     meeting.invitedAnggotaDewanIds?.forEach((id, index) => {
+      // Resolve ID to User ID first
+      const anggota = allAnggota.find((a) => a.id === id || a.userId === id);
+      const userId = anggota ? anggota.userId : id;
+
+      // Check if already in manualRecords (shouldn't be, but safety first)
+      if (manualRecords.some((r) => r.entityId === userId)) return;
+      // Check if already added to initRecords in this loop (prevent duplicate invites)
+      if (initRecords.some((r) => r.entityId === userId)) return;
+
       const memberConfig = variant?.members.find((m) => m.memberId === id);
-      const user = mockUsers.find((u) => u.id === id);
-      const mockAnggota = generateMockAnggota().find((a) => a.id === id);
+      const user = allUsers.find((u) => u.id === userId);
 
-      const resolvedName = memberConfig?.name || user?.name || "Unknown Member";
+      // Determine Name
+      const resolvedName =
+        memberConfig?.name || user?.name || "Anggota (Nama Tidak Ditemukan)";
 
-      // Logic: Prefer meetingRole, then extract from displayFormat, fallback to "Anggota"
-      // Avoid using mockAnggota.jabatan as it is the "Formal Position", not "Meeting Role"
-      let resolvedJabatan = memberConfig?.meetingRole || "";
-
-      if (!resolvedJabatan && memberConfig?.displayFormat) {
-        const parts = memberConfig.displayFormat.split(/®|-|\|/);
-        if (parts.length > 1) {
-          resolvedJabatan = parts[parts.length - 1].trim();
-        }
-      }
-
-      if (!resolvedJabatan) {
-        resolvedJabatan = "Anggota";
-      }
+      let resolvedJabatan =
+        memberConfig?.meetingRole || anggota?.jabatan || "Anggota";
 
       initRecords.push({
-        id: `att-${meeting.id}-${id}-${index}`,
+        id: `att-${meeting.id}-${userId}-${index}`, // Use userId for stability
         meetingId: meeting.id,
-        entityId: id,
+        entityId: userId, // Store UserID as entity ID strictly
         type: "ANGGOTA_DEWAN",
         status: "HADIR",
         name: resolvedName,
@@ -93,12 +120,12 @@ export function useAttendanceInitialization({
     });
 
     meeting.invitedMitraKerjaIds?.forEach((id, index) => {
-      const mitra = mockMitraKerja.find((m) => m.id === id);
-      if (!mitra) return;
+      // Check if already in records
+      if (manualRecords.some((r) => r.entityId === id)) return;
 
-      const inst = mockMitraInstitutions.find(
-        (i) => i.id === mitra.institutionId,
-      );
+      // In real app, we might want to fetch mitra but for now use institutions if it matches
+      const inst = allInstitutions.find((i) => i.id === id);
+      if (!inst) return;
 
       initRecords.push({
         id: `att-${meeting.id}-${id}-${index}`,
@@ -106,33 +133,19 @@ export function useAttendanceInitialization({
         entityId: id,
         type: "MITRA_KERJA",
         status: "HADIR",
-        name: mitra.name,
-        jabatan: mitra.position || "Utusan",
-        institution: inst?.name || "Instansi Terkait",
-        displayFormat:
-          `${mitra.name} ® ${inst?.name || "INSTANSI TERKAIT"}`.toUpperCase(),
+        name: inst.name,
+        jabatan: "Utusan",
+        institution: inst.name,
+        displayFormat: `${inst.name} ® DINAS/INSTANSI`.toUpperCase(),
         createdAt: new Date(),
         updatedAt: new Date(),
       });
     });
 
+    // Note: Tenaga Ahli usually manual, but if invited by ID we can add them here
     meeting.invitedTenagaAhliIds?.forEach((id, index) => {
-      const ta = mockTenagaAhli.find((t) => t.id === id);
-      if (!ta) return;
-
-      initRecords.push({
-        id: `att-${meeting.id}-${id}-${index}`,
-        meetingId: meeting.id,
-        entityId: id,
-        type: "TENAGA_AHLI",
-        status: "HADIR",
-        name: ta.name,
-        jabatan: ta.jabatan || "Tenaga Ahli",
-        displayFormat:
-          `${ta.name} ® ${ta.jabatan || "TENAGA AHLI"}`.toUpperCase(),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
+      if (manualRecords.some((r) => r.entityId === id)) return;
+      // Skip if not found
     });
 
     if (initRecords.length) {
@@ -149,5 +162,8 @@ export function useAttendanceInitialization({
     meeting?.invitedTenagaAhliIds,
     variants,
     recordsLength,
-  ]); // Sync when essential invitation data changes
+    allUsers.length,
+    allAnggota.length,
+    allInstitutions.length,
+  ]); // Sync when essential invitation data OR user data (hydration) changes
 }

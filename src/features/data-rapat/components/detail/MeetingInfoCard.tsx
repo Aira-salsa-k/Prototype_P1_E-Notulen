@@ -22,6 +22,7 @@ interface MeetingInfoCardProps {
     sekwanUser?: any;
     sekwanProfile?: any;
     notulisUsers: any[];
+    signatories?: any[];
   };
   isReadOnly: boolean;
   onUpdatePimpinan: (id: string) => void;
@@ -175,18 +176,22 @@ export function MeetingInfoCard({
                     value: "font-bold text-gray-900",
                   }}
                 >
-                  {(meeting.invitedAnggotaDewanIds || []).map((id) => {
-                    const name = getMemberName(id);
-                    return (
-                      <SelectItem key={id} textValue={name}>
-                        {name}
-                      </SelectItem>
-                    );
-                  })}
+                  {(relations.signatories || []).map((s: any) => (
+                    <SelectItem key={s.id} textValue={s.name}>
+                      {s.name}
+                    </SelectItem>
+                  ))}
                 </Select>
               ) : (
                 <div className="font-bold text-gray-900">
-                  {getMemberName(meeting.pimpinanRapatId || "")}
+                  {relations.signatories?.find(
+                    (s: any) => s.id === meeting.pimpinanRapatId,
+                  )?.name ||
+                    relations.signatories?.find(
+                      (s: any) => s.anggotaId === meeting.pimpinanRapatId,
+                    )?.name ||
+                    meeting.pimpinanRapatId ||
+                    "Belum ditentukan"}
                 </div>
               )}
             </div>

@@ -308,7 +308,7 @@ export const AttendancePrintDocument = ({
                   <p className="font-bold uppercase mb-10">
                     {settings.signatoryRole},
                   </p>
-                  <p className="font-bold uppercase underline">
+                  <p className="font-bold uppercase">
                     {settings.signatoryName || ".........................."}
                   </p>
                 </div>

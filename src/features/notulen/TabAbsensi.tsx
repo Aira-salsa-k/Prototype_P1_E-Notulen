@@ -17,14 +17,19 @@ import { useAttendance } from "./hooks/useAttendance";
 interface TabAbsensiProps {
   meeting: Meeting;
   isReadOnly?: boolean;
+  initialRecords?: any[];
 }
 
-export default function TabAbsensi({ meeting, isReadOnly = false }: TabAbsensiProps) {
+export default function TabAbsensi({
+  meeting,
+  isReadOnly = false,
+  initialRecords,
+}: TabAbsensiProps) {
   const {
     records,
     allMembers,
     filteredInstitutions,
-    
+
     // Print State
     printData,
     printTitle,
@@ -73,126 +78,142 @@ export default function TabAbsensi({ meeting, isReadOnly = false }: TabAbsensiPr
     handleEdit,
     handleUpdateRecord,
     openPrintSettings,
-    handleConfirmPrint
-  } = useAttendance(meeting);
+    handleConfirmPrint,
+  } = useAttendance(meeting, initialRecords);
 
   return (
     <>
-        {/* Hidden Print Document - Must be outside print:hidden scope */}
-        <AttendancePrintDocument 
-            meeting={meeting}
-            title={printTitle}
-            data={printData}
-            settings={finalPrintSettings}
+      {/* Hidden Print Document - Must be outside print:hidden scope */}
+      <AttendancePrintDocument
+        meeting={meeting}
+        title={printTitle}
+        data={printData}
+        settings={finalPrintSettings}
+      />
+
+      <div className="space-y-8 print:hidden">
+        {/* Render Tables */}
+        <AttendanceTable
+          type="ANGGOTA_DEWAN"
+          title="Anggota Dewan"
+          data={records.filter((r) => r.type === "ANGGOTA_DEWAN")}
+          isReadOnly={isReadOnly}
+          canAdd={false}
+          onPrint={openPrintSettings}
+          onStatusChange={handleStatusChange}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
         />
 
-        <div className="space-y-8 print:hidden">
-            {/* Render Tables */}
-            <AttendanceTable 
-              type="ANGGOTA_DEWAN"
-              title="Anggota Dewan"
-              data={records.filter(r => r.type === "ANGGOTA_DEWAN")}
-              isReadOnly={isReadOnly}
-              canAdd={false}
-              onPrint={openPrintSettings}
-              onStatusChange={handleStatusChange}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-            />
-
-            <AttendanceTable 
-              type="MITRA_KERJA"
-              title="Mitra Kerja"
-              data={records.filter(r => r.type === "MITRA_KERJA")}
-              isReadOnly={isReadOnly}
-              canAdd={true}
-              onAdd={disclosureAddMitra.onOpen}
-              onPrint={openPrintSettings}
-              onStatusChange={handleStatusChange}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-            />
-
-            <AttendanceTable 
-              type="TENAGA_AHLI"
-              title="Tenaga Ahli"
-              data={records.filter(r => r.type === "TENAGA_AHLI")}
-              isReadOnly={isReadOnly}
-              canAdd={true}
-              onAdd={disclosureAddTa.onOpen}
-              onPrint={openPrintSettings}
-              onStatusChange={handleStatusChange}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-            />
-        </div>
-
-        {/* Modular Modals */}
-        <AddMitraModal 
-            isOpen={disclosureAddMitra.isOpen}
-            onClose={disclosureAddMitra.onClose}
-            filterAKD={filterAKD}
-            setFilterAKD={setFilterAKD}
-            mitraSource={mitraSource}
-            setMitraSource={setMitraSource}
-            selectedInstitutionId={selectedInstitutionId}
-            setSelectedInstitutionId={setSelectedInstitutionId}
-            mitraPersonName={mitraPersonName}
-            setMitraPersonName={setMitraPersonName}
-            mitraPosition={mitraPosition}
-            setMitraPosition={setMitraPosition}
-            manualInstitutionName={manualInstitutionName}
-            setManualInstitutionName={setManualInstitutionName}
-            filteredInstitutions={filteredInstitutions}
-            onSave={handleAddMitra}
+        <AttendanceTable
+          type="MITRA_KERJA"
+          title="Mitra Kerja"
+          data={records.filter((r) => r.type === "MITRA_KERJA")}
+          isReadOnly={isReadOnly}
+          canAdd={true}
+          onAdd={disclosureAddMitra.onOpen}
+          onPrint={openPrintSettings}
+          onStatusChange={handleStatusChange}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
         />
 
-        <AddTaModal 
-            isOpen={disclosureAddTa.isOpen}
-            onClose={disclosureAddTa.onClose}
-            name={newTaName}
-            setName={setNewTaName}
-            jabatan={newTaJabatan}
-            setJabatan={setNewTaJabatan}
-            onSave={handleAddTa}
+        <AttendanceTable
+          type="TENAGA_AHLI"
+          title="Tenaga Ahli"
+          data={records.filter((r) => r.type === "TENAGA_AHLI")}
+          isReadOnly={isReadOnly}
+          canAdd={true}
+          onAdd={disclosureAddTa.onOpen}
+          onPrint={openPrintSettings}
+          onStatusChange={handleStatusChange}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
         />
+      </div>
 
-        <EditParticipantModal 
-            isOpen={disclosureEdit.isOpen}
-            onClose={disclosureEdit.onClose}
-            record={editingRecord}
-            setRecord={setEditingRecord}
-            onSave={handleUpdateRecord}
-            filterAKD={filterAKD}
-            setFilterAKD={setFilterAKD}
-            filteredInstitutions={filteredInstitutions}
-        />
+      {/* Modular Modals */}
+      <AddMitraModal
+        isOpen={disclosureAddMitra.isOpen}
+        onClose={disclosureAddMitra.onClose}
+        filterAKD={filterAKD}
+        setFilterAKD={setFilterAKD}
+        mitraSource={mitraSource}
+        setMitraSource={setMitraSource}
+        selectedInstitutionId={selectedInstitutionId}
+        setSelectedInstitutionId={setSelectedInstitutionId}
+        mitraPersonName={mitraPersonName}
+        setMitraPersonName={setMitraPersonName}
+        mitraPosition={mitraPosition}
+        setMitraPosition={setMitraPosition}
+        manualInstitutionName={manualInstitutionName}
+        setManualInstitutionName={setManualInstitutionName}
+        filteredInstitutions={filteredInstitutions}
+        onSave={handleAddMitra}
+      />
 
-        <PrintSettingsModal 
-            isOpen={isPrintModalOpen}
-            onClose={() => setIsPrintModalOpen(false)}
-            printDate={printDate}
-            setPrintDate={setPrintDate}
-            selectedSignatoryId={selectedSignatoryId}
-            setSelectedSignatoryId={setSelectedSignatoryId}
-            signatories={allMembers}
-            printHeaderTitle={printHeaderTitle}
-            setPrintHeaderTitle={setPrintHeaderTitle}
-            printMode={printMode}
-            setPrintMode={setPrintMode}
-            onConfirm={handleConfirmPrint}
-        />
-        
-        <style jsx global>{`
-            @media print {
-                @page { margin: 1cm; size: A4; }
-                body * { visibility: hidden; }
-                #attendance-print-document, #attendance-print-document * { visibility: visible; }
-                #attendance-print-document .invisible, 
-                #attendance-print-document .invisible * { visibility: hidden !important; }
-                #attendance-print-document { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
-            }
-        `}</style>
+      <AddTaModal
+        isOpen={disclosureAddTa.isOpen}
+        onClose={disclosureAddTa.onClose}
+        name={newTaName}
+        setName={setNewTaName}
+        jabatan={newTaJabatan}
+        setJabatan={setNewTaJabatan}
+        onSave={handleAddTa}
+      />
+
+      <EditParticipantModal
+        isOpen={disclosureEdit.isOpen}
+        onClose={disclosureEdit.onClose}
+        record={editingRecord}
+        setRecord={setEditingRecord}
+        onSave={handleUpdateRecord}
+        filterAKD={filterAKD}
+        setFilterAKD={setFilterAKD}
+        filteredInstitutions={filteredInstitutions}
+      />
+
+      <PrintSettingsModal
+        isOpen={isPrintModalOpen}
+        onClose={() => setIsPrintModalOpen(false)}
+        printDate={printDate}
+        setPrintDate={setPrintDate}
+        selectedSignatoryId={selectedSignatoryId}
+        setSelectedSignatoryId={setSelectedSignatoryId}
+        signatories={allMembers}
+        printHeaderTitle={printHeaderTitle}
+        setPrintHeaderTitle={setPrintHeaderTitle}
+        printMode={printMode}
+        setPrintMode={setPrintMode}
+        onConfirm={handleConfirmPrint}
+      />
+
+      <style jsx global>{`
+        @media print {
+          @page {
+            margin: 1cm;
+            size: A4;
+          }
+          body * {
+            visibility: hidden;
+          }
+          #attendance-print-document,
+          #attendance-print-document * {
+            visibility: visible;
+          }
+          #attendance-print-document .invisible,
+          #attendance-print-document .invisible * {
+            visibility: hidden !important;
+          }
+          #attendance-print-document {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+          }
+        }
+      `}</style>
     </>
   );
 }
