@@ -7,12 +7,13 @@ import {
   PlusIcon,
   ListBulletIcon,
   ChevronRightIcon,
-  PencilIcon,
+  PencilSquareIcon,
   TrashIcon,
   FolderIcon,
 } from "@heroicons/react/24/outline";
 import { MeetingCategory, MeetingTypeVariant } from "@/types/meeting";
 import { VariantCard } from "./VariantCard";
+import { AppButton } from "@/components/ui/button/AppButton";
 
 interface CategorySectionProps {
   category: MeetingCategory;
@@ -77,7 +78,7 @@ export function CategorySection({
           </div>
         ) : categoryVariants.length === 1 ? (
           // SINGLE VARIANT: DIRECT DISPLAY
-          <div className="bg-gray-50/30 rounded-2xl border border-gray-100 p-6 animate-in fade-in duration-500">
+          <div className="bg-gray-50/30 rounded-2xl border-2 border-primary/20 p-6 animate-in fade-in duration-500">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-4">
                 <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
@@ -116,15 +117,14 @@ export function CategorySection({
               {!isReadOnly && (onEdit || onDelete) && (
                 <div className="flex items-center gap-2">
                   {onEdit && (
-                    <Button
-                      size="sm"
-                      isIconOnly
-                      variant="flat"
-                      color="primary"
-                      onPress={() => onEdit(categoryVariants[0])}
+                    <div
+                      role="button"
+                      className="p-2 rounded-lg bg-amber-200 text-amber-800 hover:bg-amber-300/70 hover:text-amber-700 transition-colors cursor-pointer flex items-center justify-center"
+                      onClick={() => onEdit(categoryVariants[0])}
+                      title="Edit  Anggota rapat"
                     >
-                      <PencilIcon className="h-4 w-4" />
-                    </Button>
+                      <PencilSquareIcon className="h-4 w-4 " />
+                    </div>
                   )}
                   {onDelete && (
                     <Button
@@ -159,14 +159,14 @@ export function CategorySection({
           <Accordion
             variant="splitted"
             selectionMode="multiple"
-            className="px-0"
+            className="px-0 "
           >
             {categoryVariants.map((variant) => (
               <AccordionItem
                 key={variant.id}
                 aria-label={variant.subName || category.name}
                 title={
-                  <div className="flex items-center justify-between w-full pr-4">
+                  <div className="flex items-center justify-between w-full pr-4 ">
                     <div className="flex items-center gap-3">
                       <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                         <FolderIcon className="w-5 h-5" />
@@ -213,12 +213,14 @@ export function CategorySection({
                           {onEdit && (
                             <div
                               role="button"
-                              tabIndex={0}
-                              className="p-2 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors cursor-pointer"
-                              title="Edit Jenis rapat"
-                              onClick={() => onEdit(variant)}
+                              className="p-2 rounded-lg bg-amber-200 text-amber-800 hover:bg-amber-300/70 hover:text-amber-700 transition-colors cursor-pointer flex items-center justify-center"
+                              title="Edit Anggota rapat"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onEdit(variant);
+                              }}
                             >
-                              <PencilIcon className="h-4 w-4" />
+                              <PencilSquareIcon className="h-4 w-4" />
                             </div>
                           )}
 

@@ -73,7 +73,7 @@ export const KopSuratHeader = ({
       </div>
 
       {/* DOUBLE LINE Separator */}
-      <div className={`mb-4 print:mb-2 print:-mt-3 ${lineClassName}`}>
+      <div className={`mb-4 print:mb-6 print:-mt-3 ${lineClassName}`}>
         <div className="border-b-[3px] border-black"></div>
         <div className="border-b-[1px] border-black mt-[2px]"></div>
       </div>

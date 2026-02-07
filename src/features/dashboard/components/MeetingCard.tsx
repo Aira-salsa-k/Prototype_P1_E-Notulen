@@ -69,7 +69,7 @@ export default function MeetingCard({
 
             <div className="flex items-center justify-end gap-3">
               <Link href={`${getDashboardPath()}/data-rapat/${meeting.id}`}>
-                <AppButton size="sm" color="hijau">
+                <AppButton size="sm" color="ungu">
                   Masuk ke halaman Rapat
                 </AppButton>
               </Link>

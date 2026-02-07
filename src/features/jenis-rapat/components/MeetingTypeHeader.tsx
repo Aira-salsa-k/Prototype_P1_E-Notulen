@@ -56,7 +56,7 @@ export function MeetingTypeHeader({
 
           {onAdd && (
             <AppButton
-              color="kuning"
+              color="hijau"
               className="font-semibold w-full sm:w-auto"
               startContent={<PlusIcon className="h-4 w-4" />}
               onPress={onAdd}

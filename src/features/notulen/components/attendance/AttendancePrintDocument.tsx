@@ -56,7 +56,7 @@ export const AttendancePrintDocument = ({
             className={`${isEverythingElseHidden ? "invisible" : "visible"}`}
           >
             <KopSuratHeader
-              contentClassName="px-2"
+              contentClassName="px-2 "
               lineClassName="mx-10"
               logoClassName="ml-8"
             />
@@ -79,7 +79,7 @@ export const AttendancePrintDocument = ({
               className={`mb-3 ${isEverythingElseHidden ? "invisible" : "visible"}`}
             >
               <div className="border-b-[1px] border-black"></div>
-              <div className="border-b-[3px] border-[#FFFF00] mt-[1px]"></div>
+              <div className="border-b-[3px] border-[#5D7387] mt-[1px]"></div>
               <div className="border-b-[1px] border-black mt-[1px]"></div>
             </div>
 
@@ -95,7 +95,11 @@ export const AttendancePrintDocument = ({
                   <tr>
                     <td
                       className="font-bold align-top"
-                      style={{ padding: "1px 0", lineHeight: "1" }}
+                      style={{
+                        width: "100px",
+                        padding: "1px 0",
+                        lineHeight: "1",
+                      }}
                     >
                       Masa Sidang
                     </td>
@@ -119,13 +123,21 @@ export const AttendancePrintDocument = ({
                   <tr>
                     <td
                       className="font-bold align-top"
-                      style={{ padding: "1px 0", lineHeight: "1" }}
+                      style={{
+                        width: "100px",
+                        padding: "1px 0",
+                        lineHeight: "1",
+                      }}
                     >
                       Dasar Surat
                     </td>
                     <td
                       className="align-top"
-                      style={{ padding: "1px 0", lineHeight: "1" }}
+                      style={{
+                        width: "12px",
+                        padding: "1px 0",
+                        lineHeight: "1",
+                      }}
                     >
                       :
                     </td>
@@ -139,13 +151,21 @@ export const AttendancePrintDocument = ({
                   <tr>
                     <td
                       className="font-bold align-top"
-                      style={{ padding: "1px 0", lineHeight: "1" }}
+                      style={{
+                        width: "100px",
+                        padding: "1px 0",
+                        lineHeight: "1",
+                      }}
                     >
                       Hari/Tanggal
                     </td>
                     <td
                       className="align-top"
-                      style={{ padding: "1px 0", lineHeight: "1" }}
+                      style={{
+                        width: "12px",
+                        padding: "1px 0",
+                        lineHeight: "1",
+                      }}
                     >
                       :
                     </td>
@@ -159,13 +179,21 @@ export const AttendancePrintDocument = ({
                   <tr>
                     <td
                       className="font-bold align-top"
-                      style={{ padding: "1px 0", lineHeight: "1" }}
+                      style={{
+                        width: "100px",
+                        padding: "1px 0",
+                        lineHeight: "1",
+                      }}
                     >
                       Waktu
                     </td>
                     <td
                       className="align-top"
-                      style={{ padding: "1px 0", lineHeight: "1" }}
+                      style={{
+                        width: "12px",
+                        padding: "1px 0",
+                        lineHeight: "1",
+                      }}
                     >
                       :
                     </td>
@@ -179,13 +207,21 @@ export const AttendancePrintDocument = ({
                   <tr>
                     <td
                       className="font-bold align-top"
-                      style={{ padding: "1px 0", lineHeight: "1" }}
+                      style={{
+                        width: "100px",
+                        padding: "1px 0",
+                        lineHeight: "1",
+                      }}
                     >
                       Tempat
                     </td>
                     <td
                       className="align-top"
-                      style={{ padding: "1px 0", lineHeight: "1" }}
+                      style={{
+                        width: "12px",
+                        padding: "1px 0",
+                        lineHeight: "1",
+                      }}
                     >
                       :
                     </td>
@@ -199,13 +235,21 @@ export const AttendancePrintDocument = ({
                   <tr>
                     <td
                       className="font-bold align-top"
-                      style={{ padding: "1px 0", lineHeight: "1" }}
+                      style={{
+                        width: "100px",
+                        padding: "1px 0",
+                        lineHeight: "1",
+                      }}
                     >
                       Agenda
                     </td>
                     <td
                       className="align-top"
-                      style={{ padding: "1px 0", lineHeight: "1" }}
+                      style={{
+                        width: "12px",
+                        padding: "1px 0",
+                        lineHeight: "1",
+                      }}
                     >
                       :
                     </td>
@@ -225,7 +269,7 @@ export const AttendancePrintDocument = ({
               className={`border border-black ${isEverythingElseHidden ? "invisible" : "visible"}`}
             >
               <table className="w-full text-left border-collapse">
-                <thead className="bg-[#FABF8F] text-black border-b border-black text-center">
+                <thead className="bg-[#ECECEC] text-black border-b border-black text-center">
                   <tr
                     style={{ fontFamily: "Cambria, serif", fontSize: "11pt" }}
                     className="uppercase font-bold"

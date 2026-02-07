@@ -62,7 +62,7 @@ export function VariantCard({
   return (
     <div className="mt-2 ">
       {/* MEMBERS TABLE */}
-      <div className="border border-gray-200/60 rounded-xl overflow-hidden shadow-xs">
+      <div className="border border-gray-200/90 rounded-xl overflow-hidden shadow-xs">
         <Table
           aria-label="Tabel Anggota Rapat"
           removeWrapper
