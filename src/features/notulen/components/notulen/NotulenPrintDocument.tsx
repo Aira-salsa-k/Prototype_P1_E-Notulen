@@ -234,11 +234,12 @@ export const NotulenPrintDocument = ({
 
         {/* ATTENDANCE SECTION */}
         <div className="mb-8 font-arimo">
-          <h3 className="font-bold uppercase text-md mb-4 text-center">
-            DAFTAR PESERTA RAPAT
-          </h3>
-          {/* 1. INTERNAL DEWAN */}
-          <div className="mb-6 break-inside-avoid">
+          {/* Wrap Title and First Section together to prevent orphan title */}
+          <div className="break-inside-avoid mb-6">
+            <h3 className="font-bold uppercase text-md mb-4 text-center">
+              DAFTAR PESERTA RAPAT
+            </h3>
+            {/* 1. INTERNAL DEWAN */}
             <h4 className="font-bold text-sm mb-2">
               DAFTAR HADIR ANGGOTA DPRK KEEROM
             </h4>
