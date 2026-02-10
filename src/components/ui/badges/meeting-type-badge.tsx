@@ -1,36 +1,36 @@
 import { BaseBadge } from "./BaseBadge";
 import { AKD_CONFIG } from "@/lib/config/akd";
 import { AKD } from "@/types/anggota-dewan";
+import { SemanticTone } from "@/types";
 
 interface MeetingTypeBadgeProps {
   categoryName: string;
   subCategoryName?: string;
-  color?: string; // "default" | "primary" | "secondary" | "success" | "warning" | "danger"
+  color?: SemanticTone;
   size?: "sm" | "md" | "lg";
 }
 
 export function MeetingTypeBadge({
   categoryName,
   subCategoryName,
-  color = "default",
+  color = "neutral",
   size = "sm",
 }: MeetingTypeBadgeProps) {
-  // Check if categoryName itself is an AKD key
-  const akdConfig = AKD_CONFIG[categoryName as AKD];
+  // 1. Resolve configuration from AKD_CONFIG
+  // Search by key first, then fallback to label matching
+  const akdEntry =
+    AKD_CONFIG[categoryName as AKD] ||
+    Object.values(AKD_CONFIG).find(
+      (config) => config.label.toLowerCase() === categoryName.toLowerCase(),
+    );
 
-  const resolvedLabel = akdConfig ? akdConfig.label : categoryName;
-  const resolvedTone = akdConfig ? akdConfig.tone : color;
+  const resolvedLabel = akdEntry ? akdEntry.label : categoryName;
+  const resolvedTone = akdEntry ? akdEntry.tone : color;
 
+  // 2. Format label: "Category - Subcategory" or just "Category"
   const label = subCategoryName
     ? `${resolvedLabel} - ${subCategoryName}`
     : resolvedLabel;
 
-  return (
-    <BaseBadge
-      label={label}
-      className="border-none font-bold uppercase tracking-wide px-2"
-      tone={resolvedTone as any}
-      size={size}
-    />
-  );
+  return <BaseBadge label={label} tone={resolvedTone} size={size} />;
 }

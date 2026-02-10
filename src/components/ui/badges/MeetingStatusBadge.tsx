@@ -30,7 +30,7 @@ const STATUS_CONFIG: Record<
   completed: {
     label: "Selesai",
     color: "default",
-    className: "bg-slate-50 text-slate-700 border-slate-200",
+    className: "bg-slate-100 text-slate-700 border-slate-200",
   },
 };
 

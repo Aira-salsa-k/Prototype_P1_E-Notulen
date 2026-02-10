@@ -10,6 +10,7 @@ import { User } from "@/types/user";
 import { Meeting } from "@/types/meeting";
 import { LifecycleConfirmationModal } from "./LifecycleConfirmationModal";
 import { useDataRapatStore } from "@/features/data-rapat/store/useDataRapatStore";
+import { AppButton } from "@/components/ui/button/AppButton";
 
 interface MeetingHeaderProps {
   meeting: Meeting;
@@ -51,29 +52,29 @@ export function MeetingHeader({
 
       <div className="flex gap-2 items-center">
         {meeting.status === "scheduled" && canManageLifecycle(currentUser) && (
-          <Button
-            color="success"
+          <AppButton
+            color="hijau"
             variant="solid"
             startContent={<PlayIcon className="w-4 h-4" />}
-            className="font-black text-white shadow-lg shadow-green-500/30 px-6"
+            className="font-black px-6"
             onPress={() => setModalType("start")}
           >
             AKTIFKAN RAPAT (LIVE)
-          </Button>
+          </AppButton>
         )}
 
         {meeting.status === "live" && canManageLifecycle(currentUser) && (
           <>
             {!meeting.closingStartedAt ? (
-              <Button
-                color="danger"
+              <AppButton
+                color="ungu"
                 variant="solid"
                 startContent={<CheckBadgeIcon className="w-4 h-4" />}
-                className="font-black text-white shadow-sm shadow-red-500/30 px-6"
+                className="font-black px-6"
                 onPress={() => setModalType("finish")}
               >
                 SELESAIKAN & KUNCI RAPAT
-              </Button>
+              </AppButton>
             ) : (
               <CountdownTimer
                 meetingId={meeting.id}

@@ -6,15 +6,13 @@ export type SemanticTone =
   | "secondary"
   | "success"
   | "warning"
-  // | "danger"
+  | "danger"
   | "neutral"
   | "accent"
   | "teal"
   | "cyan"
   | "indigo"
   | "lime";
-
-
 
 export interface ApiResponse<T> {
   success: boolean;

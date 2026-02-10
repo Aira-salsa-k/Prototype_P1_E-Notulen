@@ -28,31 +28,8 @@ export const mockMeetingTypeVariants: MeetingTypeVariant[] = [
   // KOMISI I
   // ============================================================
   {
-    id: "sub-raker-komisi", // Dipakai oleh Meeting 002
+    id: "m1", // AKD - Menggunakan ID Kategori sebagai ID Varian
     categoryId: "m1",
-    subName: "Rapat Kerja Komisi I",
-    isActive: true,
-    createdAt: now,
-    updatedAt: now,
-    members: allMembers
-      .filter((m) => m.akd.includes("KOMISI_I"))
-      .map((m, i) => {
-        const user = mockUsers.find((u) => u.id === m.userId);
-        const name = user?.name || "Unknown";
-        const jabatanRapat = getJabatanRapat(i);
-        return {
-          memberId: m.id,
-          name: name,
-          jabatan: jabatanRapat,
-          meetingRole: jabatanRapat,
-          displayFormat: `${name} ® ${jabatanRapat.toUpperCase()} KOMISI I`,
-        };
-      }),
-  },
-  {
-    id: "var-komisi-i", // Alias
-    categoryId: "m1",
-    subName: "Rapat Kerja Komisi I",
     isActive: true,
     createdAt: now,
     updatedAt: now,
@@ -76,31 +53,8 @@ export const mockMeetingTypeVariants: MeetingTypeVariant[] = [
   // KOMISI II
   // ============================================================
   {
-    id: "sub-rdpu-komisi", // Dipakai oleh Meeting 003
+    id: "m2", // AKD
     categoryId: "m2",
-    subName: "Rapat Kerja Komisi II",
-    isActive: true,
-    createdAt: now,
-    updatedAt: now,
-    members: allMembers
-      .filter((m) => m.akd.includes("KOMISI_II"))
-      .map((m, i) => {
-        const user = mockUsers.find((u) => u.id === m.userId);
-        const name = user?.name || "Unknown";
-        const jabatanRapat = getJabatanRapat(i);
-        return {
-          memberId: m.id,
-          name: name,
-          jabatan: jabatanRapat,
-          meetingRole: jabatanRapat,
-          displayFormat: `${name} ® ${jabatanRapat.toUpperCase()} KOMISI II`,
-        };
-      }),
-  },
-  {
-    id: "var-komisi-ii",
-    categoryId: "m2",
-    subName: "Rapat Kerja Komisi II",
     isActive: true,
     createdAt: now,
     updatedAt: now,
@@ -124,9 +78,8 @@ export const mockMeetingTypeVariants: MeetingTypeVariant[] = [
   // KOMISI III
   // ============================================================
   {
-    id: "var-komisi-iii",
+    id: "m3", // AKD
     categoryId: "m3",
-    subName: "Rapat Kerja Komisi III",
     isActive: true,
     createdAt: now,
     updatedAt: now,
@@ -152,32 +105,6 @@ export const mockMeetingTypeVariants: MeetingTypeVariant[] = [
   {
     id: "sub-paripurna-lkpj", // Dipakai oleh Meeting 001
     categoryId: "m4",
-    subName: "Rapat Paripurna",
-    isActive: true,
-    createdAt: now,
-    updatedAt: now,
-    members: allMembers.map((m, i) => {
-      const user = mockUsers.find((u) => u.id === m.userId);
-      const name = user?.name || "Unknown";
-      let jabatanRapat = "Anggota";
-      if (m.jabatan.includes("KETUA DPR")) jabatanRapat = "Ketua";
-      else if (m.jabatan.includes("WAKIL KETUA I"))
-        jabatanRapat = "Wakil Ketua I";
-      else if (m.jabatan.includes("WAKIL KETUA II"))
-        jabatanRapat = "Wakil Ketua II";
-      return {
-        memberId: m.id,
-        name: name,
-        jabatan: jabatanRapat,
-        meetingRole: jabatanRapat,
-        displayFormat: `${name} ® ${jabatanRapat.toUpperCase()}`,
-      };
-    }),
-  },
-  {
-    id: "var-paripurna",
-    categoryId: "m4",
-    subName: "Rapat Paripurna",
     isActive: true,
     createdAt: now,
     updatedAt: now,
@@ -204,9 +131,8 @@ export const mockMeetingTypeVariants: MeetingTypeVariant[] = [
   // BANGGAR
   // ============================================================
   {
-    id: "sub-banggar-kua-ppas", // Dipakai oleh Meeting 005
+    id: "m5", // AKD
     categoryId: "m5",
-    subName: "Rapat Badan Anggaran",
     isActive: true,
     createdAt: now,
     updatedAt: now,
@@ -230,9 +156,8 @@ export const mockMeetingTypeVariants: MeetingTypeVariant[] = [
   // BAMUS
   // ============================================================
   {
-    id: "sub-bamus-agenda", // Dipakai oleh Meeting 006
+    id: "m6", // AKD
     categoryId: "m6",
-    subName: "Rapat Badan Musyawarah",
     isActive: true,
     createdAt: now,
     updatedAt: now,
@@ -256,9 +181,8 @@ export const mockMeetingTypeVariants: MeetingTypeVariant[] = [
   // BAPEMPERDA
   // ============================================================
   {
-    id: "sub-bapemperda-ranperda", // Dipakai oleh Meeting 007
+    id: "m8", // AKD
     categoryId: "m8",
-    subName: "Rapat Bapemperda",
     isActive: true,
     createdAt: now,
     updatedAt: now,
@@ -282,9 +206,8 @@ export const mockMeetingTypeVariants: MeetingTypeVariant[] = [
   // BADAN KEHORMATAN
   // ============================================================
   {
-    id: "sub-bk-etik", // Dipakai oleh Meeting 008
+    id: "m9", // AKD
     categoryId: "m9",
-    subName: "Rapat Badan Kehormatan",
     isActive: true,
     createdAt: now,
     updatedAt: now,
@@ -300,6 +223,54 @@ export const mockMeetingTypeVariants: MeetingTypeVariant[] = [
           jabatan: jabatanRapat,
           meetingRole: jabatanRapat,
           displayFormat: `${name} ® ${jabatanRapat.toUpperCase()} BADAN KEHORMATAN`,
+        };
+      }),
+  },
+
+  // ============================================================
+  // PANSUS
+  // ============================================================
+  {
+    id: "sub-pansus-kerja", // Dipakai oleh Meeting 008
+    categoryId: "m7",
+    subName: "LHP",
+    isActive: true,
+    createdAt: now,
+    updatedAt: now,
+    members: allMembers
+      .filter((m) => m.akd.includes("BADAN_KEHORMATAN"))
+      .map((m, i) => {
+        const user = mockUsers.find((u) => u.id === m.userId);
+        const name = user?.name || "Unknown";
+        const jabatanRapat = getJabatanRapat(i);
+        return {
+          memberId: m.id,
+          name: name,
+          jabatan: jabatanRapat,
+          meetingRole: jabatanRapat,
+          displayFormat: `${name} ® ${jabatanRapat.toUpperCase()} PANSUS`,
+        };
+      }),
+  },
+  {
+    id: "sub-pansus-kerja-2",
+    subName: "LKPJ",
+    categoryId: "m7",
+    isActive: true,
+    createdAt: now,
+    updatedAt: now,
+    members: allMembers
+      .filter((m) => m.akd.includes("BADAN_KEHORMATAN"))
+      .map((m, i) => {
+        const user = mockUsers.find((u) => u.id === m.userId);
+        const name = user?.name || "Unknown";
+        const jabatanRapat = getJabatanRapat(i);
+        return {
+          memberId: m.id,
+          name: name,
+          jabatan: jabatanRapat,
+          meetingRole: jabatanRapat,
+          displayFormat: `${name} ® ${jabatanRapat.toUpperCase()} PANSUS`,
         };
       }),
   },

@@ -31,7 +31,7 @@ export function LifecycleConfirmationModal({
       <ModalHeader className="flex flex-col gap-1 pb-2">
         <div className="flex items-center gap-3">
           <div
-            className={`p-2 rounded-xl ${isStart ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"}`}
+            className={`p-2 rounded-xl ${isStart ? "bg-lime-100 text-lime-600" : "bg-red-100 text-red-600"}`}
           >
             {isStart ? (
               <PlayIcon className="w-6 h-6" />
@@ -70,7 +70,7 @@ export function LifecycleConfirmationModal({
           </p>
 
           <div
-            className={`p-4 rounded-xl border flex gap-3 ${isStart ? "bg-blue-50 border-blue-100 text-blue-700" : "bg-orange-50 border-orange-100 text-orange-700"}`}
+            className={`p-4 rounded-xl border flex gap-3 ${isStart ? "bg-indigo-50 border-indigo-100 text-indigo-700" : "bg-orange-50 border-orange-100 text-orange-700"}`}
           >
             <ExclamationTriangleIcon className="w-5 h-5 flex-shrink-0" />
             <p className="text-sm font-medium">
@@ -85,6 +85,7 @@ export function LifecycleConfirmationModal({
       <ModalFooter className="border-t border-gray-100 mt-2">
         <AppButton
           variant="light"
+          color="btn-batal"
           onPress={onClose}
           isDisabled={isLoading}
           className="font-semibold text-gray-500"
@@ -92,10 +93,10 @@ export function LifecycleConfirmationModal({
           Batal
         </AppButton>
         <AppButton
-          color={isStart ? "success" : "danger"}
+          color={isStart ? "hijau" : "merah"}
           onPress={onConfirm}
           isLoading={isLoading}
-          className="font-bold text-white px-8"
+          className="font-bold px-8"
         >
           {isStart ? "YA, MULAI SEKARANG" : "YA, SELESAIKAN"}
         </AppButton>

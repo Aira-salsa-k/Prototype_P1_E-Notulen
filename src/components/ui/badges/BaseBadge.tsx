@@ -23,11 +23,9 @@ export function BaseBadge({
     <Chip
       size={size}
       variant="bordered"
-      // Casting 'as any' diperlukan karena mapping string kita
-      // mungkin lebih luas dari tipe internal HeroUI
       color={semanticToHeroColor[tone] as any}
       className={cn(
-        "font-medium border-3", // Standar styling tambahan
+        "font-bold uppercase tracking-wide px-2 border-2", // Enterprise Standard Styling
         semanticToClassName[tone],
         className,
       )}

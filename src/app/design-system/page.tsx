@@ -7,6 +7,7 @@ import { StatusBadge } from "@/components/ui/badges/StatusBadge";
 import { MeetingTypeBadge } from "@/components/ui/badges/meeting-type-badge";
 import { MeetingStatusBadge } from "@/components/ui/badges/MeetingStatusBadge";
 import { AKDBadge } from "@/components/ui/badges/AKDBadge";
+import { BaseBadge } from "@/components/ui/badges/BaseBadge";
 import {
   HomeIcon,
   PencilIcon,
@@ -285,6 +286,12 @@ export default function DesignSystemPage() {
               component={<AppButton color="merah">Hapus Permanen</AppButton>}
               description="Red-600 untuk aksi destruktif."
             />
+            <VariantPreview
+              name="Hijau (Live Button)"
+              code="bg-lime-400/50 text-lime-900 active:bg-green-800 font-semibold"
+              component={<AppButton color="hijau">Live Button</AppButton>}
+              description="Lime-400 untuk aksi live button."
+            />
           </div>
           <div className="mt-4 p-4 bg-yellow-50 text-yellow-800 rounded-lg text-sm">
             <span className="font-bold">Note:</span> Varian seperti "hijau",
@@ -318,9 +325,7 @@ export default function DesignSystemPage() {
                   className="p-4 border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
                 >
                   <div className="flex flex-col items-center gap-3 text-center">
-                    <Chip className={className} variant="flat">
-                      {tone.toUpperCase()}
-                    </Chip>
+                    <BaseBadge label={tone.toUpperCase()} tone={tone as any} />
                     <div className="w-full">
                       <p className="text-[10px] text-gray-400 font-mono mb-1 truncate">
                         {tone}
@@ -372,16 +377,18 @@ export default function DesignSystemPage() {
               </h3>
               <div className="flex flex-wrap gap-4">
                 <MeetingTypeBadge
-                  categoryName="Rapat Paripurna"
-                  color="primary"
+                  categoryName="Pansus"
+                  subCategoryName="LKPJ"
+                  color="cyan"
                 />
                 <MeetingTypeBadge
-                  categoryName="Rapat Komisi"
-                  subCategoryName="Komisi I"
-                  color="warning"
+                  categoryName="Pansus"
+                  subCategoryName="LHP"
+                  color="cyan"
                 />
-                <MeetingTypeBadge categoryName="Rapat Banmus" color="danger" />
-                <MeetingTypeBadge categoryName="Rapat Umum" color="success" />
+                <MeetingTypeBadge categoryName="Komisi I" color="info" />
+                <MeetingTypeBadge categoryName="Banmus" color="warning" />
+                <MeetingTypeBadge categoryName="Bapemperda" color="lime" />
               </div>
             </div>
 
@@ -405,19 +412,20 @@ export default function DesignSystemPage() {
                 <MeetingStatusBadge status="live" />
                 <MeetingStatusBadge status="completed" />
               </div>
-              <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-                <p className="text-xs text-blue-700 font-medium mb-2">
-                  Color Mapping:
+              <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                <p className="text-xs text-gray-700 font-medium mb-2">
+                  Status Logic:
                 </p>
-                <ul className="text-xs text-blue-600 space-y-1">
+                <ul className="text-xs text-gray-600 space-y-1">
                   <li>
-                    • <strong>Terjadwal</strong> → Purple (Primary)
+                    • <strong>Terjadwal</strong> → Indigo/Primary (`neutral`
+                    fallback)
                   </li>
                   <li>
-                    • <strong>Sedang Berlangsung</strong> → Red (Danger)
+                    • <strong>Live</strong> → Green/Success
                   </li>
                   <li>
-                    • <strong>Selesai</strong> → Slate (Default)
+                    • <strong>Selesai</strong> → Red/Danger
                   </li>
                 </ul>
               </div>

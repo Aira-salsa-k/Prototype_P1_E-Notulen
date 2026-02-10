@@ -76,4 +76,5 @@ export const mockMeetingCategories: MeetingCategory[] = [
     createdAt: now,
     updatedAt: now,
   },
+
 ];
