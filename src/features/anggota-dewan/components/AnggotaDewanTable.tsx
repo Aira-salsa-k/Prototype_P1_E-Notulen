@@ -24,7 +24,7 @@ import { DataTable } from "@/components/ui/table/DataTable";
 import { TableActions } from "@/components/ui/table/TableActions";
 
 import { AKDBadge } from "@/components/ui/badges/AKDBadge";
-import { StatusBadge } from "../../../components/ui/badges/StatusBadge";
+import { StatusBadge } from "@/components/ui/badges/StatusBadge";
 
 interface AnggotaDewanTableProps {
   anggota: AnggotaDewanRow[];

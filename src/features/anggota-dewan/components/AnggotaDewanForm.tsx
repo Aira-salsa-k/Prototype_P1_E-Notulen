@@ -12,7 +12,8 @@ import {
   SelectItem,
   Textarea,
 } from "@heroui/react";
-import { AnggotaFormData, AKD } from "@/types/anggota-dewan";
+import { AKD } from "@/types/anggota-dewan";
+import { AnggotaFormData } from "@/features/anggota-dewan/types/AnggotaFormData";
 import { AKD_OPTIONS } from "@/lib/akd";
 import { useState, useEffect } from "react";
 import { AKD_CONFIG } from "@/lib/config/akd";

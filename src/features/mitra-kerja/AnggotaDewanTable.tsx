@@ -1,13 +1,14 @@
 // app/components/anggota-dewan/AnggotaDewanTable.tsx
+
 import { Button } from "@heroui/button";
 import { Tooltip } from "@heroui/tooltip";
 import { Popover, PopoverTrigger, PopoverContent } from "@heroui/popover";
 import { Snippet } from "@heroui/snippet";
 import {
-  EyeIcon,
+  KeyIcon,
   PencilIcon,
   TrashIcon,
-  ClipboardDocumentIcon,
+  EllipsisVerticalIcon,
 } from "@heroicons/react/24/outline";
 
 import {
@@ -17,172 +18,116 @@ import {
   DropdownItem,
 } from "@heroui/dropdown";
 
-import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
-
-import { AnggotaDewanRow } from "@/types/view/anggota-dewan-row";
+import { useMemo } from "react";
+import { AnggotaDewanRow } from "@/features/anggota-dewan/view/anggota-dewan-row";
 import { DataTable } from "@/components/ui/table/DataTable";
+import { TableActions } from "@/components/ui/table/TableActions";
 
 import { AKDBadge } from "@/components/ui/badges/AKDBadge";
-import { StatusBadge } from "../../../components/ui/badges/StatusBadge";
+import { StatusBadge } from "@/components/ui/badges/StatusBadge";
 
 interface AnggotaDewanTableProps {
   anggota: AnggotaDewanRow[];
   onEdit?: (row: AnggotaDewanRow) => void;
   onDelete?: (row: AnggotaDewanRow) => void;
+  onResetPassword?: (row: AnggotaDewanRow) => void;
+  canEdit?: boolean;
+  canDelete?: boolean;
+  canResetPassword?: boolean;
 }
 
-export default function AnggotaDewanTable({
+export const AnggotaDewanTable = ({
   anggota,
   onEdit,
   onDelete,
-}: AnggotaDewanTableProps) {
+  onResetPassword,
+  canEdit = true,
+  canDelete = true,
+  canResetPassword = true,
+}: AnggotaDewanTableProps) => {
+  // Sort members by status (Aktif first) then priority (Ketua > W. Ketua I-III > Anggota)
+  const sortedAnggota = useMemo(() => {
+    const getPriority = (jabatan: string) => {
+      const up = jabatan.toUpperCase();
+      if (up.includes("KETUA") && !up.includes("WAKIL")) return 1;
+      if (
+        up.includes("WAKIL KETUA I") &&
+        !up.includes("WAKIL KETUA II") &&
+        !up.includes("WAKIL KETUA III")
+      )
+        return 2;
+      if (up.includes("WAKIL KETUA II") && !up.includes("WAKIL KETUA III"))
+        return 3;
+      if (up.includes("WAKIL KETUA III")) return 4;
+      if (up.includes("ANGGOTA")) return 5;
+      return 99;
+    };
+
+    return [...anggota].sort((a, b) => {
+      // 1. Sort by Status (active first)
+      const statusA = a.anggota.status === "active" ? 0 : 1;
+      const statusB = b.anggota.status === "active" ? 0 : 1;
+
+      if (statusA !== statusB) return statusA - statusB;
+
+      // 2. Sort by Position Hierarchy
+      const pA = getPriority(a.anggota.jabatan || "");
+      const pB = getPriority(b.anggota.jabatan || "");
+
+      if (pA !== pB) return pA - pB;
+
+      // 3. Secondary sort by name
+      return a.user.name.localeCompare(b.user.name);
+    });
+  }, [anggota]);
+
   const columns = [
     { key: "name", label: "Nama" },
     { key: "jabatan", label: "Jabatan" },
-    { key: "akd", label: "AKD", className: "w-[240px] max-w-[270px]" },
+    { key: "akd", label: "AKD" },
     { key: "username", label: "Username" },
-    { key: "password", label: "Password" },
     { key: "status", label: "Status" },
-    { key: "actions", label: "Aksi" },
+    ...(canEdit || canDelete || canResetPassword
+      ? [{ key: "actions", label: "Aksi" }]
+      : []),
   ];
 
   const renderCell = (item: AnggotaDewanRow, columnKey: React.Key) => {
     switch (columnKey) {
       case "name":
-        return <p className="font-medium text-gray-900">{item.name}</p>;
+        return <p className="font-medium text-gray-900">{item.user.name}</p>;
 
       case "jabatan":
-        return <p className="text-gray-900">{item.jabatan}</p>;
+        return (
+          <p className="text-gray-900 uppercase">{item.anggota.jabatan}</p>
+        );
 
       case "akd":
         return (
           <div className="flex flex-wrap gap-1 max-w-[220px]">
-            {item.akd.map((akd) => (
+            {item.anggota.akd.map((akd) => (
               <AKDBadge key={akd} akd={akd} />
             ))}
           </div>
         );
 
       case "username":
-        return <span className="font-mono text-sm">{item.username}</span>;
-
-      case "password":
-        return (
-          <div className="flex items-center gap-2">
-            <span className="font-mono">••••</span>
-
-            <Popover placement="top">
-              <PopoverTrigger>
-                <Button size="sm" variant="light">
-                  <EyeIcon className="h-4 w-4 text-gray-400" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent>
-                <Snippet symbol="" size="sm">
-                  {item.password}
-                </Snippet>
-              </PopoverContent>
-            </Popover>
-          </div>
-        );
+        return <span className="font-mono text-sm">{item.user.username}</span>;
 
       case "status":
-        return <StatusBadge status={item.status} />;
+        return <StatusBadge status={item.anggota.status} />;
 
       case "actions":
         return (
-          <>
-            {/* DESKTOP ACTIONS */}
-
-            <div className="hidden lg:flex items-center gap-1">
-              <Tooltip color="default" content="Salin Akun">
-                <Snippet
-                  symbol=""
-                  color="default"
-                  size="sm"
-                  tooltipProps={{
-                    content: "Salin Akun",
-                    color: "foreground",
-                    closeDelay: 500,
-                  }}
-                  classNames={{
-                    base: "bg-transparent p-0 min-w-0",
-                    pre: "hidden",
-                    copyButton:
-                      "text-indigo-800/50 hover:text-indigo-600 transition-colors bg-indigo-200/20", // Styling tombol copy
-                  }}
-                >
-                  {`User: ${item.username}  Pass: ${item.password} website : http://..`}
-                </Snippet>
-              </Tooltip>
-
-              <Tooltip content="Edit">
-                <Button
-                  isIconOnly
-                  size="sm"
-                  variant="light"
-                  onPress={() => onEdit?.(item)}
-                  className="text-indigo-900"
-                >
-                  <PencilIcon className="h-4 w-4" />
-                </Button>
-              </Tooltip>
-
-              <Tooltip color="danger" content="Hapus">
-                <Button
-                  isIconOnly
-                  size="sm"
-                  variant="light"
-                  onPress={() => onDelete?.(item)}
-                  className="text-danger"
-                >
-                  <TrashIcon className="h-4 w-4" />
-                </Button>
-              </Tooltip>
-            </div>
-
-            {/* MOBILE / TABLET ACTIONS */}
-            <div className="flex lg:hidden justify-end">
-              <Dropdown>
-                <DropdownTrigger>
-                  <Button isIconOnly size="sm" variant="light">
-                    <EllipsisVerticalIcon className="h-5 w-5 text-gray-600" />
-                  </Button>
-                </DropdownTrigger>
-
-                <DropdownMenu aria-label="Aksi">
-                  <DropdownItem
-                    key="copy"
-                    startContent={<ClipboardDocumentIcon className="h-4 w-4" />}
-                    onPress={() =>
-                      navigator.clipboard.writeText(
-                        `User: ${item.username} | Pass: ${item.password}`
-                      )
-                    }
-                  >
-                    Salin Akun
-                  </DropdownItem>
-
-                  <DropdownItem
-                    key="edit"
-                    startContent={<PencilIcon className="h-4 w-4" />}
-                    onPress={() => onEdit?.(item)}
-                  >
-                    Edit
-                  </DropdownItem>
-
-                  <DropdownItem
-                    key="delete"
-                    color="danger"
-                    startContent={<TrashIcon className="h-4 w-4" />}
-                    onPress={() => onDelete?.(item)}
-                  >
-                    Hapus
-                  </DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
-            </div>
-          </>
+          <TableActions
+            item={item}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            onResetPassword={onResetPassword}
+            canEdit={canEdit}
+            canDelete={canDelete}
+            canResetPassword={canResetPassword}
+          />
         );
 
       default:
@@ -192,14 +137,14 @@ export default function AnggotaDewanTable({
 
   return (
     <div className="relative overflow-x-auto">
-      <div className="min-w-[1100px]">
+      <div className="min-w-1100[px]">
         <DataTable
           columns={columns}
-          items={anggota}
+          items={sortedAnggota}
           renderCell={renderCell}
           emptyContent="Tidak ada data anggota dewan"
         />
       </div>
     </div>
   );
-}
+};
