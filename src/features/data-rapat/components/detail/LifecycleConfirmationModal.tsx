@@ -2,7 +2,7 @@
 
 import { ModalHeader, ModalBody, ModalFooter } from "@heroui/react";
 import { AppButton } from "@/components/ui/button/AppButton";
-import { ModalBase } from "@/components/ui/modal/ModalBase";
+import { AppModal } from "@/components/ui/modal/AppModal";
 import {
   PlayIcon,
   CheckBadgeIcon,
@@ -27,7 +27,7 @@ export function LifecycleConfirmationModal({
   const isStart = type === "start";
 
   return (
-    <ModalBase isOpen={isOpen} onClose={onClose} size="lg">
+    <AppModal isOpen={isOpen} onClose={onClose} size="lg">
       <ModalHeader className="flex flex-col gap-1 pb-2">
         <div className="flex items-center gap-3">
           <div
@@ -101,6 +101,6 @@ export function LifecycleConfirmationModal({
           {isStart ? "YA, MULAI SEKARANG" : "YA, SELESAIKAN"}
         </AppButton>
       </ModalFooter>
-    </ModalBase>
+    </AppModal>
   );
 }

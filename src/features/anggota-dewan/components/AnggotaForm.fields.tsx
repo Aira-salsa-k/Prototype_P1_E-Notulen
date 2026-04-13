@@ -85,7 +85,7 @@ export function AnggotaFormFields({ data, update, mode }: Props) {
       />
 
       <Select
-        isRequired
+       isRequired
         label="AKD"
         scrollShadowProps={{
           isEnabled: false,
@@ -97,7 +97,7 @@ export function AnggotaFormFields({ data, update, mode }: Props) {
         classNames={{
           trigger: "h-auto min-h-[44px] py-2", // ⬅️ hug content
           value: "p-0",
-        }}
+        }} 
         renderValue={(items) => (
           <div className="flex flex-wrap gap-2 max-h-[160px] overflow-y-auto">
             {items.map((item) => (

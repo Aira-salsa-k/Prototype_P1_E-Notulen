@@ -3,7 +3,7 @@
 
 import { useMemo } from "react";
 import { ModalHeader, ModalBody, ModalFooter } from "@heroui/react";
-import { ModalBase } from "@/components/ui/modal/ModalBase";
+import { AppModal } from "@/components/ui/modal/AppModal";
 import { AppButton } from "@/components/ui/button/AppButton";
 import { FormGrid } from "@/components/ui/form/FormGrid";
 
@@ -41,18 +41,18 @@ export function MitraFormModal({
   // Menggunakan Hook Abstraksi
   const { data, update } = useMitraForm(initialData, isOpen);
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  const success = await onSubmit(data);
-  if (success !== false) {
-    onClose();
-  }
-};
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const success = await onSubmit(data);
+    if (success !== false) {
+      onClose();
+    }
+  };
 
   if (!isOpen) return null;
 
   return (
-    <ModalBase isOpen={isOpen} onClose={onClose} size="xl">
+    <AppModal isOpen={isOpen} onClose={onClose} size="xl">
       <form onSubmit={handleSubmit}>
         <ModalHeader className="text-2xl font-bold px-6 pt-6">
           <div className="flex flex-col">
@@ -87,6 +87,6 @@ const handleSubmit = async (e: React.FormEvent) => {
           </AppButton>
         </ModalFooter>
       </form>
-    </ModalBase>
+    </AppModal>
   );
 }

@@ -21,6 +21,7 @@ import {
 import { useMemo } from "react";
 import { AnggotaDewanRow } from "@/features/anggota-dewan/view/anggota-dewan-row";
 import { DataTable } from "@/components/ui/table/DataTable";
+import { TableActions } from "@/components/ui/table/TableActions";
 
 import { AKDBadge } from "@/components/ui/badges/AKDBadge";
 import { StatusBadge } from "../../../components/ui/badges/StatusBadge";
@@ -118,100 +119,15 @@ export const AnggotaDewanTable = ({
 
       case "actions":
         return (
-          <>
-            {/* DESKTOP ACTIONS */}
-
-            <div className="hidden lg:flex items-center gap-1.5">
-              {canResetPassword && (
-                <Tooltip content="Reset Password" color="warning">
-                  <Button
-                    isIconOnly
-                    size="sm"
-                    variant="flat"
-                    color="warning"
-                    onPress={() => onResetPassword?.(item)}
-                    className="hover:scale-105 transition-transform bg-amber-200/80"
-                  >
-                    <KeyIcon className="h-5 w-5" />
-                  </Button>
-                </Tooltip>
-              )}
-
-              {canEdit && (
-                <Tooltip content="Edit" color="primary">
-                  <Button
-                    isIconOnly
-                    size="sm"
-                    variant="flat"
-                    color="primary"
-                    onPress={() => onEdit?.(item)}
-                    className="text-primary hover:scale-105 transition-transform"
-                  >
-                    <PencilIcon className="h-5 w-5" />
-                  </Button>
-                </Tooltip>
-              )}
-
-              {canDelete && (
-                <Tooltip color="danger" content="Hapus">
-                  <Button
-                    isIconOnly
-                    size="sm"
-                    variant="flat"
-                    color="danger"
-                    onPress={() => onDelete?.(item)}
-                    className="text-danger"
-                  >
-                    <TrashIcon className="h-5 w-5" />
-                  </Button>
-                </Tooltip>
-              )}
-            </div>
-
-            {/* MOBILE / TABLET ACTIONS */}
-            <div className="flex lg:hidden justify-end">
-              <Dropdown>
-                <DropdownTrigger>
-                  <Button isIconOnly size="sm" variant="light">
-                    <EllipsisVerticalIcon className="h-5 w-5 text-gray-600" />
-                  </Button>
-                </DropdownTrigger>
-
-                <DropdownMenu aria-label="Aksi">
-                  {canResetPassword ? (
-                    <DropdownItem
-                      key="reset"
-                      startContent={<KeyIcon className="h-4 w-4" />}
-                      onPress={() => onResetPassword?.(item)}
-                    >
-                      Reset Password
-                    </DropdownItem>
-                  ) : null}
-
-                  {canEdit ? (
-                    <DropdownItem
-                      key="edit"
-                      startContent={<PencilIcon className="h-4 w-4" />}
-                      onPress={() => onEdit?.(item)}
-                    >
-                      Edit
-                    </DropdownItem>
-                  ) : null}
-
-                  {canDelete ? (
-                    <DropdownItem
-                      key="delete"
-                      color="danger"
-                      startContent={<TrashIcon className="h-4 w-4" />}
-                      onPress={() => onDelete?.(item)}
-                    >
-                      Hapus
-                    </DropdownItem>
-                  ) : null}
-                </DropdownMenu>
-              </Dropdown>
-            </div>
-          </>
+          <TableActions
+            item={item}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            onResetPassword={onResetPassword}
+            canEdit={canEdit}
+            canDelete={canDelete}
+            canResetPassword={canResetPassword}
+          />
         );
 
       default:
@@ -221,7 +137,7 @@ export const AnggotaDewanTable = ({
 
   return (
     <div className="relative overflow-x-auto">
-      <div className="min-w-[1100px]">
+      <div className="min-w-1100[px]">
         <DataTable
           columns={columns}
           items={sortedAnggota}

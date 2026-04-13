@@ -3,7 +3,7 @@
 import { useJenisRapatStore } from "@/features/jenis-rapat/store/useJenisRapatStore";
 import { useDataRapatStore } from "@/features/data-rapat/store/useDataRapatStore";
 import { useAuthStore } from "@/store/useAuthStore";
-import { Card, CardBody } from "@heroui/card";
+import { AppCard } from "@/components/ui/card/AppCard";
 import { MeetingTypeBadge } from "@/components/ui/badges/meeting-type-badge";
 import { useMemo, useEffect } from "react";
 import { mockMeetingCategories } from "@/mocks/meeting-category";
@@ -85,32 +85,24 @@ export default function MeetingTypes() {
 
   return (
     <div className="mb-6">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-gray-900">
-          Jenis Rapat Terdaftar
-        </h2>
-      </div>
-
-      <Card className="border border-gray-200 shadow-sm mb-8">
-        <CardBody className="p-6">
-          <div className="flex flex-wrap gap-2 text-center items-center justify-center">
-            {filteredCategories.length > 0 ? (
-              filteredCategories.map((item) => (
-                <MeetingTypeBadge
-                  key={item.id}
-                  categoryName={item.name}
-                  color={item.color}
-                  size="md"
-                />
-              ))
-            ) : (
-              <p className="text-sm text-gray-400 italic">
-                Belum ada jenis rapat terdaftar.
-              </p>
-            )}
-          </div>
-        </CardBody>
-      </Card>
+      <AppCard title="Jenis Rapat Terdaftar">
+        <div className="flex flex-wrap gap-2 text-center items-center justify-center">
+          {filteredCategories.length > 0 ? (
+            filteredCategories.map((item) => (
+              <MeetingTypeBadge
+                key={item.id}
+                categoryName={item.name}
+                color={item.color}
+                size="md"
+              />
+            ))
+          ) : (
+            <p className="text-sm text-gray-400 italic">
+              Belum ada jenis rapat terdaftar.
+            </p>
+          )}
+        </div>
+      </AppCard>
     </div>
   );
 }

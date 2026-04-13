@@ -1,19 +1,44 @@
-import clsx from "clsx";
-export function AppCard({
+import {
+  Card as HeroCard,
+  CardBody,
+  CardHeader,
+  CardProps as HeroCardProps,
+} from "@heroui/card";
+import { cn } from "@/lib/utils";
+
+interface AppCardProps extends Omit<HeroCardProps, "title"> {
+  title?: React.ReactNode;
+  action?: React.ReactNode;
+  children: React.ReactNode;
+  noPadding?: boolean;
+}
+
+export const AppCard = ({
+  title,
+  action,
   children,
   className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
+  noPadding = false,
+  ...props
+}: AppCardProps) => {
   return (
-    <div
-      className={clsx(
-        "bg-surface border border-border rounded-lg p-4 shadow-sm",
-        className
-      )}
+    <HeroCard
+      className={cn("border border-gray-200 shadow-sm", className)}
+      {...props}
     >
-      {children}
-    </div>
+      {(title || action) && (
+        <CardHeader className="flex justify-between items-center p-6 pb-2">
+          {typeof title === "string" ? (
+            <h3 className="text-xl font-bold text-gray-900">{title}</h3>
+          ) : (
+            title
+          )}
+          {action && <div>{action}</div>}
+        </CardHeader>
+      )}
+      <CardBody className={cn(noPadding ? "p-0" : "p-6", "pt-2")}>
+        {children}
+      </CardBody>
+    </HeroCard>
   );
-}
+};

@@ -293,7 +293,7 @@ export const AttendancePrintDocument = ({
                       {meeting.agenda}
                     </td>
                   </tr>
-                  <tr>
+                  {/* <tr>
                     <td
                       className="font-bold align-top"
                       style={{
@@ -324,7 +324,7 @@ export const AttendancePrintDocument = ({
                             .join(", ")
                         : "-"}
                     </td>
-                  </tr>
+                  </tr> */}
                 </tbody>
               </table>
             </div>

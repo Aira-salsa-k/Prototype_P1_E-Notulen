@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Alert } from "@heroui/react";
 import { Input } from "@heroui/input";
-import { ModalBase } from "@/components/ui/modal/ModalBase";
+import { AppModal } from "@/components/ui/modal/AppModal";
 import { AppButton } from "@/components/ui/button/AppButton";
 
 interface ConfirmDeleteModalProps {
@@ -50,7 +50,7 @@ export function ConfirmDeleteModal({
   const canConfirm = confirmText.toUpperCase() === confirmWord.toUpperCase();
 
   return (
-    <ModalBase isOpen={isOpen} onClose={onCancel} size="xl">
+    <AppModal isOpen={isOpen} onClose={onCancel} size="xl">
       <div className="p-6 space-y-5">
         {/* Title & description */}
         <div>
@@ -96,7 +96,11 @@ export function ConfirmDeleteModal({
 
         {/* Actions */}
         <div className="flex justify-end gap-3 pt-2">
-          <AppButton color={"ungu-muda"} onPress={onCancel} isDisabled={isLoading}>
+          <AppButton
+            color={"ungu-muda"}
+            onPress={onCancel}
+            isDisabled={isLoading}
+          >
             Batal
           </AppButton>
 
@@ -113,6 +117,6 @@ export function ConfirmDeleteModal({
           </AppButton>
         </div>
       </div>
-    </ModalBase>
+    </AppModal>
   );
 }

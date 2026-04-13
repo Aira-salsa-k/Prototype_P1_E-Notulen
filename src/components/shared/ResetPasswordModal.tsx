@@ -1,7 +1,7 @@
 "use client";
 
 import { ModalHeader, ModalBody, ModalFooter, Alert } from "@heroui/react";
-import { ModalBase } from "@/components/ui/modal/ModalBase";
+import { AppModal } from "@/components/ui/modal/AppModal";
 import { AppButton } from "@/components/ui/button/AppButton";
 import { Snippet } from "@heroui/snippet";
 import {
@@ -42,7 +42,7 @@ export function ResetPasswordModal({
     : "Konfirmasi Reset Password";
 
   return (
-    <ModalBase isOpen={isOpen} onClose={onClose} size="xl">
+    <AppModal isOpen={isOpen} onClose={onClose} size="xl">
       <ModalHeader className="flex flex-col gap-1 pt-6 sm:pt-8 px-4 sm:px-8">
         <div className="flex items-center gap-3">
           <div
@@ -145,6 +145,6 @@ export function ResetPasswordModal({
           </AppButton>
         )}
       </ModalFooter>
-    </ModalBase>
+    </AppModal>
   );
 }

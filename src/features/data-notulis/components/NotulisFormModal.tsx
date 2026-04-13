@@ -2,7 +2,7 @@
 
 import { ModalHeader, ModalBody, ModalFooter } from "@heroui/react";
 import { AppButton } from "@/components/ui/button/AppButton";
-import { ModalBase } from "@/components/ui/modal/ModalBase";
+import { AppModal } from "@/components/ui/modal/AppModal";
 import { PreviewCard } from "@/components/ui/preview/PreviewCard";
 import { FormGrid } from "@/components/ui/form/FormGrid";
 
@@ -50,7 +50,7 @@ export function NotulisFormModal({
   if (!isOpen) return null;
 
   return (
-    <ModalBase isOpen={isOpen} onClose={onClose} size="4xl">
+    <AppModal isOpen={isOpen} onClose={onClose} size="4xl">
       <form onSubmit={handleSubmit(onSubmit)}>
         <ModalHeader className="text-2xl font-bold">
           {mode === "add" ? "Tambah Notulis Baru" : "Edit Profil Notulis"}
@@ -90,6 +90,6 @@ export function NotulisFormModal({
           </AppButton>
         </ModalFooter>
       </form>
-    </ModalBase>
+    </AppModal>
   );
 }

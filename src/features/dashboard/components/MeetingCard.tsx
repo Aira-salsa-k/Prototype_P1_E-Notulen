@@ -60,6 +60,7 @@ export default function MeetingCard({
       <CardFooter className="bg-gray-50 px-6 py-4 border-t border-gray-200 space-y-3">
         <div className="flex flex-col w-full ">
           <div className="flex w-full items-center justify-between mb-4">
+            
             <div className="flex px-3 bg-red-100 rounded-2xl">
               <div className="flex items-center gap-2">
                 <h5 className="font-bold text-red-900">LIVE</h5>
@@ -144,6 +145,7 @@ export default function MeetingCard({
                 </div>
               </div>
             </div>
+            
           </div>
         </CardBody>
       )}

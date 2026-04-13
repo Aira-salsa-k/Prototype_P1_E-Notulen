@@ -9,11 +9,7 @@ import { DataRapatHeader } from "@/features/data-rapat/components/DataRapatHeade
 import { DataRapatFilter } from "@/features/data-rapat/components/DataRapatFilter";
 import { DataRapatList } from "@/features/data-rapat/components/DataRapatList";
 import { mockMeetings } from "@/mocks/meeting";
-import { mockMeetingTypeVariants } from "@/mocks/meeting-variants";
-import { mockMeetingCategories } from "@/mocks/meeting-category";
-import { mockNotulis } from "@/mocks/notulis";
-import { mockUsers } from "@/mocks/user";
-import { generateMockSekretarisDewan } from "@/mocks/sekretaris-dewan";
+
 import { Meeting } from "@/types/meeting";
 import { ClientOnly } from "@/components/utils/ClientOnly";
 import { MeetingFormModal } from "@/features/data-rapat/components/MeetingFormModal";
@@ -21,8 +17,6 @@ import { useNotulisStore } from "@/features/data-notulis/store/useNotulisStore";
 import { useSekretarisDewanStore } from "@/features/sekretaris-dewan/store/useSekretarisDewanStore";
 import { useAnggotaStore } from "@/features/anggota-dewan/store/useAnggotaStore";
 import { useMitraStore } from "@/features/mitra-kerja/store/useMitraKerjaStore";
-import { generateMockAnggota } from "@/mocks/anggota-dewan";
-import { mockMitraInstitutions } from "@/mocks/mitra-kerja";
 
 export default function DataRapatPage() {
   const router = useRouter();

@@ -10,7 +10,7 @@ import clsx from "clsx";
 interface Column {
   key: string;
   label: string;
-  className?:string;
+  className?: string;
 }
 
 interface DataTableProps<T> {
@@ -37,7 +37,10 @@ export function DataTable<T extends { id: string }>({
       >
         <TableHeader columns={columns}>
           {(column) => (
-            <TableColumn key={column.key} className={clsx("px-4", column.className)}>
+            <TableColumn
+              key={column.key}
+              className={clsx("px-4", column.className)}
+            >
               {column.label}
             </TableColumn>
           )}

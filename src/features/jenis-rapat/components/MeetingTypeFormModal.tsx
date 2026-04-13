@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { ModalHeader, ModalBody, ModalFooter } from "@heroui/react";
 import { AppButton } from "@/components/ui/button/AppButton";
-import { ModalBase } from "@/components/ui/modal/ModalBase";
+import { AppModal } from "@/components/ui/modal/AppModal";
 import { generateMockAnggota } from "@/mocks/anggota-dewan";
 import { generateMockSekretarisDewan } from "@/mocks/sekretaris-dewan";
 import { mockUsers } from "@/mocks/user";
@@ -219,7 +219,7 @@ export function MeetingTypeFormModal({
   }, []);
 
   return (
-    <ModalBase
+    <AppModal
       isOpen={isOpen}
       onClose={onClose}
       size="full"
@@ -279,6 +279,6 @@ export function MeetingTypeFormModal({
           </ModalFooter>
         </form>
       </FormProvider>
-    </ModalBase>
+    </AppModal>
   );
 }
