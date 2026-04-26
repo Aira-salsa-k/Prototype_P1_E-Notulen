@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import { Button } from "@heroui/button";
 import { PhotoIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useNotulenStore } from "@/features/notulen/store/useNotulenStore";
@@ -8,32 +9,138 @@ interface TabDokumentasiProps {
   isReadOnly?: boolean;
 }
 
+// Utility to convert file to base64 with resizing to save localStorage space
+const processImage = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (e) => {
+      const base64 = e.target?.result as string;
+      const img = new Image();
+      img.src = base64;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const MAX_WIDTH = 1200;
+        const MAX_HEIGHT = 1200;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx?.drawImage(img, 0, 0, width, height);
+
+        // Compress as JPEG with 0.6 quality for aggressive space saving in localStorage
+        const compressedBase64 = canvas.toDataURL("image/jpeg", 0.6);
+        resolve(compressedBase64);
+      };
+    };
+    reader.onerror = (error) => reject(error);
+  });
+};
+
 export default function TabDokumentasi({
   isReadOnly = false,
 }: TabDokumentasiProps) {
   const { minutesData, actions } = useNotulenStore();
 
-  const handleUpload = () => {
-    if (isReadOnly) return;
-    // Mock File Upload (Cycle through mock photos)
-    const mockPhotos = [
-      "/foto_rapat/foto-1.jpeg",
-      "/foto_rapat/foto-2.jpeg",
-      "/foto_rapat/foto-3.jpeg",
-      "/foto_rapat/foto-4.jpeg",
-    ];
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const anggotaDewanRef = useRef<HTMLInputElement>(null);
+  const mitraKerjaRef = useRef<HTMLInputElement>(null);
+  const tenagaAhliRef = useRef<HTMLInputElement>(null);
 
-    // Add all mock photos at once for demo purposes, or can be sequential
-    mockPhotos.forEach((url) => {
-      // Prevent adding duplicates if already exists
-      if (!minutesData?.dokumentasi.includes(url)) {
-        actions.addDocumentation(url);
+  const handleUploadClick = () => {
+    if (isReadOnly) return;
+    fileInputRef.current?.click();
+  };
+
+  const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    for (let i = 0; i < files.length; i++) {
+      try {
+        const base64 = await processImage(files[i]);
+        actions.addDocumentation(base64);
+      } catch (err) {
+        console.error("Failed to upload image:", err);
       }
-    });
+    }
+    // Reset input
+    e.target.value = "";
+  };
+
+  const handleAbsensiClick = (
+    type: "anggotaDewan" | "mitraKerja" | "tenagaAhli",
+  ) => {
+    if (isReadOnly) return;
+    if (type === "anggotaDewan") anggotaDewanRef.current?.click();
+    if (type === "mitraKerja") mitraKerjaRef.current?.click();
+    if (type === "tenagaAhli") tenagaAhliRef.current?.click();
+  };
+
+  const onAbsensiChange = async (
+    type: "anggotaDewan" | "mitraKerja" | "tenagaAhli",
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const base64 = await processImage(file);
+      actions.updateLampiranAbsensi(type, base64);
+    } catch (err) {
+      console.error("Failed to upload scan:", err);
+    }
+    // Reset input
+    e.target.value = "";
   };
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
+      {/* Hidden Inputs */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        className="hidden"
+        accept="image/*"
+        multiple
+        onChange={onFileChange}
+      />
+      <input
+        type="file"
+        ref={anggotaDewanRef}
+        className="hidden"
+        accept="image/*"
+        onChange={(e) => onAbsensiChange("anggotaDewan", e)}
+      />
+      <input
+        type="file"
+        ref={mitraKerjaRef}
+        className="hidden"
+        accept="image/*"
+        onChange={(e) => onAbsensiChange("mitraKerja", e)}
+      />
+      <input
+        type="file"
+        ref={tenagaAhliRef}
+        className="hidden"
+        accept="image/*"
+        onChange={(e) => onAbsensiChange("tenagaAhli", e)}
+      />
+
       <div className="flex justify-between items-center">
         <div>
           <h3 className="text-xl font-bold text-gray-800">
@@ -47,7 +154,7 @@ export default function TabDokumentasi({
           <Button
             color="primary"
             startContent={<PhotoIcon className="w-5 h-5" />}
-            onPress={handleUpload}
+            onPress={handleUploadClick}
           >
             Upload Foto
           </Button>
@@ -130,12 +237,7 @@ export default function TabDokumentasi({
                     size="sm"
                     variant="flat"
                     isDisabled={isReadOnly}
-                    onPress={() =>
-                      actions.updateLampiranAbsensi(
-                        "anggotaDewan",
-                        "/scan_absen/scan_absen_anggota_dewan.png",
-                      )
-                    }
+                    onPress={() => handleAbsensiClick("anggotaDewan")}
                   >
                     Upload Scan
                   </Button>
@@ -176,12 +278,7 @@ export default function TabDokumentasi({
                     size="sm"
                     variant="flat"
                     isDisabled={isReadOnly}
-                    onPress={() =>
-                      actions.updateLampiranAbsensi(
-                        "mitraKerja",
-                        "/scan_absen/scan_absen_anggota_dewan.png",
-                      )
-                    }
+                    onPress={() => handleAbsensiClick("mitraKerja")}
                   >
                     Upload Scan
                   </Button>
@@ -222,12 +319,7 @@ export default function TabDokumentasi({
                     size="sm"
                     variant="flat"
                     isDisabled={isReadOnly}
-                    onPress={() =>
-                      actions.updateLampiranAbsensi(
-                        "tenagaAhli",
-                        "/scan_absen/scan_absen_anggota_dewan.png",
-                      )
-                    }
+                    onPress={() => handleAbsensiClick("tenagaAhli")}
                   >
                     Upload Scan
                   </Button>
