@@ -53,14 +53,7 @@ export default function NotulisJenisRapatPage() {
     type: "category",
   });
 
-  // Initialize Data
-  useEffect(() => {
-    if (_hasHydrated && !isInitialized) {
-      actions.setCategories(mockMeetingCategories);
-      actions.setVariants(mockMeetingTypeVariants);
-      actions.markAsInitialized();
-    }
-  }, [_hasHydrated, isInitialized, actions]);
+  // Initialization removed to allow empty state
 
   // Handlers
   const handleCreate = (categoryId?: string) => {

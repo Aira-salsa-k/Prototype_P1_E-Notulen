@@ -45,6 +45,11 @@ export const useNotulisStore = create<NotulisState>()(
       onRehydrateStorage: () => (state) => {
         state?.setHasHydrated(true);
       },
+      partialize: (state) => ({
+        notulisList: state.notulisList,
+        users: state.users,
+        isInitialized: state.isInitialized,
+      }),
     },
   ),
 );

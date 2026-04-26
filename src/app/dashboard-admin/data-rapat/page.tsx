@@ -68,13 +68,7 @@ export default function DataRapatPage() {
     markAsInitialized: markMitraInit,
   } = useMitraStore();
 
-  // Initialize Data
-  useEffect(() => {
-    if (_hasHydrated && !isInitialized) {
-      actions.setMeetings(mockMeetings);
-      actions.markAsInitialized();
-    }
-  }, [_hasHydrated, isInitialized, actions]);
+  // Initialization removed to allow empty state
 
   // Derived State
   const filteredMeetings = useMemo(() => {

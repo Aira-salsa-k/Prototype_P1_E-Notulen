@@ -41,6 +41,11 @@ export const useAnggotaStore = create<AnggotaState>()(
       onRehydrateStorage: () => (state) => {
         state?.setHasHydrated(true);
       },
+      partialize: (state) => ({
+        anggota: state.anggota,
+        users: state.users,
+        isInitialized: state.isInitialized,
+      }),
     },
   ),
 );

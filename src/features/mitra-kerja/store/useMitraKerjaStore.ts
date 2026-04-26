@@ -33,6 +33,10 @@ export const useMitraStore = create<MitraState>()(
       onRehydrateStorage: () => (state) => {
         state?.setHasHydrated(true);
       },
+      partialize: (state) => ({
+        institutions: state.institutions,
+        isInitialized: state.isInitialized,
+      }),
     },
   ),
 );

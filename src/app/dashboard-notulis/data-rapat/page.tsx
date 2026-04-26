@@ -20,15 +20,7 @@ export default function DataRapatNotulisPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMeeting, setEditingMeeting] = useState<Meeting | null>(null);
 
-  // Initialize Data
-  useEffect(() => {
-    if (_hasHydrated) {
-      if (!isInitialized) {
-        actions.setMeetings(mockMeetings);
-        actions.markAsInitialized();
-      }
-    }
-  }, [_hasHydrated, isInitialized, actions, meetings]);
+  // Initialization removed to allow empty state
 
   // Filter meetings: Only show those assigned to this notulis OR created by them
   const myMeetings = useMemo(() => {

@@ -32,18 +32,9 @@ export function GlobalDataInitializer() {
   const mitra = useMitraStore();
 
   useEffect(() => {
-    // 1. Data Rapat
-    if (rapat._hasHydrated && rapat.meetings.length === 0) {
-      rapat.actions.setMeetings(mockMeetings);
-      rapat.actions.markAsInitialized();
-    }
+    // 1. Data Rapat - REMOVED (Empty by default)
 
-    // 2. Jenis Rapat
-    if (jenis._hasHydrated && jenis.categories.length === 0) {
-      jenis.actions.setCategories(mockMeetingCategories);
-      jenis.actions.setVariants(mockMeetingTypeVariants);
-      jenis.actions.markAsInitialized();
-    }
+    // 2. Jenis Rapat - REMOVED (Empty by default)
 
     // 3. Notulis
     if (notulis._hasHydrated && notulis.notulisList.length === 0) {
@@ -66,16 +57,10 @@ export function GlobalDataInitializer() {
       anggota.markAsInitialized();
     }
 
-    // 6. Mitra
-    if (mitra._hasHydrated && mitra.institutions.length === 0) {
-      mitra.setInstitutions(mockMitraInstitutions);
-      mitra.markAsInitialized();
-    }
+    // 6. Mitra - REMOVED (Empty by default)
   }, [
     rapat._hasHydrated,
-    rapat.meetings.length,
     jenis._hasHydrated,
-    jenis.categories.length,
     notulis._hasHydrated,
     notulis.notulisList.length,
     sekwan._hasHydrated,
@@ -83,7 +68,6 @@ export function GlobalDataInitializer() {
     anggota._hasHydrated,
     anggota.anggota.length,
     mitra._hasHydrated,
-    mitra.institutions.length,
   ]);
 
   return null;

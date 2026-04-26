@@ -51,12 +51,7 @@ export default function MitraKerjaPage() {
   const [modalState, setModalState] = useState<MitraKerjaModalState>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!isInitialized && institutions.length === 0) {
-      setInstitutions(mockMitraInstitutions);
-      markAsInitialized();
-    }
-  }, [isInitialized, institutions.length, setInstitutions, markAsInitialized]);
+  // Initialization removed to allow empty state
 
   // 3. Memoized Stats
 

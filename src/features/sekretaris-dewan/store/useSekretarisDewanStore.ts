@@ -42,6 +42,11 @@ export const useSekretarisDewanStore = create<SekretarisDewanState>()(
       onRehydrateStorage: () => (state) => {
         state?.setHasHydrated(true);
       },
+      partialize: (state) => ({
+        sekretarisDewan: state.sekretarisDewan,
+        users: state.users,
+        isInitialized: state.isInitialized,
+      }),
     },
   ),
 );
