@@ -216,7 +216,7 @@ export const generateMeetingPDF = async (
   };
 
   drawPesertaTable(
-    "DAFTAR HADIR ANGGOTA INTERNAL DPRK KEEROM",
+    "DAFTAR HADIR ANGGOTA DPRK KEEROM",
     meeting.invitedAnggotaDewanIds || [],
   );
   drawPesertaTable(

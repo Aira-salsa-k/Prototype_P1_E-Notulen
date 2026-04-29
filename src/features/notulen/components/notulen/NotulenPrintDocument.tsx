@@ -207,7 +207,9 @@ export const NotulenPrintDocument = ({
             <tr>
               <td className="w-32 py-0.5 align-top">Agenda</td>
               <td className="w-4 py-0.5 align-top">:</td>
-              <td className="py-0.5 align-top">{meeting.agenda}</td>
+              <td className="py-0.5 align-top text-justify leading-relaxed">
+                {meeting.agenda}
+              </td>
             </tr>
             <tr>
               <td className="w-32 py-0.5 align-top">Pimpinan Rapat</td>
@@ -400,7 +402,7 @@ export const NotulenPrintDocument = ({
                 {index === 0 && (
                   <div className="mb-4">
                     <p className="mb-2">
-                      Rapat dimulai oleh{" "}
+                      Rapat dibuka oleh{" "}
                       <span className="font-bold">{pimpinanNames}</span>
                     </p>
                   </div>
@@ -536,7 +538,7 @@ export const NotulenPrintDocument = ({
         {/* DOCUMENTATION SECTION */}
         {minutesData?.dokumentasi && minutesData.dokumentasi.length > 0 && (
           <div className="mt-12 pt-12" style={{ pageBreakBefore: "always" }}>
-            <div className="text-center mb-12">
+            <div className="text-center mb-4">
               <h2 className="font-bold text-lg uppercase">
                 DOKUMENTASI KEGIATAN
               </h2>
@@ -545,28 +547,29 @@ export const NotulenPrintDocument = ({
               </p>
             </div>
 
-            <div className="grid grid-cols-1 gap-12">
-              {minutesData.dokumentasi.map((url, index) => (
-                <React.Fragment key={index}>
-                  <div className="flex flex-col items-center">
-                    <div className="border border-gray-300 p-2 bg-white shadow-sm w-full max-w-[95%]">
-                      <img
-                        src={url}
-                        alt={`Dokumentasi ${index + 1}`}
-                        className="w-full h-auto object-contain max-h-[1000px]"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Page break after every 2 photos */}
-                  {(index + 1) % 2 === 0 &&
-                    index + 1 < minutesData.dokumentasi.length && (
-                      <div
-                        style={{ pageBreakBefore: "always" }}
-                        className="h-16"
-                      />
-                    )}
-                </React.Fragment>
+            <div className="space-y-0">
+              {Array.from({
+                length: Math.ceil(minutesData.dokumentasi.length / 2),
+              }).map((_, pageIdx) => (
+                <div
+                  key={pageIdx}
+                  className="flex flex-col gap-4 pt-4"
+                  style={{ pageBreakAfter: "always" }}
+                >
+                  {minutesData.dokumentasi
+                    .slice(pageIdx * 2, pageIdx * 2 + 2)
+                    .map((url, index) => (
+                      <div key={index} className="flex flex-col items-center">
+                        <div className="border border-gray-300 p-1.5 bg-white shadow-sm w-full max-w-[85%] max-h-[420px] aspect-[4/3] overflow-hidden">
+                          <img
+                            src={url}
+                            alt={`Dokumentasi ${pageIdx * 2 + index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                </div>
               ))}
             </div>
           </div>
@@ -579,63 +582,78 @@ export const NotulenPrintDocument = ({
           <div className="mt-12" style={{ pageBreakBefore: "always" }}>
             {/* 1. Anggota Dewan */}
             {minutesData.lampiranAbsensi.anggotaDewan && (
-              <div className="mb-12">
-                <div className="text-center mb-8">
-                  <h2 className="font-bold text-lg uppercase">
-                    LAMPIRAN ABSENSI
-                  </h2>
-                  <p className="uppercase font-bold text-sm mt-1">
-                    DAFTAR HADIR ANGGOTA INTERNAL DPRK KEEROM
-                  </p>
-                </div>
-                <div className="flex items-center justify-center">
-                  <img
-                    src={minutesData.lampiranAbsensi.anggotaDewan}
-                    alt="Scan Absen Anggota Dewan"
-                    className="w-full h-auto object-contain border border-gray-200"
-                  />
+              <div
+                className="w-full"
+                style={{ pageBreakBefore: "always", pageBreakAfter: "always" }}
+              >
+                <div className="flex flex-col items-center justify-start break-inside-avoid">
+                  <div className="text-center mb-6">
+                    <h2 className="font-bold text-lg uppercase">
+                      LAMPIRAN ABSENSI
+                    </h2>
+                    <p className="uppercase font-bold text-sm mt-1">
+                      DAFTAR HADIR ANGGOTA DPRK KEEROM
+                    </p>
+                  </div>
+                  <div className="w-full flex items-center justify-center border border-gray-200 overflow-hidden shadow-sm">
+                    <img
+                      src={minutesData.lampiranAbsensi.anggotaDewan}
+                      alt="Scan Absen Anggota Dewan"
+                      className="max-w-full max-h-[850px] object-contain"
+                    />
+                  </div>
                 </div>
               </div>
             )}
 
             {/* 2. Mitra Kerja */}
             {minutesData.lampiranAbsensi.mitraKerja && (
-              <div className="mb-12" style={{ pageBreakBefore: "always" }}>
-                <div className="text-center mb-8 pt-12">
-                  <h2 className="font-bold text-lg uppercase">
-                    LAMPIRAN ABSENSI
-                  </h2>
-                  <p className="uppercase font-bold text-sm mt-1">
-                    DAFTAR HADIR MITRA KERJA
-                  </p>
-                </div>
-                <div className="flex items-center justify-center">
-                  <img
-                    src={minutesData.lampiranAbsensi.mitraKerja}
-                    alt="Scan Absen Mitra Kerja"
-                    className="w-full h-auto object-contain border border-gray-200"
-                  />
+              <div
+                className="w-full"
+                style={{ pageBreakBefore: "always", pageBreakAfter: "always" }}
+              >
+                <div className="flex flex-col items-center justify-start break-inside-avoid">
+                  <div className="text-center mb-6">
+                    <h2 className="font-bold text-lg uppercase">
+                      LAMPIRAN ABSENSI
+                    </h2>
+                    <p className="uppercase font-bold text-sm mt-1">
+                      DAFTAR HADIR MITRA KERJA
+                    </p>
+                  </div>
+                  <div className="w-full flex items-center justify-center border border-gray-200 overflow-hidden shadow-sm">
+                    <img
+                      src={minutesData.lampiranAbsensi.mitraKerja}
+                      alt="Scan Absen Mitra Kerja"
+                      className="max-w-full max-h-[850px] object-contain"
+                    />
+                  </div>
                 </div>
               </div>
             )}
 
             {/* 3. Tenaga Ahli */}
             {minutesData.lampiranAbsensi.tenagaAhli && (
-              <div className="mb-12" style={{ pageBreakBefore: "always" }}>
-                <div className="text-center mb-8 pt-12">
-                  <h2 className="font-bold text-lg uppercase">
-                    LAMPIRAN ABSENSI
-                  </h2>
-                  <p className="uppercase font-bold text-sm mt-1">
-                    DAFTAR HADIR TENAGA AHLI
-                  </p>
-                </div>
-                <div className="flex items-center justify-center">
-                  <img
-                    src={minutesData.lampiranAbsensi.tenagaAhli}
-                    alt="Scan Absen Tenaga Ahli"
-                    className="w-full h-auto object-contain border border-gray-200"
-                  />
+              <div
+                className="w-full"
+                style={{ pageBreakBefore: "always", pageBreakAfter: "always" }}
+              >
+                <div className="flex flex-col items-center justify-start break-inside-avoid">
+                  <div className="text-center mb-6">
+                    <h2 className="font-bold text-lg uppercase">
+                      LAMPIRAN ABSENSI
+                    </h2>
+                    <p className="uppercase font-bold text-sm mt-1">
+                      DAFTAR HADIR TENAGA AHLI
+                    </p>
+                  </div>
+                  <div className="w-full flex items-center justify-center border border-gray-200 overflow-hidden shadow-sm">
+                    <img
+                      src={minutesData.lampiranAbsensi.tenagaAhli}
+                      alt="Scan Absen Tenaga Ahli"
+                      className="max-w-full max-h-[850px] object-contain"
+                    />
+                  </div>
                 </div>
               </div>
             )}

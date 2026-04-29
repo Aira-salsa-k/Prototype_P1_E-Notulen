@@ -161,7 +161,7 @@ export default function TabDokumentasi({
         )}
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 gap-4">
         {minutesData?.dokumentasi.map((url, idx) => (
           <div
             key={idx}
@@ -208,13 +208,13 @@ export default function TabDokumentasi({
           {/* 1. Anggota Dewan */}
           <div className="space-y-3">
             <p className="font-semibold text-sm text-gray-700">Anggota Dewan</p>
-            <div className="border-2 border-dashed border-gray-300 rounded-xl p-4 flex flex-col items-center justify-center min-h-[200px] bg-gray-50 overflow-hidden relative group">
+            <div className="border-2 border-dashed border-gray-300 rounded-xl p-0 flex flex-col items-center justify-center min-h-[300px] aspect-[3/4] bg-gray-50 overflow-hidden relative group">
               {minutesData?.lampiranAbsensi?.anggotaDewan ? (
                 <>
                   <img
                     src={minutesData.lampiranAbsensi.anggotaDewan}
                     alt="Absen Dewan"
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-cover object-top"
                   />
                   {!isReadOnly && (
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
@@ -249,13 +249,13 @@ export default function TabDokumentasi({
           {/* 2. Mitra Kerja */}
           <div className="space-y-3">
             <p className="font-semibold text-sm text-gray-700">Mitra Kerja</p>
-            <div className="border-2 border-dashed border-gray-300 rounded-xl p-4 flex flex-col items-center justify-center min-h-[200px] bg-gray-50 overflow-hidden relative group">
+            <div className="border-2 border-dashed border-gray-300 rounded-xl p-0 flex flex-col items-center justify-center min-h-[300px] aspect-[3/4] bg-gray-50 overflow-hidden relative group">
               {minutesData?.lampiranAbsensi?.mitraKerja ? (
                 <>
                   <img
                     src={minutesData.lampiranAbsensi.mitraKerja}
                     alt="Absen Mitra"
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-cover object-top"
                   />
                   {!isReadOnly && (
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
@@ -290,13 +290,13 @@ export default function TabDokumentasi({
           {/* 3. Tenaga Ahli */}
           <div className="space-y-3">
             <p className="font-semibold text-sm text-gray-700">Tenaga Ahli</p>
-            <div className="border-2 border-dashed border-gray-300 rounded-xl p-4 flex flex-col items-center justify-center min-h-[200px] bg-gray-50 overflow-hidden relative group">
+            <div className="border-2 border-dashed border-gray-300 rounded-xl p-0 flex flex-col items-center justify-center min-h-[300px] aspect-[3/4] bg-gray-50 overflow-hidden relative group">
               {minutesData?.lampiranAbsensi?.tenagaAhli ? (
                 <>
                   <img
                     src={minutesData.lampiranAbsensi.tenagaAhli}
                     alt="Absen TA"
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-cover object-top"
                   />
                   {!isReadOnly && (
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">

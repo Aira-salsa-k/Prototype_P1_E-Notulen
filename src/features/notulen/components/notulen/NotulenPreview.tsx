@@ -201,7 +201,9 @@ export default function NotulenPreview({
           <tr>
             <td className="w-32 py-0.5 align-top">Agenda</td>
             <td className="w-4 py-0.5 align-top">:</td>
-            <td className="py-0.5 align-top">{meeting.agenda}</td>
+            <td className="py-0.5 align-top text-justify leading-relaxed">
+              {meeting.agenda}
+            </td>
           </tr>
           <tr>
             <td className="w-32 py-0.5 align-top">Pimpinan Rapat</td>
@@ -235,7 +237,7 @@ export default function NotulenPreview({
         {/* 1. INTERNAL DEWAN */}
         <div className="mb-6">
           <h4 className="font-bold text-sm mb-2">
-            DAFTAR HADIR ANGGOTA INTERNAL DPRK KEEROM
+            DAFTAR HADIR ANGGOTA DPRK KEEROM
           </h4>
           <table className="w-full text-sm border border-black border-collapse">
             <thead>
@@ -386,7 +388,7 @@ export default function NotulenPreview({
                 {index === 0 && (
                   <div className="mb-4 text-justify leading-relaxed text-sm">
                     <p>
-                      Rapat dimulai oleh{" "}
+                      Rapat dibuka oleh{" "}
                       <span className="font-bold">{pimpinanNames}</span>
                     </p>
                   </div>
@@ -565,7 +567,7 @@ export default function NotulenPreview({
                   LAMPIRAN ABSENSI
                 </h2>
                 <p className="uppercase font-bold text-sm mt-1">
-                  DAFTAR HADIR ANGGOTA INTERNAL DPRK KEEROM
+                  DAFTAR HADIR ANGGOTA DPRK KEEROM
                 </p>
               </div>
               <div className="p-4 min-h-[500px] flex items-center justify-center">

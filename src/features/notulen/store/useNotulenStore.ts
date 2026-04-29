@@ -93,18 +93,27 @@ export const useNotulenStore = create<NotulenState>((set, get) => {
           .getState()
           .meetings.find((m) => m.id === meetingId);
 
-        if (meetingInStore?.notulenSections?.length) {
+        if (meetingInStore) {
           set({
             currentMeetingId: meetingId,
-            sections: meetingInStore.notulenSections,
-            points: meetingInStore.notulenSections.reduce(
+            sections: meetingInStore.notulenSections || [],
+            points: (meetingInStore.notulenSections || []).reduce(
               (acc, section) => {
                 acc[section.id] = section.points || [];
                 return acc;
               },
               {} as Record<string, NotulenPoint[]>,
             ),
-            minutesData: meetingInStore.minutesData || null,
+            minutesData: meetingInStore.minutesData || {
+              id: "minutes-" + meetingId,
+              meetingId: meetingId,
+              decisions: [],
+              dokumentasi: [],
+              lampiranAbsensi: {},
+              isSigned: false,
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            },
           });
           return;
         }
@@ -261,12 +270,23 @@ export const useNotulenStore = create<NotulenState>((set, get) => {
 
       addDocumentation: (url) => {
         set((state) => {
-          const newMinutes = state.minutesData
-            ? {
-                ...state.minutesData,
-                dokumentasi: [...state.minutesData.dokumentasi, url],
-              }
-            : null;
+          const currentMinutes =
+            state.minutesData ||
+            ({
+              id: "minutes-" + state.currentMeetingId,
+              meetingId: state.currentMeetingId!,
+              decisions: [],
+              dokumentasi: [],
+              lampiranAbsensi: {},
+              isSigned: false,
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            } as MeetingMinutes);
+
+          const newMinutes = {
+            ...currentMinutes,
+            dokumentasi: [...currentMinutes.dokumentasi, url],
+          };
           syncToMeetingStore(state.currentMeetingId!, {
             minutesData: newMinutes,
           });
@@ -292,15 +312,26 @@ export const useNotulenStore = create<NotulenState>((set, get) => {
 
       updateLampiranAbsensi: (type, url) => {
         set((state) => {
-          const newMinutes = state.minutesData
-            ? {
-                ...state.minutesData,
-                lampiranAbsensi: {
-                  ...state.minutesData.lampiranAbsensi,
-                  [type]: url,
-                },
-              }
-            : null;
+          const currentMinutes =
+            state.minutesData ||
+            ({
+              id: "minutes-" + state.currentMeetingId,
+              meetingId: state.currentMeetingId!,
+              decisions: [],
+              dokumentasi: [],
+              lampiranAbsensi: {},
+              isSigned: false,
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            } as MeetingMinutes);
+
+          const newMinutes = {
+            ...currentMinutes,
+            lampiranAbsensi: {
+              ...currentMinutes.lampiranAbsensi,
+              [type]: url,
+            },
+          };
           syncToMeetingStore(state.currentMeetingId!, {
             minutesData: newMinutes,
           });
