@@ -77,7 +77,7 @@ export function DataRapatList({
   };
 
   return (
-    <div className="border border-gray-200 rounded-2xl overflow-hidden shadow-xs bg-white">
+    <div className="border border-gray-400 rounded-2xl overflow-hidden shadow-xs bg-white">
       <Table
         aria-label="Tabel Jadwal Rapat"
         removeWrapper={true}
@@ -119,7 +119,7 @@ export function DataRapatList({
             return (
               <TableRow
                 key={meeting.id}
-                className="border-b last:border-b-0 border-gray-100 hover:bg-gray-50/50 transition-colors group"
+                className="border-b last:border-b-0 border-gray-400 hover:bg-gray-50/50 transition-colors group"
               >
                 <TableCell className="py-6 pl-6 align-top">
                   <div className="max-w-md">

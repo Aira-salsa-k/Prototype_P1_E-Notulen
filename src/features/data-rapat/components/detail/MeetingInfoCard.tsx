@@ -38,7 +38,7 @@ export function MeetingInfoCard({
     relations;
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm relative overflow-hidden">
+    <div className="bg-white rounded-2xl border border-gray-300 p-8 shadow-sm relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-bl-full -mr-16 -mt-16 opacity-50" />
 

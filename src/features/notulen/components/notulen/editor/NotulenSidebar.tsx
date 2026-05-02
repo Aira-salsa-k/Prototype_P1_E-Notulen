@@ -39,7 +39,7 @@ const ParticipantGroup = ({
   children: React.ReactNode;
 }) => {
   return (
-    <div className="border-b border-gray-100 last:border-0 overflow-hidden">
+    <div className="border border-gray-400 last:border-0 overflow-hidden">
       <button
         onClick={onToggle}
         className={`w-full flex items-center justify-between p-3 transition-all ${
@@ -158,8 +158,8 @@ export default function NotulenSidebar({
       <button
         key={p.id}
         onClick={() => handleSpeakerSelect(p)}
-        className={`w-full text-left py-3 px-4 border-b border-gray-50 last:border-0 transition-all flex items-center justify-between group
-          ${isActive ? activeBg : "bg-white hover:bg-gray-50"}
+        className={`w-full text-left py-3 px-4 border-b border-gray-400 last:border-0 transition-all flex items-center justify-between group
+          ${isActive ? activeBg : "bg-white hover:bg-gray-100"}
         `}
       >
         <div className="flex flex-col min-w-0 pr-2">
@@ -188,8 +188,8 @@ export default function NotulenSidebar({
   };
 
   return (
-    <div className="relative h-full flex flex-col bg-slate-50 border-r border-gray-200 rounded-l-2xl shadow-sm w-80 flex-shrink-0 select-none overflow-hidden">
-      <div className="p-4 border-b bg-white">
+    <div className="relative h-full flex flex-col bg-white border border-gray-400 rounded-l-2xl shadow-sm w-80 flex-shrink-0 select-none overflow-hidden">
+      <div className="p-4 border-b border-gray-400 bg-white">
         <h3 className="text-base font-bold text-gray-800">Panel Pembicara</h3>
         <p className="text-[11px] text-gray-500 mt-1">
           Pilih nama pembicara di bawah untuk mulai mencatat poin notulensi.
@@ -225,14 +225,14 @@ export default function NotulenSidebar({
               isOpen={expanded.mitra}
               onToggle={() => toggleGroup("mitra")}
               icon={BuildingOfficeIcon}
-              colorClass="bg-indigo-100 hover:bg-indigo-200 text-indigo-700"
+              colorClass="bg-indigo-200 hover:bg-indigo-300 text-indigo-800"
             >
               {groupedParticipants.mitra.map((p) =>
                 renderParticipantButton(
                   p,
-                  "bg-indigo-50",
-                  "text-indigo-700",
-                  "text-indigo-500",
+                  "bg-indigo-100",
+                  "text-indigo-800",
+                  "text-indigo-600",
                 ),
               )}
             </ParticipantGroup>
@@ -244,21 +244,21 @@ export default function NotulenSidebar({
               isOpen={expanded.ta}
               onToggle={() => toggleGroup("ta")}
               icon={UserCircleIcon}
-              colorClass="bg-sky-100 hover:bg-sky-200 text-sky-800"
+              colorClass="bg-sky-200 hover:bg-sky-300 text-sky-900"
             >
               {groupedParticipants.ta.map((p) =>
                 renderParticipantButton(
                   p,
-                  "bg-sky-50",
-                  "text-sky-700",
-                  "text-sky-500",
+                  "bg-sky-100",
+                  "text-sky-800",
+                  "text-sky-600",
                 ),
               )}
             </ParticipantGroup>
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-            <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center mb-4">
+            <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
               <UserCircleIcon className="w-8 h-8 text-gray-300" />
             </div>
             <p className="text-sm font-semibold text-gray-600 mb-1">

@@ -17,18 +17,18 @@ export function MeetingTabs({
   participants,
 }: MeetingTabsProps) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm min-h-[600px] overflow-hidden">
+    <div className="bg-white rounded-2xl border border-gray-400 shadow-sm min-h-[600px] overflow-hidden">
       <Tabs
         aria-label="Meeting Tabs"
         variant="underlined"
         classNames={{
-          base: "w-full border-b border-gray-100 px-8 pt-4 bg-gray-50/50",
+          base: "w-full border-b border-gray-300 px-8 pt-4 bg-gray-50/50",
           tabList:
             "gap-8 w-full relative rounded-none p-0 border-b border-divider",
           cursor: "w-full bg-primary h-1 rounded-t-full",
           tab: "max-w-fit px-0 h-14",
           tabContent:
-            "group-data-[selected=true]:text-primary font-black text-gray-400 uppercase tracking-wider text-xs",
+            "group-data-[selected=true]:text-primary font-black text-gray-500 uppercase tracking-wider text-xs",
         }}
       >
         <Tab key="absensi" title="Daftar Hadir">

@@ -65,6 +65,12 @@ export default function TabNotulensi({
           variant="bordered"
           selectedKey={activeTab}
           onSelectionChange={(key) => setActiveTab(key as string)}
+          classNames={{
+            tabList: "border-2 border-gray-400 p-1 bg-white",
+            cursor: "bg-primary rounded-lg shadow-sm",
+            tabContent:
+              "font-bold text-gray-600 group-data-[selected=true]:text-white transition-colors",
+          }}
         >
           <Tab
             key="editor"

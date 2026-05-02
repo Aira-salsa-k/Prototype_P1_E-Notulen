@@ -389,11 +389,15 @@ export const AttendancePrintDocument = ({
                                 (globalIdx + 1) % 2 === 0 ? "ml-27" : "ml-4"
                               }`}
                             >
-                              {globalIdx + 1}. ...............
+                              {globalIdx + 1}{" "}
+                              <span className="text-gray-400 opacity-70">
+                                {" "}
+                                . . . .
+                              </span>
                             </div>
                           </td>
                         </tr>
-                      );
+                      ); 
                     })
                   )}
                 </tbody>

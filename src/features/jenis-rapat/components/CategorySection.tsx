@@ -38,7 +38,7 @@ export function CategorySection({
     <div className="mb-2">
       {/* CATEGORY HEADER (Non-Accordion) */}
       {!isReadOnly && onCreate && (
-        <div className="flex items-center justify-end mb-6 pt-4 border-t border-gray-200">
+        <div className="flex items-center justify-end mb-6 pt-4 border-t border-gray-300">
           <Button
             color="primary"
             onPress={() => onCreate(category.id)}

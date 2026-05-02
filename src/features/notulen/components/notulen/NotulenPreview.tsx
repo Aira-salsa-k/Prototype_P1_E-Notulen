@@ -160,10 +160,11 @@ export default function NotulenPreview({
   };
 
   return (
-    <div className="bg-white border rounded-xl shadow-sm pt-8 pb-10 px-16 max-w-[210mm] mx-auto min-h-[297mm] text-black font-arimo">
+    <div className="bg-white border border-gray-400 rounded-xl shadow-md pt-8 pb-10 px-4 md:px-20 w-full max-w-[225mm] mx-auto min-h-[297mm] text-black font-arimo">
       {/* KOP SURAT PREVIEW */}
       <div className="text-center mb-8 pb-4">
         <KopSuratHeader />
+     
       </div>
 
       <div className="text-center mb-8">
@@ -393,7 +394,7 @@ export default function NotulenPreview({
                     </p>
                   </div>
                 )}
-                <div className="font-bold uppercase text-sm mb-2 bg-gray-100 p-1 inline-block border border-gray-300 rounded-sm">
+                <div className="font-bold uppercase text-sm mb-2 bg-gray-100 p-1.5 inline-block border border-gray-500 rounded-sm">
                   {displayFormat}
                 </div>
                 <ul className="list-disc pl-5 space-y-1 text-sm text-justify">
@@ -417,7 +418,7 @@ export default function NotulenPreview({
 
         <table className="w-full text-sm border border-black border-collapse mb-6">
           <thead>
-            <tr className="bg-gray-100">
+            <tr className="bg-gray-200">
               <th className="border border-black px-2 py-1 w-10 text-center">
                 NO
               </th>

@@ -44,7 +44,7 @@
 
   /* Dropdown Variables */
   --dropdown-bg: color-mix(in srgb, rgb(var(--color-primary)) 7%, white);
-  --dropdown-border: 229 231 235; /* #e5e7eb */
+  --dropdown-border: 209 213 219; /* #e5e7eb */
 
   /* Option Variables */
   --option-bg-default: transparent;

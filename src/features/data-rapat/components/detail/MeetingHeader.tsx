@@ -44,7 +44,7 @@ export function MeetingHeader({
           variant="flat"
           startContent={<ArrowLeftIcon className="w-4 h-4" />}
           onPress={onBack}
-          className="text-gray-500 hover:text-gray-900 transition-colors"
+          className="text-white transition-colors font-semibold bg-indigo-900"
         >
           Kembali
         </Button>

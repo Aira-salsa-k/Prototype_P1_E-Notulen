@@ -29,7 +29,7 @@ export function MeetingTypeListView({
   return (
     <div className="flex flex-col gap-6 ">
       {filteredCategories.length > 0 ? (
-        <div className="space-y-6">
+        <div className="space-y-6 bg">
           <AppAccordion
             items={filteredCategories}
             renderItem={(category) => ({

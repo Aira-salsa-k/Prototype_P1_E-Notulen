@@ -70,7 +70,12 @@ export function MeetingTypeFormInfo({
                   >
                     {[
                       ...categories.map((c) => (
-                        <SelectItem key={c.id} textValue={c.name}>
+                        <SelectItem
+                          key={c.id}
+                          textValue={c.name}
+                          className="border-2 border-indigo-900/10 "
+                 
+                        >
                           {c.name}
                         </SelectItem>
                       )),
@@ -86,14 +91,14 @@ export function MeetingTypeFormInfo({
               />
 
               {isNewCategory && (
-                <div className="p-4 bg-primary-50/50 rounded-xl space-y-4 animate-in slide-in-from-top-2 duration-300 border border-primary-100">
+                <div className="p-4 bg-primary-50/10 rounded-xl space-y-4 animate-in slide-in-from-top-2 duration-300 border border-indigo-900">
                   <Input
                     {...register("categoryName", { required: isNewCategory })}
                     label="Nama Kategori Baru"
-                    placeholder="Misal: Rapat Koordinasi"
+                    placeholder="Isi Nama Kategori Baru contoh : BADAN ANGGARAN"
                     labelPlacement="outside"
                     variant="bordered"
-                    className="bg-white"
+                    className="bg-white pb-4"
                   />
                   <Controller
                     name="categoryColor"
@@ -152,7 +157,9 @@ export function MeetingTypeFormInfo({
         <div className="space-y-1">
           <label className="text-sm font-semibold text-gray-700">
             Nama Sub Jenis Rapat{" "}
-            <span className="text-red-500 font-bold">(Opsional khusus untuk jenis rapat NON AKD)</span>
+            <span className="text-red-500 font-bold">
+              (Opsional khusus untuk jenis rapat NON AKD)
+            </span>
           </label>
 
           <Input

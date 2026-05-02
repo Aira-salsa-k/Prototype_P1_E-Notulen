@@ -44,7 +44,7 @@ export const AppAccordion = ({
             subtitle={subtitle}
             startContent={startContent}
             classNames={{
-              base: "border border-gray-100 shadow-sm rounded-2xl mb-4 overflow-hidden bg-white",
+              base: "border border-gray-400 shadow-sm rounded-2xl mb-4 overflow-hidden bg-white",
               trigger: "px-6 py-5 hover:bg-gray-50/50 transition-colors",
               content: "px-6 pb-6 pt-2 text-gray-700",
               title: "text-lg font-semibold text-gray-900",
