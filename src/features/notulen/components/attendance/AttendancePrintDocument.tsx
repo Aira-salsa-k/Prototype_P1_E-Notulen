@@ -86,7 +86,7 @@ export const AttendancePrintDocument = ({
         >
           {/* Kop Surat (Only on first page) */}
           <div
-            className={`${isEverythingElseHidden || pageIdx > 0 ? "hidden" : "visible"}`}
+            className={`${pageIdx > 0 ? "hidden" : isEverythingElseHidden ? "invisible" : "visible"}`}
           >
             <KopSuratHeader
               contentClassName="px-2 "
@@ -98,7 +98,7 @@ export const AttendancePrintDocument = ({
           <div className="px-10 pb-10">
             {/* Title (Only on first page) */}
             <div
-              className={`text-center mb-2 mt-2 ${isEverythingElseHidden || pageIdx > 0 ? "hidden" : "visible"}`}
+              className={`text-center mb-2 mt-2 ${pageIdx > 0 ? "hidden" : isEverythingElseHidden ? "invisible" : "visible"}`}
             >
               <h2
                 style={{ fontFamily: "Cambria, serif", fontSize: "10pt" }}
@@ -109,7 +109,7 @@ export const AttendancePrintDocument = ({
             </div>
 
             <div
-              className={`mb-3 ${isEverythingElseHidden || pageIdx > 0 ? "hidden" : "visible"}`}
+              className={`mb-3 ${pageIdx > 0 ? "hidden" : isEverythingElseHidden ? "invisible" : "visible"}`}
             >
               <div className="border-b-[1px] border-black"></div>
               <div className="border-b-[3px] border-[#C5FCFF] mt-[1px]"></div>
@@ -118,7 +118,7 @@ export const AttendancePrintDocument = ({
 
             {/* Metadata Section (Only on first page) */}
             <div
-              className={`mb-3 ${isMetadataHidden || pageIdx > 0 ? "hidden" : "visible"} `}
+              className={`mb-3 ${pageIdx > 0 ? "hidden" : isMetadataHidden ? "invisible" : "visible"} `}
             >
               <table
                 className="w-full text-black"
