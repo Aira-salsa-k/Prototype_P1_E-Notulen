@@ -81,7 +81,7 @@ export const generateMeetingPDF = async (
   let yPos = 20;
 
   // --- HEADER (KOP SURAT) ---
-  const logoUrl = "/logo-dprk.png";
+  const logoUrl = "/logo-DPRK-New.png";
   const logoBase64 = await loadImage(logoUrl);
 
   if (logoBase64) {

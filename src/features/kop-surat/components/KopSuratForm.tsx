@@ -53,7 +53,7 @@ export const KopSuratForm = () => {
             <div className="col-span-2">
               <Input
                 label="Logo URL"
-                placeholder="/logo-dprk.png"
+                placeholder="/logo-DPRK-New.png"
                 {...register("logoUrl")}
                 description="URL lokasi file gambar logo (bisa path lokal atau URL eksternal)"
               />

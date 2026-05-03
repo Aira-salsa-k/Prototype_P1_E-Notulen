@@ -36,13 +36,13 @@ export const KopSuratHeader = ({
       {/* Header Container */}
       {/* Header Container */}
       <div
-        className={`grid grid-cols-[110px_1fr_110px] items-center border-black pb-1 mb-0 min-h-[50px] ${contentClassName}`}
+        className={`grid grid-cols-[110px_1fr_110px] items-center border-black pb-4 mb-0 min-h-[50px] ${contentClassName}`}
       >
         {/* LOGO */}
         <div className={`flex items-center justify-center ${logoClassName}`}>
           <img
             src={config.logoUrl}
-            className={`w-20 h-20 print:w-[110px] print:h-[110px] object-contain ${imgClassName}`}
+            className={`w-20 h-21 pb-1 object-contain ${imgClassName}`}
             alt="Logo Instansi"
           />
         </div>
