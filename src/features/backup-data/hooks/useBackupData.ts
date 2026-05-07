@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { mockMeetingResolved } from "@/mocks/meeting";
+import { useDataRapatStore } from "@/features/data-rapat/store/useDataRapatStore";
 import {
   isSameDay,
   isSameWeek,
@@ -24,6 +24,7 @@ export type BackupFilterType =
 
 export const useBackupData = () => {
   const { currentUser } = useAuthStore();
+  const meetings = useDataRapatStore((state) => state.meetings);
   const [filterType, setFilterType] = useState<BackupFilterType>("daily");
   const [customStartDate, setCustomStartDate] = useState<string>("");
   const [customEndDate, setCustomEndDate] = useState<string>("");
@@ -31,10 +32,10 @@ export const useBackupData = () => {
 
   // Filter finished meetings AND check permissions
   const finishedMeetings = useMemo(() => {
-    return mockMeetingResolved.filter(
+    return meetings.filter(
       (m) => m.status === "completed" && canViewMeeting(currentUser, m),
     );
-  }, [currentUser]);
+  }, [currentUser, meetings]);
 
   const filteredMeetings = useMemo(() => {
     if (!selectedDate && filterType !== "custom") return [];

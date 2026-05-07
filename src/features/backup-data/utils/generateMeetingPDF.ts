@@ -3,7 +3,7 @@ import autoTable from "jspdf-autotable";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import JSZip from "jszip";
-import { MeetingResolved } from "@/types/meeting";
+import { Meeting } from "@/types/meeting";
 import { MeetingMinutes, NotulenSection, NotulenPoint } from "@/types/notulen";
 import {
   mockNotulenSections,
@@ -32,7 +32,7 @@ const loadImage = async (url: string): Promise<string | null> => {
 };
 
 // Helper to resolve names
-const resolveName = (id: string, meeting: MeetingResolved): string => {
+const resolveName = (id: string, meeting: Meeting): string => {
   // Try identifying from known participant lists attached to meeting object if available
   // Fallback to mocks
   const user = mockUsers.find((u) => u.id === id);
@@ -50,7 +50,7 @@ const resolveName = (id: string, meeting: MeetingResolved): string => {
 };
 
 export const generateMeetingPDF = async (
-  meeting: MeetingResolved,
+  meeting: Meeting,
   folder: JSZip,
 ) => {
   const doc = new jsPDF({

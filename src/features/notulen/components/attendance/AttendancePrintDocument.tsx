@@ -331,9 +331,9 @@ export const AttendancePrintDocument = ({
 
             {/* Table */}
             <div
-              className={`border border-black ${isEverythingElseHidden ? "invisible" : "visible"}`}
+              className={`${isEverythingElseHidden ? "invisible" : "visible"}`}
             >
-              <table className="w-full text-left border-collapse">
+              <table className="w-full text-left border-collapse border border-black">
                 <thead className="bg-[#BBEFFD] text-black border-b border-black text-center">
                   <tr
                     style={{ fontFamily: "Cambria, serif", fontSize: "11pt" }}
@@ -397,7 +397,7 @@ export const AttendancePrintDocument = ({
                             </div>
                           </td>
                         </tr>
-                      ); 
+                      );
                     })
                   )}
                 </tbody>
