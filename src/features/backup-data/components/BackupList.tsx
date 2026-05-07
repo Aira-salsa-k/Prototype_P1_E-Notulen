@@ -13,7 +13,7 @@ import {
 } from "@heroui/react";
 import { Meeting } from "@/types/meeting";
 import { formatTanggalID } from "@/features/notulen/utils/dateFormat";
-import { mockMeetingCategories } from "@/mocks/meeting-category";
+import { useJenisRapatStore } from "@/features/jenis-rapat/store/useJenisRapatStore";
 
 interface BackupListProps {
   meetings: Meeting[];
@@ -28,8 +28,10 @@ export const BackupList = ({ meetings }: BackupListProps) => {
     { key: "status", label: "STATUS" },
   ];
 
+  const categories = useJenisRapatStore((state) => state.categories);
+
   const getCategoryName = (id: string) => {
-    return mockMeetingCategories.find((c) => c.id === id)?.name || id;
+    return categories.find((c) => c.id === id)?.name || id;
   };
 
   const rows = meetings.map((meeting, index) => ({
