@@ -15,10 +15,9 @@ import {
 } from "@/features/notulen/utils/dateFormat";
 import { Meeting } from "@/types/meeting";
 import { mockNotulenSections, mockMeetingMinutes } from "@/mocks/notulen";
-import { generateMockAnggota } from "@/mocks/anggota-dewan";
-import { mockUsers } from "@/mocks/user";
-import { generateMockSekretarisDewan } from "@/mocks/sekretaris-dewan";
-import { mockNotulis } from "@/mocks/notulis";
+import { useAnggotaStore } from "@/features/anggota-dewan/store/useAnggotaStore";
+import { useNotulisStore } from "@/features/data-notulis/store/useNotulisStore";
+import { useSekretarisDewanStore } from "@/features/sekretaris-dewan/store/useSekretarisDewanStore";
 import { KopSuratConfig } from "@/features/kop-surat/types";
 
 const resolveUrl = (url: string) => {
@@ -155,25 +154,35 @@ export const BackupPDFTemplate = ({
   meeting,
   config,
 }: BackupPDFTemplateProps) => {
+  const { anggota: allAnggota, users: allAnggotaUsers } = useAnggotaStore.getState();
+  const { notulisList: allNotulisProfiles, users: allNotulisUsers } = useNotulisStore.getState();
+  const { sekretarisDewan: allSekwanProfiles, users: allSekwanUsers } = useSekretarisDewanStore.getState();
+
+  const allUsers = [...allSekwanUsers, ...allNotulisUsers, ...allAnggotaUsers];
+
   const resolveName = (id: string) => {
     const attendance = meeting.attendanceRecords?.find(
       (a) => a.entityId === id || a.id === id,
     );
     if (attendance?.name) return attendance.name;
-    const user = mockUsers.find((u) => u.id === id);
+
+    const user = allUsers.find((u) => u.id === id);
     if (user) return user.name;
-    const anggota = generateMockAnggota().find(
-      (a) => a.id === id || a.userId === id,
-    );
+
+    const anggota = allAnggota.find((a) => a.id === id);
     if (anggota) {
-      const u = mockUsers.find((usr) => usr.id === anggota.userId);
+      const u = allUsers.find((user) => user.id === anggota.userId);
       if (u) return u.name;
     }
-    const notulis = mockNotulis.find((n) => n.id === id || n.userID === id);
+
+    const notulis = allNotulisProfiles.find(
+      (n) => n.id === id || n.userID === id,
+    );
     if (notulis) {
-      const u = mockUsers.find((usr) => usr.id === notulis.userID);
+      const u = allUsers.find((user) => user.id === notulis.userID);
       if (u) return u.name;
     }
+
     return id || "Belum ditentukan";
   };
 
@@ -183,8 +192,7 @@ export const BackupPDFTemplate = ({
     );
     if (attendance?.jabatan) return attendance.jabatan;
 
-    // We don't have meeting.meetingTypeVariant in Meeting, so default:
-    const anggota = generateMockAnggota().find(
+    const anggota = allAnggota.find(
       (a) => a.id === id || a.userId === id,
     );
     if (anggota) return anggota.jabatan || "Anggota Dewan";
@@ -197,20 +205,20 @@ export const BackupPDFTemplate = ({
         name: "..........................",
         nip: "...........................................",
       };
-    const not = mockNotulis.find((n) => n.id === id || n.userID === id);
-    const uid = not ? not.userID : id;
-    const user = mockUsers.find((u) => u.id === uid);
+    
+    const notulis = allNotulisProfiles.find(
+      (n) => n.id === id || n.userID === id,
+    );
+    const userId = notulis ? notulis.userID : id;
+    const user = allNotulisUsers.find((u) => u.id === userId);
     return {
       name: user?.name || "..........................",
-      nip: not?.NIP || "...........................................",
+      nip: notulis?.NIP || "...........................................",
     };
   };
 
-  const sections = mockNotulenSections
-    .filter((sec) => sec.meetingID === meeting.id)
-    .sort((a, b) => a.order - b.order);
-  const minutesData =
-    mockMeetingMinutes.find((m) => m.meetingId === meeting.id) || null;
+  const sections = (meeting.notulenSections || []).sort((a, b) => a.order - b.order);
+  const minutesData = meeting.minutesData || null;
 
   const pimpinanNames = meeting.pimpinanRapatId
     ? resolveName(meeting.pimpinanRapatId)
@@ -218,18 +226,17 @@ export const BackupPDFTemplate = ({
         .map((id) => resolveName(id))
         .join(", ");
 
-  const sekwanProfile = generateMockSekretarisDewan().find(
-    (sec) =>
-      sec.id === meeting.sekretarisId || sec.userId === meeting.sekretarisId,
-  );
-  const sekwanUserId = sekwanProfile
-    ? sekwanProfile.userId
-    : meeting.sekretarisId;
-  const sekwanUser = mockUsers.find((u) => u.id === sekwanUserId);
-  const sekwanData = {
-    name: sekwanUser?.name || "..........................",
-    nip: sekwanProfile?.nip || "...........................................",
-  };
+  const sekwanData = (() => {
+    const sekwanProfile = allSekwanProfiles.find(
+      (s) => s.id === meeting.sekretarisId || s.userId === meeting.sekretarisId,
+    );
+    const userId = sekwanProfile ? sekwanProfile.userId : meeting.sekretarisId;
+    const user = allSekwanUsers.find((u) => u.id === userId);
+    return {
+      name: user?.name || "..........................",
+      nip: sekwanProfile?.nip || "...........................................",
+    };
+  })();
 
   const resolvedNotulisList = (meeting.notulisIds || []).map((id) =>
     resolvePersonData(id),
@@ -454,7 +461,14 @@ export const BackupPDFTemplate = ({
         </View>
 
         {meeting.notulisIds && meeting.notulisIds.length > 0 && (
-          <View style={{ ...s.sigRow, marginTop: 20 }}>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent:
+                meeting.notulisIds.length === 1 ? "center" : "space-between",
+              marginTop: 20,
+            }}
+          >
             <View style={s.sigBlock}>
               <Text style={s.sigLabel}>NOTULIS,</Text>
               <Text style={s.sigName}>{notulis1.name}</Text>
