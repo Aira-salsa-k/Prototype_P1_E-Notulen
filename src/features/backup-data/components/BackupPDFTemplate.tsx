@@ -52,7 +52,7 @@ const s = StyleSheet.create({
   page: {
     fontFamily: "Arimo",
     fontSize: 10,
-    paddingTop: 30,
+    paddingTop: 40, 
     paddingBottom: 40,
     paddingHorizontal: 60,
     color: "#000",
@@ -384,22 +384,22 @@ export const BackupPDFTemplate = ({
         </Text>
         <Table>
           <TR>
-            <TD style={s.thCell} weighting={0.05}>
+            <TD style={s.thCell} weighting={0.03}>
               NO
             </TD>
-            <TD style={{ ...s.thCell, textAlign: "left" }} weighting={0.95}>
+            <TD style={{ ...s.thCell, textAlign: "left" }} weighting={0.97}>
               HASIL KEPUTUSAN RAPAT
             </TD>
           </TR>
           {minutesData?.decisions && minutesData.decisions.length > 0 ? (
             minutesData.decisions.map((d, i) => (
               <TR key={i} wrap={false}>
-                <TD style={s.tdCenter} weighting={0.05}>
+                <TD style={s.tdCenter} weighting={0.03}>
                   {String(i + 1)}
                 </TD>
                 <TD
                   style={{ ...s.tdLeft, textAlign: "justify" }}
-                  weighting={0.95}
+                  weighting={0.97}
                 >
                   {d}
                 </TD>
