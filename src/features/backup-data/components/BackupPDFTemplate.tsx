@@ -54,7 +54,7 @@ const s = StyleSheet.create({
     fontSize: 10,
     paddingTop: 30,
     paddingBottom: 40,
-    paddingHorizontal: 45,
+    paddingHorizontal: 60,
     color: "#000",
   },
   kopRow: { flexDirection: "row", alignItems: "center", marginBottom: 4 },
@@ -303,7 +303,7 @@ export const BackupPDFTemplate = ({
             <Text style={s.kopTitle}>{config.districtName}</Text>
             <Text style={s.kopAddress}>{fullAddress}</Text>
           </View>
-          <View style={{ width: 60 }} />
+          <View style={{ width: 50 }} />
         </View>
         <View style={s.kopLine} />
         <View style={s.kopLineThin} />
