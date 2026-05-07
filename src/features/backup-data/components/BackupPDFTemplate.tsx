@@ -57,7 +57,7 @@ const s = StyleSheet.create({
     paddingHorizontal: 60,
     color: "#000",
   },
-  kopRow: { flexDirection: "row", alignItems: "center", marginBottom: 4 },
+  kopRow: { flexDirection: "row", alignItems: "center", marginBottom: 6 },
   kopLogo: { width: 50, height: 50, objectFit: "contain" },
   kopCenter: { flex: 1, textAlign: "center", paddingHorizontal: 8 },
   kopTitle: {
